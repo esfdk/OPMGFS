@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Evolution\EvolvableDoubleArray.cs" />
+    <Compile Include="Evolution\Evolver.cs" />
+    <Compile Include="Evolution\IEvolvable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
