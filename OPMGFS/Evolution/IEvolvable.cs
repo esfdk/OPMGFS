@@ -71,6 +71,5 @@ namespace OPMGFS.Evolution
         public abstract void InitializeObject();
 
         #endregion
-
     }
 }

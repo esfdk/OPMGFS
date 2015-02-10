@@ -20,7 +20,7 @@ namespace OPMGFS
 
         private static void TestEvolution()
         {
-            var evolverTest = new Evolver<EvolvableDoubleArray>(10, 10, 2, 10);
+            var evolverTest = new Evolver<EvolvableDoubleArray>(10, 10, 2, 10, 0.3);
             for (var i = 0; i < evolverTest.Population.Count; i++)
             //{
             //    Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
@@ -38,7 +38,7 @@ namespace OPMGFS
             Console.WriteLine("------------------");
             Console.WriteLine();
 
-            evolverTest.Evolve();
+            var best = (EvolvableDoubleArray)evolverTest.Evolve();
 
             for (var i = 0; i < evolverTest.Population.Count; i++)
             {
@@ -50,6 +50,15 @@ namespace OPMGFS
                 Console.Write("]");
                 Console.WriteLine();
             }
+
+            Console.WriteLine();
+            Console.WriteLine("The best one had fitness " + best.Fitness + " and looked like this: [");
+            foreach (var number in best.Numbers)
+            {
+                Console.Write(number + ", ");
+            }
+            Console.Write("]");
+
             Console.ReadLine();
         }
     }

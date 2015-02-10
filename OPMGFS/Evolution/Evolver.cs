@@ -26,12 +26,15 @@ namespace OPMGFS.Evolution
         /// <param name="populationSize">The size of the population to evolve.</param>
         /// <param name="numberOfCandidates">The number of children to spawn mutations from.</param>
         /// <param name="numberOfChildren">The number of children to create for every generation.</param>
-        public Evolver(int numberOfGenerations, int populationSize, int numberOfCandidates, int numberOfChildren)
+        /// <param name="mutationChance">The chance of mutation happening in the parents.</param>
+        public Evolver(int numberOfGenerations, int populationSize, int numberOfCandidates, int numberOfChildren, double mutationChance)
         {
             this.NumberOfGenerations = numberOfGenerations;
             this.PopulationSize = populationSize;
             this.NumberOfCandidates = numberOfCandidates;
             this.NumberOfChildren = numberOfChildren;
+            this.MutationChance = mutationChance;
+
             this.Population = new List<T>();
 
             // this.GenerateInitialPopulation();
@@ -64,9 +67,15 @@ namespace OPMGFS.Evolution
         private int NumberOfChildren { get; set; }
 
         /// <summary>
+        /// Gets or sets the chance of mutation happening.
+        /// </summary>
+        private double MutationChance { get; set; }
+
+        /// <summary>
         /// Starts, and handles, the evolution.
         /// </summary>
-        public void Evolve()
+        /// <returns>The best individual at the end of the evolution.</returns>
+        public IEvolvable Evolve()
         {
             this.GenerateInitialPopulation();
             this.EvaluatePopulation();
@@ -79,7 +88,15 @@ namespace OPMGFS.Evolution
                 this.SelectPopulationForNextGeneration();
             }
 
-            // TODO: Select best result
+            IEvolvable best = null;
+
+            foreach (var individual in this.Population)
+            {
+                if (best == null) best = individual;
+                if (individual.Fitness > best.Fitness) best = individual;
+            }
+
+            return best;
 
             // 1. Create initial population
             // 2. Evaluate each candidate
@@ -99,7 +116,7 @@ namespace OPMGFS.Evolution
             {
                 Console.WriteLine("Generating " + i);
 
-                var temp = (T)Activator.CreateInstance(typeof(T), new object[] { 0.3 }); // TODO: Change to actual mutation chance
+                var temp = (T)Activator.CreateInstance(typeof(T), new object[] { this.MutationChance });
                 temp.InitializeObject();
                 this.Population.Add(temp);
             }
@@ -167,7 +184,7 @@ namespace OPMGFS.Evolution
 
         /// <summary>
         /// Spawns children from the candidates chosen and adds them directly to the population.
-        /// TODO: Should maybe not add them directly to?
+        /// TODO: Should maybe not add them directly to population?
         /// </summary>
         /// <param name="candidates">A list of the candidates to create children from.</param>
         private void SpawnChildren(List<T> candidates)
