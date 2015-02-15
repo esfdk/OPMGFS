@@ -62,10 +62,33 @@ namespace OPMGFS.Evolution
             {
                 tempArray[i] = this.Numbers[i];
 
-                if (Program.Random.NextDouble() > this.MutationChance)
+                if (EvolutionOptions.Random.NextDouble() > this.MutationChance)
                     continue;
 
-                tempArray[i] += Program.Random.NextDouble() - 0.5;
+                tempArray[i] += EvolutionOptions.Random.NextDouble() - 0.5;
+            }
+
+            tempDArray.SetNumbers(tempArray);
+
+            return tempDArray;
+        }
+
+        /// <summary>
+        /// Creates a recombination between this object and other.
+        /// </summary>
+        /// <param name="other">The object to recombine with this object. Must be an EvolvableDoubleArray.</param>
+        /// <returns>A recombination between the two objects.</returns>
+        public override IEvolvable SpawnRecombination(IEvolvable other)
+        {
+            if (other.GetType() != this.GetType()) return this;
+            var tempOther = (EvolvableDoubleArray)other;
+
+            var tempDArray = new EvolvableDoubleArray(this.MutationChance);
+            var tempArray = new double[this.Numbers.Length];
+
+            for (int i = 0; i < this.Numbers.Length; i++)
+            {
+                tempArray[i] = ((this.Numbers[i] + tempOther.Numbers[i]) / 2) + (EvolutionOptions.Random.NextDouble() - 0.5);
             }
 
             tempDArray.SetNumbers(tempArray);
@@ -87,7 +110,7 @@ namespace OPMGFS.Evolution
         public override void InitializeObject()
         {
             for (var i = 0; i < this.Numbers.Length; i++)
-                this.Numbers[i] = Program.Random.NextDouble() - 0.5;
+                this.Numbers[i] = EvolutionOptions.Random.NextDouble() - 0.5;
         }
     }
 }

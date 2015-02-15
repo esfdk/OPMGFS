@@ -61,6 +61,13 @@ namespace OPMGFS.Evolution
         public abstract IEvolvable SpawnMutation();
 
         /// <summary>
+        /// Creates a recombination between this evolvable and other.
+        /// </summary>
+        /// <param name="other">The other evolvable to create a recombination with.</param>
+        /// <returns>A recombination between this evolvable and other.</returns>
+        public abstract IEvolvable SpawnRecombination(IEvolvable other);
+
+        /// <summary>
         /// Calculates the fitness of the object.
         /// </summary>
         public abstract void CalculateFitness();

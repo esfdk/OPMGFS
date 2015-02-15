@@ -24,18 +24,22 @@ namespace OPMGFS.Evolution
         /// </summary>
         /// <param name="numberOfGenerations">The number of generations to evolve over.</param>
         /// <param name="populationSize">The size of the population to evolve.</param>
-        /// <param name="numberOfCandidates">The number of children to spawn mutations from.</param>
+        /// <param name="numberOfParents">The number of children to spawn mutations from.</param>
         /// <param name="numberOfChildren">The number of children to create for every generation.</param>
         /// <param name="mutationChance">The chance of mutation happening in the parents.</param>
-        public Evolver(int numberOfGenerations, int populationSize, int numberOfCandidates, int numberOfChildren, double mutationChance)
+        public Evolver(int numberOfGenerations, int populationSize, int numberOfParents, int numberOfChildren, double mutationChance)
         {
+            this.Population = new List<T>();
+
+            this.ParentSelectionStrategy = EvolutionOptions.SelectionStrategy.HighestFitness;
+            this.PopulationSelectionStrategy = EvolutionOptions.SelectionStrategy.HighestFitness;
+            this.PopulationStrategy = EvolutionOptions.PopulationStrategy.Mutation;
+
             this.NumberOfGenerations = numberOfGenerations;
             this.PopulationSize = populationSize;
-            this.NumberOfCandidates = numberOfCandidates;
+            this.NumberOfParents = numberOfParents;
             this.NumberOfChildren = numberOfChildren;
             this.MutationChance = mutationChance;
-
-            this.Population = new List<T>();
 
             // this.GenerateInitialPopulation();
             // this.EvaluatePopulation();
@@ -45,6 +49,21 @@ namespace OPMGFS.Evolution
         /// Gets the current population.
         /// </summary>
         public List<T> Population { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value that determines how parents are selected for the population step.
+        /// </summary>
+        public EvolutionOptions.SelectionStrategy ParentSelectionStrategy { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that determines how the next population is selected.
+        /// </summary>
+        public EvolutionOptions.SelectionStrategy PopulationSelectionStrategy { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that determines how a new population is created.
+        /// </summary>
+        public EvolutionOptions.PopulationStrategy PopulationStrategy { get; set; }
 
         /// <summary>
         /// Gets or sets the number of generations for the evolution.
@@ -57,9 +76,9 @@ namespace OPMGFS.Evolution
         private int PopulationSize { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of candidates to choose for mutation.
+        /// Gets or sets the number of parents to choose for populating a new generation.
         /// </summary>
-        private int NumberOfCandidates { get; set; }
+        private int NumberOfParents { get; set; }
 
         /// <summary>
         /// Gets or sets the number of children to spawn during evolution.
@@ -105,6 +124,7 @@ namespace OPMGFS.Evolution
             //     b. Create children
             //     c. Evaluate children
             //     d. Select individuals for next generation
+            // 4. Return the best result
         }
 
         /// <summary>
@@ -139,45 +159,22 @@ namespace OPMGFS.Evolution
         /// <returns>A list containing the candidates.</returns>
         private List<T> SelectParents()
         {
-            var parentIndicies = new List<int>();
+            List<int> parentIndicies;
 
-            // Iterate over all parents
-            for (var i = 0; i < this.PopulationSize; i++)
+            switch (this.ParentSelectionStrategy)
             {
-                // If we have not found enough parents, just add the individual
-                if (parentIndicies.Count < this.NumberOfCandidates)
-                {
-                    parentIndicies.Add(i);
-                }
-                else
-                {
-                    // ... Else, find the selected parent with the lowest fitness
-                    var lowestFitness = 100000d;
-                    var lowestIndex = 0;
-                    foreach (var parentIndicy in parentIndicies)
-                    {
-                        if (this.Population[parentIndicy].Fitness < lowestFitness)
-                        {
-                            lowestFitness = this.Population[parentIndicy].Fitness;
-                            lowestIndex = parentIndicy;
-                        }
-                    }
+                case EvolutionOptions.SelectionStrategy.HighestFitness:
+                    parentIndicies = this.SelectionHighestFitness(this.NumberOfParents);
+                    break;
 
-                    // ... and if its fitness is lower than the fitness of the individual being considered,
-                    // remove the old parent and add the new individual
-                    if (this.Population[i].Fitness > lowestFitness)
-                    {
-                        parentIndicies.Remove(lowestIndex);
-                        parentIndicies.Add(i);
-                    }
-                }
+                case EvolutionOptions.SelectionStrategy.ChanceBased:
+                    parentIndicies = this.SelectionChanceBased(this.NumberOfParents);
+                    break;
+
+                default:
+                    parentIndicies = this.SelectionHighestFitness(this.NumberOfParents);
+                    break;
             }
-
-            //Console.WriteLine("-------");
-            //foreach (var d in parentIndicies)
-            //{
-            //    Console.WriteLine(d + " " + this.Population[d].Fitness);
-            //}
 
             return parentIndicies.Select(parentIndicy => this.Population[parentIndicy]).ToList();
         }
@@ -191,7 +188,23 @@ namespace OPMGFS.Evolution
         {
             for (var i = 0; i < this.NumberOfChildren; i++)
             {
-                var tempChild = (T)candidates[i % this.NumberOfCandidates].SpawnMutation();
+                T tempChild;
+
+                switch (this.PopulationStrategy)
+                {
+                    case EvolutionOptions.PopulationStrategy.Mutation:
+                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation();
+                        break;
+
+                    case EvolutionOptions.PopulationStrategy.Recombination:
+                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnRecombination(candidates[(i + 1) % this.NumberOfParents]);
+                        break;
+
+                    default:
+                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation();
+                        break;
+                }
+
                 this.Population.Add(tempChild);
             }
         }
@@ -201,41 +214,129 @@ namespace OPMGFS.Evolution
         /// </summary>
         private void SelectPopulationForNextGeneration()
         {
-            var populationIndicies = new List<int>();
+            List<int> populationIndicies;
+
+            switch (this.ParentSelectionStrategy)
+            {
+                case EvolutionOptions.SelectionStrategy.HighestFitness:
+                    populationIndicies = this.SelectionHighestFitness(this.PopulationSize);
+                    break;
+
+                case EvolutionOptions.SelectionStrategy.ChanceBased:
+                    populationIndicies = this.SelectionChanceBased(this.PopulationSize);
+                    break;
+
+                default:
+                    populationIndicies = this.SelectionHighestFitness(this.PopulationSize);
+                    break;
+            }
+
+            var tempPopulation = populationIndicies.Select(parentIndicy => this.Population[parentIndicy]).ToList();
+            this.Population = tempPopulation;
+        }
+
+        /// <summary>
+        /// Selects the individuals with the highest fitness.
+        /// </summary>
+        /// <returns>A list that contains the indexes of the selected individuals.</returns>
+        /// <param name="amountToFind">The number of individuals to find.</param>
+        private List<int> SelectionHighestFitness(int amountToFind)
+        {
+            var individualIndicies = new List<int>();
+
+            double[] lowestFitness = { 1000000d };
+            var lowestIndex = 0;
 
             // Iterate over the entire population
             for (var i = 0; i < this.Population.Count; i++)
             {
-                // If we have not found enough individuals, just add the individual
-                if (populationIndicies.Count < this.PopulationSize)
+                // If we have not found enough for the new population, just add the individual
+                if (individualIndicies.Count < amountToFind)
                 {
-                    populationIndicies.Add(i);
+                    individualIndicies.Add(i);
+
+                    // If we have filled the list, find the individual with the lowest fitness and save its index, in case it needs to be replaced.
+                    if (individualIndicies.Count < amountToFind) 
+                        continue;
+
+                    foreach (var parentIndicy in individualIndicies.Where(parentIndicy => this.Population[parentIndicy].Fitness < lowestFitness[0]))
+                    {
+                        lowestFitness[0] = this.Population[parentIndicy].Fitness;
+                        lowestIndex = parentIndicy;
+                    }
                 }
                 else
                 {
-                    // ... Else, find the selected individuals with the lowest fitness
-                    var lowestFitness = 100000d;
-                    var lowestIndex = 0;
-                    foreach (var parentIndicy in populationIndicies)
+                    // If the fitness of the individual being considered is higher than the lowest fitness of best ones so far,
+                    // remove the old individual and add the new individual.
+                    if (this.Population[i].Fitness > lowestFitness[0])
                     {
-                        if (this.Population[parentIndicy].Fitness < lowestFitness)
+                        individualIndicies.Remove(lowestIndex);
+                        individualIndicies.Add(i);
+
+                        lowestFitness[0] = 1000000d;
+                        lowestIndex = 0;
+
+                        // Find the individual with the lowest fitness and save its index, in case it needs to be replaced.
+                        foreach (var parentIndicy in individualIndicies.Where(parentIndicy => this.Population[parentIndicy].Fitness < lowestFitness[0]))
                         {
-                            lowestFitness = this.Population[parentIndicy].Fitness;
+                            lowestFitness[0] = this.Population[parentIndicy].Fitness;
                             lowestIndex = parentIndicy;
                         }
-                    }
-
-                    // ... and if its fitness is lower than the fitness of the individual being considered,
-                    // remove the old individuals and add the new individual
-                    if (this.Population[i].Fitness > lowestFitness)
-                    {
-                        populationIndicies.Remove(lowestIndex);
-                        populationIndicies.Add(i);
                     }
                 }
             }
 
-            this.Population = populationIndicies.Select(parentIndicy => this.Population[parentIndicy]).ToList();
+            return individualIndicies;
+        }
+
+        /// <summary>
+        /// Selects individuals through chance, where a higher fitness means a higher chance of being selected.
+        /// </summary>
+        /// <returns>A list that contains the indexes of the selected individuals.</returns>
+        /// <param name="amountToFind">The number of individuals to find.</param>
+        private List<int> SelectionChanceBased(int amountToFind)
+        {
+            var parentIndicies = new List<int>();
+
+            var highestFitness = -1000000d;
+            var lowestFitness = 1000000d;
+
+            // Find lowest and highest fitness so we can normalize fitness values.
+            foreach (var individual in this.Population)
+            {
+                if (individual.Fitness > highestFitness) highestFitness = individual.Fitness;
+                if (individual.Fitness < lowestFitness) lowestFitness = individual.Fitness;
+            }
+
+            // Add the individual with the highest fitness.
+            for (var i = 0; i < this.Population.Count; i++)
+            {
+                if (!(Math.Abs(this.Population[i].Fitness - highestFitness) < EvolutionOptions.Tolerance))
+                    continue;
+
+                parentIndicies.Add(i);
+                break;
+            }
+
+            while (parentIndicies.Count < amountToFind)
+            {
+                // Iterate over the population
+                for (var i = 0; i < this.Population.Count; i++)
+                {
+                    if (parentIndicies.Count >= amountToFind) break;
+                    if (parentIndicies.Contains(i)) continue;
+
+                    // Calculate the normalized value of the individual and use that as the chance of being selected.
+                    var normalizedValue = (this.Population[i].Fitness - lowestFitness)
+                                          / (highestFitness - lowestFitness);
+
+                    if (EvolutionOptions.Random.NextDouble() < normalizedValue)
+                        parentIndicies.Add(i);
+                }
+            }
+
+            return parentIndicies;
         }
     }
 }

@@ -10,18 +10,19 @@ namespace OPMGFS
 
     class Program
     {
-        public static Random Random { get; private set; }
-
         static void Main(string[] args)
         {
-            Random = new Random();
             TestEvolution();
         }
 
         private static void TestEvolution()
         {
             var evolverTest = new Evolver<EvolvableDoubleArray>(10, 10, 2, 10, 0.3);
-            for (var i = 0; i < evolverTest.Population.Count; i++)
+            //evolverTest.ParentSelectionStrategy = Options.SelectionStrategy.ChanceBased;
+            //evolverTest.PopulationSelectionStrategy = Options.SelectionStrategy.ChanceBased;
+            //evolverTest.PopulationStrategy = Options.PopulationStrategy.Recombination;
+
+            //for (var i = 0; i < evolverTest.Population.Count; i++)
             //{
             //    Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
             //    //foreach (var number in evolvableDoubleArray.Numbers)
