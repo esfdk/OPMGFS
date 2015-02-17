@@ -45,12 +45,22 @@
     <Compile Include="Evolution\Evolver.cs" />
     <Compile Include="Evolution\IEvolvable.cs" />
     <Compile Include="Evolution\EvolutionOptions.cs" />
+    <Compile Include="Novelty\IntegerNoveltySearch\IntegerNovelArchive.cs" />
+    <Compile Include="Novelty\IntegerNoveltySearch\IntegerPopulation.cs" />
+    <Compile Include="Novelty\IntegerNoveltySearch\IntegerSearcher.cs" />
+    <Compile Include="Novelty\IntegerNoveltySearch\IntegerSolution.cs" />
+    <Compile Include="Novelty\NovelArchive.cs" />
+    <Compile Include="Novelty\NoveltySearchOptions.cs" />
+    <Compile Include="Novelty\Population.cs" />
+    <Compile Include="Novelty\Solution.cs" />
+    <Compile Include="Novelty\NoveltySearcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
