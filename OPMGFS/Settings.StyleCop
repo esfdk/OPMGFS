@@ -1,0 +1,11 @@
+<StyleCopSettings Version="105">
+  <GlobalSettings>
+    <CollectionProperty Name="RecognizedWords">
+      <Value>enum</Value>
+      <Value>enums</Value>
+      <Value>hashcode</Value>
+      <Value>neighbours</Value>
+      <Value>pathfinding</Value>
+    </CollectionProperty>
+  </GlobalSettings>
+</StyleCopSettings>

@@ -31,6 +31,75 @@ namespace OPMGFS
             var mapHeights = new Enums.HeightLevel[height, width];
             var mapItems = new Enums.Item[height, width];
 
+            for (int i = 0; i <= 3; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    mapHeights[i, j] = Enums.HeightLevel.Height1;
+                    if (j <= 4) mapHeights[i, j] = Enums.HeightLevel.Height2;
+                }
+            }
+
+            mapHeights[1, 4] = Enums.HeightLevel.Ramp12;
+            mapHeights[2, 4] = Enums.HeightLevel.Ramp12;
+            mapHeights[1, 5] = Enums.HeightLevel.Ramp12;
+            mapHeights[2, 5] = Enums.HeightLevel.Ramp12;
+
+            mapHeights[4, 7] = Enums.HeightLevel.Ramp01;
+            mapHeights[4, 8] = Enums.HeightLevel.Ramp01;
+            mapHeights[5, 7] = Enums.HeightLevel.Ramp01;
+            mapHeights[5, 8] = Enums.HeightLevel.Ramp01;
+            mapHeights[6, 7] = Enums.HeightLevel.Ramp01;
+            mapHeights[6, 8] = Enums.HeightLevel.Ramp01;
+
+            mapItems[0, 4] = Enums.Item.Cliff;
+            mapItems[0, 5] = Enums.Item.Cliff;
+            mapItems[0, 6] = Enums.Item.Cliff;
+            //mapItems[1, 4] = Enums.Item.Cliff;
+            //mapItems[2, 4] = Enums.Item.Cliff;
+            mapItems[3, 4] = Enums.Item.Cliff;
+            mapItems[3, 5] = Enums.Item.Cliff;
+            mapItems[3, 6] = Enums.Item.Cliff;
+
+            mapItems[4, 0] = Enums.Item.Cliff;
+            mapItems[4, 1] = Enums.Item.Cliff;
+            mapItems[4, 2] = Enums.Item.Cliff;
+            mapItems[4, 3] = Enums.Item.Cliff;
+            mapItems[4, 4] = Enums.Item.Cliff;
+            mapItems[4, 5] = Enums.Item.Cliff;
+            mapItems[4, 6] = Enums.Item.Cliff;
+            mapItems[4, 7] = Enums.Item.Cliff;
+            //mapItems[4, 8] = Enums.Item.Cliff;
+            //mapItems[4, 9] = Enums.Item.Cliff;
+
+            mapItems[5, 7] = Enums.Item.Cliff;
+            mapItems[6, 7] = Enums.Item.Cliff;
+
+            //mapItems[1, 0] = Enums.Item.Cliff;
+            //mapHeights[1, 1] = Enums.HeightLevel.Ramp01;
+            //var neighbours = MapPathfinding.Neighbours(mapHeights, mapItems, new Tuple<int, int>(1, 1));
+
+            var path = MapPathfinding.FindPathFromTo(mapHeights, mapItems, new Tuple<int, int>(0, 0), new Tuple<int, int>(9, 0));
+
+
+            foreach (var tuple in path)
+            {
+                Console.WriteLine(tuple.Item1 + ", " + tuple.Item2);
+                mapItems[tuple.Item1, tuple.Item2] = Enums.Item.XelNagaTower;
+            }
+
+            printHeightLevels(mapHeights);
+            //Console.WriteLine("-------------");
+            printMap(mapItems);
+            //Console.WriteLine("-------------");
+
+            //foreach (var neighbour in neighbours)
+            //{
+            //    Console.WriteLine(neighbour.Item1 + ", " + neighbour.Item2);
+            //}
+
+
+            /*
             for (var i = 0; i < mapItems.GetLength(0); i++)
             {
                 for (int j = 0; j < mapItems.GetLength(1); j++)
@@ -66,31 +135,51 @@ namespace OPMGFS
 
             printHeightLevels(newMap.HeightLevels);
             Console.WriteLine("-------------");
-            printMap(newMap.MapItems);
+            printMap(newMap.MapItems);*/
         }
 
         private static void printHeightLevels(Enums.HeightLevel[,] heightLevels)
         {
+            for (int i = 0; i < heightLevels.GetLength(0) + 2; i++)
+                Console.Write("-");
+
+            Console.WriteLine();
             for (var i = 0; i < heightLevels.GetLength(0); i++)
             {
+                Console.Write("|");
                 for (int j = 0; j < heightLevels.GetLength(1); j++)
                 {
                     Console.Write((int)heightLevels[i, j]);
                 }
+                Console.Write("|");
                 Console.WriteLine();
             }
+
+            for (int i = 0; i < heightLevels.GetLength(0) + 2; i++)
+                Console.Write("-");
+            Console.WriteLine();
         }
 
         private static void printMap(Enums.Item[,] items)
         {
+            for (int i = 0; i < items.GetLength(0) + 2; i++)
+                Console.Write("-");
+
+            Console.WriteLine();
             for (var i = 0; i < items.GetLength(0); i++)
             {
+                Console.Write("|");
                 for (int j = 0; j < items.GetLength(1); j++)
                 {
                     Console.Write(Enums.GetItemCharValue(items[i, j]));
                 }
+                Console.Write("|");
                 Console.WriteLine();
             }
+
+            for (int i = 0; i < items.GetLength(0) + 2; i++)
+                Console.Write("-");
+            Console.WriteLine();
         }
 
         private static void TestEvolution()
@@ -142,9 +231,6 @@ namespace OPMGFS
 
             //var integersearcher  = new IntegerSearcher(20, 20);
             //integersearcher.RunGenerations(10);
-            
-            
-            Console.ReadKey();
         }
     }
 }

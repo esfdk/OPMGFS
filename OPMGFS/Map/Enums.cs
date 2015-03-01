@@ -13,7 +13,7 @@ namespace OPMGFS.Map
     using System.Globalization;
 
     /// <summary>
-    /// The enums.
+    /// The class that contains the different enums used by the map.
     /// </summary>
     public static class Enums
     {
@@ -28,14 +28,24 @@ namespace OPMGFS.Map
             Height0 = 0,
 
             /// <summary>
+            /// Represents a ramp going from level 0 to 1.
+            /// </summary>
+            Ramp01 = 1,
+
+            /// <summary>
             /// Represents a height of 1.
             /// </summary>
-            Height1 = 1,
+            Height1 = 2,
+
+            /// <summary>
+            /// Represents a ramp going from level 1 to 2.
+            /// </summary>
+            Ramp12 = 3,
 
             /// <summary>
             /// Represents a height of 2.
             /// </summary>
-            Height2 = 2
+            Height2 = 4
         }
 
         /// <summary>
@@ -52,6 +62,26 @@ namespace OPMGFS.Map
             /// A ramp.
             /// </summary>
             Ramp = 'r',
+
+            /// <summary>
+            /// A ramp That goes from north to south.
+            /// </summary>
+            RampNorthSouth = '|',
+
+            /// <summary>
+            /// A ramp That goes from north-east to south-west.
+            /// </summary>
+            RampNortheastSouthwest = '/',
+
+            /// <summary>
+            /// A ramp That goes from east to west.
+            /// </summary>
+            RampEastWest = '-',
+
+            /// <summary>
+            /// A ramp That goes from north-west to south-east.
+            /// </summary>
+            RampNorthwestSoutheast = '\\',
 
             /// <summary>
             /// The cliff.

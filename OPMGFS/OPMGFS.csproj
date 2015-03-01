@@ -46,6 +46,7 @@
     <Compile Include="Evolution\IEvolvable.cs" />
     <Compile Include="Evolution\EvolutionOptions.cs" />
     <Compile Include="Map\Enums.cs" />
+    <Compile Include="Map\MapPathfinding.cs" />
     <Compile Include="Map\MapPhenotype.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerNovelArchive.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerPopulation.cs" />
