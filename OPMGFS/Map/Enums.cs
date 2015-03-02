@@ -45,7 +45,12 @@ namespace OPMGFS.Map
             /// <summary>
             /// Represents a height of 2.
             /// </summary>
-            Height2 = 4
+            Height2 = 4,
+
+            /// <summary>
+            /// Represents a cliff.
+            /// </summary>
+            Cliff = 9
         }
 
         /// <summary>

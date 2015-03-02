@@ -52,34 +52,34 @@ namespace OPMGFS
             mapHeights[6, 7] = Enums.HeightLevel.Ramp01;
             mapHeights[6, 8] = Enums.HeightLevel.Ramp01;
 
-            mapItems[0, 4] = Enums.Item.Cliff;
-            mapItems[0, 5] = Enums.Item.Cliff;
-            mapItems[0, 6] = Enums.Item.Cliff;
+            mapHeights[0, 4] = Enums.HeightLevel.Cliff;
+            mapHeights[0, 5] = Enums.HeightLevel.Cliff;
+            mapHeights[0, 6] = Enums.HeightLevel.Cliff;
             //mapItems[1, 4] = Enums.Item.Cliff;
             //mapItems[2, 4] = Enums.Item.Cliff;
-            mapItems[3, 4] = Enums.Item.Cliff;
-            mapItems[3, 5] = Enums.Item.Cliff;
-            mapItems[3, 6] = Enums.Item.Cliff;
+            mapHeights[3, 4] = Enums.HeightLevel.Cliff;
+            mapHeights[3, 5] = Enums.HeightLevel.Cliff;
+            mapHeights[3, 6] = Enums.HeightLevel.Cliff;
 
-            mapItems[4, 0] = Enums.Item.Cliff;
-            mapItems[4, 1] = Enums.Item.Cliff;
-            mapItems[4, 2] = Enums.Item.Cliff;
-            mapItems[4, 3] = Enums.Item.Cliff;
-            mapItems[4, 4] = Enums.Item.Cliff;
-            mapItems[4, 5] = Enums.Item.Cliff;
-            mapItems[4, 6] = Enums.Item.Cliff;
-            mapItems[4, 7] = Enums.Item.Cliff;
+            mapHeights[4, 0] = Enums.HeightLevel.Cliff;
+            mapHeights[4, 1] = Enums.HeightLevel.Cliff;
+            mapHeights[4, 2] = Enums.HeightLevel.Cliff;
+            mapHeights[4, 3] = Enums.HeightLevel.Cliff;
+            mapHeights[4, 4] = Enums.HeightLevel.Cliff;
+            mapHeights[4, 5] = Enums.HeightLevel.Cliff;
+            mapHeights[4, 6] = Enums.HeightLevel.Cliff;
+            mapHeights[4, 7] = Enums.HeightLevel.Cliff;
             //mapItems[4, 8] = Enums.Item.Cliff;
             //mapItems[4, 9] = Enums.Item.Cliff;
 
-            mapItems[5, 7] = Enums.Item.Cliff;
-            mapItems[6, 7] = Enums.Item.Cliff;
+            mapHeights[5, 7] = Enums.HeightLevel.Cliff;
+            mapHeights[6, 7] = Enums.HeightLevel.Cliff;
 
             //mapItems[1, 0] = Enums.Item.Cliff;
             //mapHeights[1, 1] = Enums.HeightLevel.Ramp01;
             //var neighbours = MapPathfinding.Neighbours(mapHeights, mapItems, new Tuple<int, int>(1, 1));
 
-            var path = MapPathfinding.FindPathFromTo(mapHeights, mapItems, new Tuple<int, int>(0, 0), new Tuple<int, int>(9, 0));
+            var path = MapPathfinding.FindPathFromTo(mapHeights, new Tuple<int, int>(0, 0), new Tuple<int, int>(9, 0));
 
 
             foreach (var tuple in path)

@@ -24,11 +24,10 @@ namespace OPMGFS.Map
         /// Finds the shortest path on a map using A*.
         /// </summary>
         /// <param name="mapHeightLevels"> The height levels of the map. </param>
-        /// <param name="mapItems"> The items contained in the map. </param>
         /// <param name="startPosition"> The position to start the pathfinding from. </param>
         /// <param name="endPosition"> The position to find a path to. </param>
         /// <returns> A list of the positions that make up the path. </returns>
-        public static List<Position> FindPathFromTo(Enums.HeightLevel[,] mapHeightLevels, Enums.Item[,] mapItems, Position startPosition, Position endPosition)
+        public static List<Position> FindPathFromTo(Enums.HeightLevel[,] mapHeightLevels, Position startPosition, Position endPosition)
         {
             // The lists used.
             var closedList = new List<AStarNode>();
@@ -60,7 +59,7 @@ namespace OPMGFS.Map
                 closedList.Add(current);
 
                 // Find neighbours and iterate over them.
-                var neighbours = Neighbours(mapHeightLevels, mapItems, current.Position);
+                var neighbours = Neighbours(mapHeightLevels, current.Position);
                 foreach (var neighbourPos in neighbours)
                 {
                     var neighbour = new AStarNode { Position = neighbourPos, };
@@ -139,10 +138,9 @@ namespace OPMGFS.Map
         /// Gets the neighbours for the given position.
         /// </summary>
         /// <param name="mapHeightLevels"> The height levels of the map. </param>
-        /// <param name="mapItems"> The items in the map. </param>
         /// <param name="position"> The position to find neighbours for. </param>
         /// <returns> A list of the neighbours. </returns>
-        private static List<Position> Neighbours(Enums.HeightLevel[,] mapHeightLevels, Enums.Item[,] mapItems, Position position)
+        private static List<Position> Neighbours(Enums.HeightLevel[,] mapHeightLevels, Position position)
         {
             var neighbours = new List<Position>();
             var possibleMoves = new[] { -1, 0, 1 };
@@ -157,10 +155,10 @@ namespace OPMGFS.Map
                     if (possibleHeightMove == 0 && possibleWidthMove == 0)
                         continue;
 
-                    var posToCheck = new Position(position.Item1 + possibleHeightMove, position.Item2 + possibleMoves[possibleWidthMove]);
+                    var posToCheck = new Position(position.Item1 + possibleHeightMove, position.Item2 + possibleWidthMove);
 
                     // If the move is valid, add it to the list of neighbours.
-                    if (ValidMove(mapHeightLevels, mapItems, position, posToCheck))
+                    if (ValidMove(mapHeightLevels/*, mapItems*/, position, posToCheck))
                         neighbours.Add(posToCheck);
                 }
             }
@@ -172,11 +170,10 @@ namespace OPMGFS.Map
         /// Determines if moving from one position to another is a valid move.
         /// </summary>
         /// <param name="mapHeightLevels"> The height levels of the map. </param>
-        /// <param name="mapItems"> The items in the map. </param>
         /// <param name="fromPos"> The position to travel from. </param>
         /// <param name="toPos">The position to travel to. </param>
         /// <returns> True if the move is valid; false otherwise. </returns>
-        private static bool ValidMove(Enums.HeightLevel[,] mapHeightLevels, Enums.Item[,] mapItems, Position fromPos, Position toPos)
+        private static bool ValidMove(Enums.HeightLevel[,] mapHeightLevels, Position fromPos, Position toPos)
         {
             // If not within map, it is not a valid move.
             if (!WithinMapBounds(mapHeightLevels.GetLength(0), mapHeightLevels.GetLength(1), toPos)) return false;
@@ -190,13 +187,15 @@ namespace OPMGFS.Map
             // If the positions are not adjacent, it is not a valid move.
             if (Math.Abs(fromPos.Item1 - toPos.Item1) >= 2 || Math.Abs(fromPos.Item2 - toPos.Item2) >= 2) return false;
 
+            if (mapHeightLevels[toPos.Item1, toPos.Item2] == Enums.HeightLevel.Cliff) return false;
+
             // If the target contains a cliff or a Xel'Naga tower, it is not a valid move.
-            switch (mapItems[toPos.Item1, toPos.Item2])
-            {
-                case Enums.Item.Cliff:
-                case Enums.Item.XelNagaTower:
-                    return false;
-            }
+            // switch (mapItems[toPos.Item1, toPos.Item2])
+            // {
+            //    case Enums.Item.Cliff:
+            //    case Enums.Item.XelNagaTower:
+            //        return false;
+            // }
 
             return true;
         }
