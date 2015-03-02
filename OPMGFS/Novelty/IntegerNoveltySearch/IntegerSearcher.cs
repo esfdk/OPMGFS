@@ -4,23 +4,21 @@
 
     public class IntegerSearcher : NoveltySearcher
     {
-        private Random random;
-
         public IntegerSearcher(int feasibleSize, int infeasibleSize)
         {
             this.FeasiblePopulation = new IntegerPopulation(true, feasibleSize);
             this.InfeasiblePopulation = new IntegerPopulation(false, infeasibleSize);
             this.Archive = new IntegerNovelArchive();
-            random = new Random();
+            Random = new Random();
 
             for (var i = 0; i < feasibleSize; i++)
             {
-                FeasiblePopulation.CurrentGeneration.Add(new IntegerSolution(random.Next(50000)));
+                FeasiblePopulation.CurrentGeneration.Add(new IntegerSolution(Random.Next(50000)));
             }
 
             for (var i = 0; i < feasibleSize; i++)
             {
-                InfeasiblePopulation.CurrentGeneration.Add(new IntegerSolution(-random.Next(50000)));
+                InfeasiblePopulation.CurrentGeneration.Add(new IntegerSolution(-Random.Next(50000)));
             }
         }
 
@@ -52,18 +50,18 @@
             }
         }
 
-        protected void NextGeneration()
+        protected override void NextGeneration()
         {
             var infeasibleIndividuals = FeasiblePopulation.AdvanceGeneration(
                 new NoveltySearchOptions(),
                 InfeasiblePopulation,
                 Archive,
-                random);
+                Random);
             var feasibleIndividuals = InfeasiblePopulation.AdvanceGeneration(
                 new NoveltySearchOptions(),
                 FeasiblePopulation,
                 Archive,
-                random);
+                Random);
             
             FeasiblePopulation.CurrentGeneration.AddRange(feasibleIndividuals);
             InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);

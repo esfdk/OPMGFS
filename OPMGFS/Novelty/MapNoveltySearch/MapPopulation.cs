@@ -1,12 +1,13 @@
-﻿namespace OPMGFS.Novelty.IntegerNoveltySearch
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using OPMGFS.Novelty.IntegerNoveltySearch;
 
-    public class IntegerPopulation : Population
+namespace OPMGFS.Novelty.MapNoveltySearch
+{
+    public class MapPopulation : Population
     {
-        public IntegerPopulation(bool isFeasiblePopulation, int populationSize)
+        public MapPopulation(bool isFeasiblePopulation, int populationSize)
             : base(isFeasiblePopulation, populationSize)
         {
             this.CurrentGeneration = new List<Solution>();
@@ -14,7 +15,7 @@
 
         public override List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r)
         {
-            var children = this.CurrentGeneration.Select(individual => (IntegerSolution)individual.Mutate(r)).ToList();
+            var children = this.CurrentGeneration.Select(individual => (MapSolution)individual.Mutate(r)).ToList();
             var allIndividuals = this.CurrentGeneration.ToList();
             allIndividuals.AddRange(children);
 

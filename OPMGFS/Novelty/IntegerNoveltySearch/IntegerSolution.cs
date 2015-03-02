@@ -23,7 +23,7 @@
             throw new NotImplementedException();
         }
 
-        public override double CalculateNovelty(Population feasible, Population infeasible, NovelArchive archive, int numberOfNeighbours)
+        public override double CalculateNovelty(Population feasible, NovelArchive archive, int numberOfNeighbours)
         {
             var distanceValues = new List<Tuple<double, int, int>>();
 
@@ -87,19 +87,6 @@
             this.Novelty = novelty / numberOfNeighbours;
             return this.Novelty;
 
-        }
-
-        protected override bool CheckFeasibility()
-        {
-            this.CalculateDistanceToFeasibility();
-            if (this.DistanceToFeasibility <= 0)
-            {
-                this.isFeasibilityCalculated = true;
-                this.IsFeasible = true;
-                return true;
-            }
-
-            return false;
         }
 
         protected override double CalculateDistance(Solution other)

@@ -172,6 +172,11 @@ namespace OPMGFS.Map
             Turn
         }
 
+        public enum MapPointType
+        {
+            Base, XelNagaTower, GoldBase, Ramp, StartBase
+        }
+
         /// <summary>
         /// Gets the char value of an Item.
         /// </summary>

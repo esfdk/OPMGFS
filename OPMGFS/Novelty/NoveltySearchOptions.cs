@@ -21,7 +21,7 @@
         /// Whether the novelty search should use single point or two point crossover when recombining.
         /// </param>
         /// <param name="numberOfNeighbours">The number of neighbours to use in calculation of novelty.</param>
-        public NoveltySearchOptions(bool mutate = true, bool recombine = false, double mutationChance = 0.3, bool twoPointCrossover = false, int numberOfNeighbours = 5, int addToArchive = 2)
+        public NoveltySearchOptions(bool mutate = true, bool recombine = false, double mutationChance = 0.3, bool twoPointCrossover = false, int numberOfNeighbours = 1, int addToArchive = 1)
         {
             this.TwoPointCrossover = twoPointCrossover;
             this.MutationChance = mutationChance;

@@ -70,11 +70,10 @@
         /// Calculates the novelty of the solution based on the current populations and the novel Archive.
         /// </summary>
         /// <param name="feasible">The population of feasible solutions.</param>
-        /// <param name="infeasible">The population of infeasible solutions.</param>
         /// <param name="archive">The Archive of novel solultions.</param>
         /// <param name="numberOfNeighbours">The number of neighbours that the novelty should be averaged over.</param>
         /// <returns>The novelty of the solution.</returns>
-        public abstract double CalculateNovelty(Population feasible, Population infeasible, NovelArchive archive, int numberOfNeighbours);
+        public abstract double CalculateNovelty(Population feasible, NovelArchive archive, int numberOfNeighbours);
 
         /// <summary>
         /// Checks whether the solution is part of the feasible set of solutions.
@@ -82,7 +81,17 @@
         /// <returns>
         /// The <see cref="bool"/> value indicating the feasibility of the solution.
         /// </returns>
-        protected abstract bool CheckFeasibility();
+        protected virtual bool CheckFeasibility()
+        {
+            this.CalculateDistanceToFeasibility();
+            this.isFeasibilityCalculated = true;
+
+            if (!(this.DistanceToFeasibility <= 0)) return false;
+
+            this.IsFeasible = true;
+
+            return true;
+        }
 
         /// <summary>
         /// Calculates the distance between this solution and a target solution.

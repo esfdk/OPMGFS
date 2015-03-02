@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OPMGFS.Map;
+using OPMGFS.Novelty.MapNoveltySearch;
 
 namespace OPMGFS
 {
-    using OPMGFS.Evolution;
-    using OPMGFS.Map;
-    using OPMGFS.Novelty.IntegerNoveltySearch;
-
     class Program
     {
         static void Main(string[] args)
         {
             //TestEvolution();
-            TestPhenotype();
+            //TestPhenotype();
+            TestNovelty();
 
             Console.ReadKey();
         }
@@ -231,6 +226,12 @@ namespace OPMGFS
 
             //var integersearcher  = new IntegerSearcher(20, 20);
             //integersearcher.RunGenerations(10);
+        }
+
+        private static void TestNovelty()
+        {
+            var ms = new MapSearcher(5, 5);
+            ms.RunGenerations(1);
         }
     }
 }
