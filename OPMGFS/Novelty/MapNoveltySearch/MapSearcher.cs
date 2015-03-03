@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Markup;
-using OPMGFS.Map;
-using OPMGFS.Map.MapObjects;
-using OPMGFS.Novelty.IntegerNoveltySearch;
-
-namespace OPMGFS.Novelty.MapNoveltySearch
+﻿namespace OPMGFS.Novelty.MapNoveltySearch
 {
+    using System;
+    using System.Collections.Generic;
+
+    using OPMGFS.Map;
+    using OPMGFS.Map.MapObjects;
+
     public class MapSearcher : NoveltySearcher
     {
         public MapSearcher(int feasibleSize, int infeasibleSize)
@@ -22,7 +21,7 @@ namespace OPMGFS.Novelty.MapNoveltySearch
 
                 for (var j = 0; j < 5; j++)
                 {
-                    var dist = Random.Next(129);
+                    var dist = Random.NextDouble();
                     var degree = Random.Next(181);
                     Enums.MapPointType mpt;
                     switch (j)
@@ -60,8 +59,8 @@ namespace OPMGFS.Novelty.MapNoveltySearch
 
                 for (var j = 0; j < 3; j++)
                 {
-                    var dist = -(Random.Next(60));
-                    var degree = Random.Next(181,360);
+                    var dist = -Random.NextDouble();
+                    var degree = Random.Next(181, 360);
                     Enums.MapPointType mpt;
                     switch (j)
                     {
@@ -90,7 +89,7 @@ namespace OPMGFS.Novelty.MapNoveltySearch
 
                 for (var j = 0; j < 2; j++)
                 {
-                    var dist = Random.Next(129, 200);
+                    var dist = Random.NextDouble() + 1.0;
                     var degree = Random.Next(181, 360);
                     Enums.MapPointType mpt;
                     switch (j)

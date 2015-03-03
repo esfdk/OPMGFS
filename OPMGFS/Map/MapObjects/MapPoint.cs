@@ -19,7 +19,7 @@ namespace OPMGFS.Map.MapObjects
 
         public MapPoint Mutate(Random r)
         {
-            var maxDistMod = 10.0;
+            var maxDistMod = 0.05;
             var maxDegreeMod = 10.0;
 
             var positiveChange = r.Next(2);
