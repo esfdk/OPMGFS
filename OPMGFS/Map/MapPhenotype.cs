@@ -77,16 +77,22 @@ namespace OPMGFS.Map
             var newHeightLevels = (HeightLevel[,])this.HeightLevels.Clone();
             var newMapItems = (Item[,])this.MapItems.Clone();
 
-            for (var tempHeight = 0; tempHeight < this.Height; tempHeight++)
+            // Figures out which part of the map that should be looked at.
+            var startHeight = (half == Half.Bottom) ? this.Height / 2 : 0;
+            var endHeight = (half == Half.Top) ? this.Height / 2 : this.Height;
+            var startWidth = (half == Half.Right) ? this.Width / 2 : 0;
+            var endWidth = (half == Half.Left) ? this.Width / 2 : this.Width;
+
+            for (var tempHeight = startHeight; tempHeight < endHeight; tempHeight++)
             {
                 var otherHeight = tempHeight;
-                
+
                 // If we mirror top or bottom or turn the map, find the height to copy to.
                 if ((function == Enums.MapFunction.Mirror && (half == Half.Top || half == Half.Bottom)) 
                     || function == Enums.MapFunction.Turn)
                     otherHeight = this.Height - tempHeight - 1;
 
-                for (var tempWidth = 0; tempWidth < this.Width; tempWidth++)
+                for (var tempWidth = startWidth; tempWidth < endWidth; tempWidth++)
                 {
                     var otherWidth = tempWidth;
 
@@ -98,25 +104,21 @@ namespace OPMGFS.Map
                     switch (half)
                     {
                         case Half.Top:
-                            if (tempHeight >= this.Height / 2) continue;
                             newHeightLevels[otherHeight, otherWidth] = this.HeightLevels[tempHeight, tempWidth];
                             newMapItems[otherHeight, otherWidth] = this.MapItems[tempHeight, tempWidth];
                             break;
 
                         case Half.Bottom:
-                            if (tempHeight < this.Height / 2) continue;
                             newHeightLevels[otherHeight, otherWidth] = this.HeightLevels[tempHeight, tempWidth];
                             newMapItems[otherHeight, otherWidth] = this.MapItems[tempHeight, tempWidth];
                             break;
 
                         case Half.Left:
-                            if (tempWidth >= this.Width / 2) continue;
                             newHeightLevels[otherHeight, otherWidth] = this.HeightLevels[tempHeight, tempWidth];
                             newMapItems[otherHeight, otherWidth] = this.MapItems[tempHeight, tempWidth];
                             break;
 
                         case Half.Right:
-                            if (tempWidth < this.Width / 2) continue;
                             newHeightLevels[otherHeight, otherWidth] = this.HeightLevels[tempHeight, tempWidth];
                             newMapItems[otherHeight, otherWidth] = this.MapItems[tempHeight, tempWidth];
                             break;

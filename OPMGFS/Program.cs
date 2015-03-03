@@ -4,13 +4,18 @@ using OPMGFS.Novelty.MapNoveltySearch;
 
 namespace OPMGFS
 {
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     class Program
     {
         static void Main(string[] args)
         {
+            //Console.SetWindowPosition();
+            Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             //TestEvolution();
-            //TestPhenotype();
-            TestNovelty();
+            TestPhenotype();
+            //TestNovelty();
 
             Console.ReadKey();
         }
@@ -20,20 +25,22 @@ namespace OPMGFS
             Console.WriteLine(Enums.Item.BlueMinerals);
             Console.WriteLine(Enums.GetItemCharValue(Enums.Item.BlueMinerals));
 
-            var height = 10;
-            var width = 10;
+            var height = 256;
+            var width = 256;
 
             var mapHeights = new Enums.HeightLevel[height, width];
             var mapItems = new Enums.Item[height, width];
 
             for (int i = 0; i <= 3; i++)
             {
-                for (int j = 0; j < width; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     mapHeights[i, j] = Enums.HeightLevel.Height1;
                     if (j <= 4) mapHeights[i, j] = Enums.HeightLevel.Height2;
                 }
             }
+
+            //mapHeights[10, 5] = Enums.HeightLevel.Cliff;
 
             mapHeights[1, 4] = Enums.HeightLevel.Ramp12;
             mapHeights[2, 4] = Enums.HeightLevel.Ramp12;
@@ -70,11 +77,39 @@ namespace OPMGFS
             mapHeights[5, 7] = Enums.HeightLevel.Cliff;
             mapHeights[6, 7] = Enums.HeightLevel.Cliff;
 
+            var mapPhenotype = new MapPhenotype(mapHeights, mapItems);
+            //printHeightLevels(mapPhenotype.HeightLevels);
+
+            var sw = new Stopwatch();
+            var turnTime = 0d;
+            var mirrorTime = 0d;
+            var iterations = 100;
+            for (int i = 0; i < iterations; i++)
+            {
+                sw.Reset();
+                sw.Start();
+                mapPhenotype.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
+                sw.Stop();
+                turnTime += sw.ElapsedMilliseconds;
+
+                sw.Reset();
+                sw.Start();
+                mapPhenotype.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
+                sw.Stop();
+                mirrorTime += sw.ElapsedMilliseconds;
+
+                //Console.WriteLine("Iteration " + i + " turn took " + sw.ElapsedMilliseconds + " - Mirror took " + sw.ElapsedMilliseconds);
+            }
+
+            Console.WriteLine("Average mirror time: " + mirrorTime / iterations);
+            Console.WriteLine("Average turn time:   " + turnTime / iterations);
+            //printHeightLevels(mapPhenotype.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn).HeightLevels);
+
             //mapItems[1, 0] = Enums.Item.Cliff;
             //mapHeights[1, 1] = Enums.HeightLevel.Ramp01;
             //var neighbours = MapPathfinding.Neighbours(mapHeights, mapItems, new Tuple<int, int>(1, 1));
 
-            var path = MapPathfinding.FindPathFromTo(mapHeights, new Tuple<int, int>(0, 0), new Tuple<int, int>(9, 0));
+            /*var path = MapPathfinding.FindPathFromTo(mapHeights, new Tuple<int, int>(0, 0), new Tuple<int, int>(9, 0));
 
 
             foreach (var tuple in path)
@@ -88,7 +123,7 @@ namespace OPMGFS
             printMap(mapItems);
             //Console.WriteLine("-------------");
 
-            Console.WriteLine((int)Enums.Item.XelNagaTower);
+            Console.WriteLine((int)Enums.Item.XelNagaTower);*/
 
             //foreach (var neighbour in neighbours)
             //{
