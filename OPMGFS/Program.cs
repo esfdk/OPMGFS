@@ -88,6 +88,8 @@ namespace OPMGFS
             printMap(mapItems);
             //Console.WriteLine("-------------");
 
+            Console.WriteLine((int)Enums.Item.XelNagaTower);
+
             //foreach (var neighbour in neighbours)
             //{
             //    Console.WriteLine(neighbour.Item1 + ", " + neighbour.Item2);

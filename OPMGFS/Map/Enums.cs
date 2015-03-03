@@ -61,7 +61,7 @@ namespace OPMGFS.Map
             /// <summary>
             /// The location contains nothing.
             /// </summary>
-            None = '.',
+            None = 0,
 
             /// <summary>
             /// A ramp.
@@ -184,6 +184,7 @@ namespace OPMGFS.Map
         /// <returns>A string containing the char value of the item.</returns>
         public static string GetItemCharValue(Item item)
         {
+            if (item == Item.None) return ".";
             return ((char)item).ToString(CultureInfo.InvariantCulture);
         }
     }
