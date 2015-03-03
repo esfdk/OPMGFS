@@ -123,7 +123,7 @@
         }
 
         public void RunGenerations(int generations)
-        {
+        {/*
             Console.WriteLine("Generation 0");
 
             Console.WriteLine("-----------------");
@@ -147,7 +147,7 @@
                 Console.WriteLine("Generation " + i);
 
                 this.NextGeneration();
-            }
+            }*/
         }
 
 

@@ -238,7 +238,8 @@
             foreach (var mp in this.MapPoints)
             {
                 var maxDistance = MaxDistanceAtDegree(xSize / 2.0, ySize / 2.0, mp.Degree);
-                var point = FindPoint(mp.Degree, maxDistance);
+                Console.WriteLine(maxDistance);
+                var point = FindPoint(mp.Degree, maxDistance * mp.Distance);
 
                 var xPos = point.Item1 + (xSize / 2.0);
                 var yPos = point.Item2 + (ySize / 2.0);
@@ -263,7 +264,7 @@
                 }
             }
 
-            return null;
+            return map;
         }
 
         private static double MaxDistanceAtDegree(double xSize, double ySize, double degree)
@@ -281,13 +282,15 @@
                 // TODO: Optimize distance function calculation
                 var point = FindPoint(maxDistance, cos, sin);
 
-                if (point.Item1 <= xSize && point.Item2 <= ySize)
+                if (
+                    (!(point.Item1 <= xSize) || (point.Item1 < -xSize))
+                    || (!(point.Item2 <= ySize) || (point.Item2 < -ySize)))
                 {
-                    stop = true;
+                    maxDistance--;
                 }
                 else
                 {
-                    maxDistance--;
+                    stop = true;
                 }
             }
             while (!stop);
