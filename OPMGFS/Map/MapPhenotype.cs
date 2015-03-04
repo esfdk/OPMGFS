@@ -9,6 +9,8 @@
 
 namespace OPMGFS.Map
 {
+    using System.Text;
+
     using Half = Enums.Half;
     using HeightLevel = Enums.HeightLevel;
     using Item = Enums.Item;
@@ -128,6 +130,59 @@ namespace OPMGFS.Map
 
             var newMap = new MapPhenotype(newHeightLevels, newMapItems);
             return newMap;
+        }
+
+        /// <summary>
+        /// Builds both maps as strings.
+        /// </summary>
+        /// <param name="mapHeightLevels"> The string to return the heightlevel map to. </param>
+        /// <param name="mapItems"> The string to return the item map to. </param>
+        public void GetMapStrings(out string mapHeightLevels, out string mapItems)
+        {
+            var heightLevelBuilder = new StringBuilder();
+            var itemBuilder = new StringBuilder();
+
+            // Top border
+            for (var i = 0; i < this.Height + 2; i++)
+            {
+
+                heightLevelBuilder.Append("-");
+                itemBuilder.Append("-");
+            }
+
+            heightLevelBuilder.AppendLine();
+            itemBuilder.AppendLine();
+            
+            for (var i = 0; i < this.Height; i++)
+            {
+                // Left border
+                heightLevelBuilder.Append("|");
+                itemBuilder.Append("|");
+
+                // Actual map values
+                for (int j = 0; j < this.Width; j++)
+                {
+                    heightLevelBuilder.Append(Enums.GetCharValue(this.HeightLevels[i, j]));
+                    itemBuilder.Append(Enums.GetCharValue(this.MapItems[i, j]));
+                }
+
+                // Right border
+                heightLevelBuilder.Append("| " + i);
+                itemBuilder.Append("|");
+
+                heightLevelBuilder.AppendLine();
+                itemBuilder.AppendLine();
+            }
+            
+            // Bottom border
+            for (var i = 0; i < this.Height + 2; i++)
+            {
+                heightLevelBuilder.Append("-");
+                itemBuilder.Append("-");
+            }
+
+            mapHeightLevels = heightLevelBuilder.ToString();
+            mapItems = itemBuilder.ToString();
         }
     }
 }

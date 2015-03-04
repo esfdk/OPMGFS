@@ -4,6 +4,7 @@
       <Value>enum</Value>
       <Value>enums</Value>
       <Value>hashcode</Value>
+      <Value>heightlevel</Value>
       <Value>neighbours</Value>
       <Value>pathfinding</Value>
     </CollectionProperty>

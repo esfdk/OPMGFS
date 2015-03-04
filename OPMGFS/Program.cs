@@ -7,6 +7,8 @@ namespace OPMGFS
     using System.Collections.Generic;
     using System.Diagnostics;
 
+    using OPMGFS.Map.CellularAutomata;
+
     class Program
     {
         static void Main(string[] args)
@@ -14,19 +16,30 @@ namespace OPMGFS
             //Console.SetWindowPosition();
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             //TestEvolution();
-            TestPhenotype();
+            //TestPhenotype();
             //TestNovelty();
+            TestCA();
 
             Console.ReadKey();
+        }
+
+        private static void TestCA()
+        {
+            var ca = new CellularAutomata(50, 50, Enums.Half.Top);
+            var map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
+            string heights, items;
+            map.GetMapStrings(out heights, out items);
+            Console.WriteLine(heights);
         }
 
         private static void TestPhenotype()
         {
             Console.WriteLine(Enums.Item.BlueMinerals);
-            Console.WriteLine(Enums.GetItemCharValue(Enums.Item.BlueMinerals));
+            Console.WriteLine(Enums.GetCharValue(Enums.Item.BlueMinerals));
+            Console.WriteLine(Enums.GetCharValue(Enums.HeightLevel.Cliff));
 
-            var height = 256;
-            var width = 256;
+            var height = 50;
+            var width = 50;
 
             var mapHeights = new Enums.HeightLevel[height, width];
             var mapItems = new Enums.Item[height, width];
@@ -104,6 +117,11 @@ namespace OPMGFS
             Console.WriteLine("Average mirror time: " + mirrorTime / iterations);
             Console.WriteLine("Average turn time:   " + turnTime / iterations);
             //printHeightLevels(mapPhenotype.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn).HeightLevels);
+
+            string heightLevels, items;
+            mapPhenotype.GetMapStrings(out heightLevels, out items);
+            Console.WriteLine(heightLevels);
+            Console.WriteLine(items);
 
             //mapItems[1, 0] = Enums.Item.Cliff;
             //mapHeights[1, 1] = Enums.HeightLevel.Ramp01;
@@ -203,7 +221,7 @@ namespace OPMGFS
                 Console.Write("|");
                 for (int j = 0; j < items.GetLength(1); j++)
                 {
-                    Console.Write(Enums.GetItemCharValue(items[i, j]));
+                    Console.Write(Enums.GetCharValue(items[i, j]));
                 }
                 Console.Write("|");
                 Console.WriteLine();
