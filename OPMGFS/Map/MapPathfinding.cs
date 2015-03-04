@@ -140,25 +140,25 @@ namespace OPMGFS.Map
         /// <param name="mapHeightLevels"> The height levels of the map. </param>
         /// <param name="position"> The position to find neighbours for. </param>
         /// <returns> A list of the neighbours. </returns>
-        private static List<Position> Neighbours(Enums.HeightLevel[,] mapHeightLevels, Position position)
+        private static IEnumerable<Position> Neighbours(Enums.HeightLevel[,] mapHeightLevels, Position position)
         {
             var neighbours = new List<Position>();
             var possibleMoves = new[] { -1, 0, 1 };
 
             // Iterate over all combinations of neighbours.
             // Don't even bother converting this to LINQ :D
-            foreach (var possibleHeightMove in possibleMoves)
+            foreach (var possibleXMove in possibleMoves)
             {
-                foreach (var possibleWidthMove in possibleMoves)
+                foreach (var possibleYMove in possibleMoves)
                 {
                     // If we are looking at the current position, don't do anything.
-                    if (possibleHeightMove == 0 && possibleWidthMove == 0)
+                    if (possibleXMove == 0 && possibleYMove == 0)
                         continue;
 
-                    var posToCheck = new Position(position.Item1 + possibleHeightMove, position.Item2 + possibleWidthMove);
+                    var posToCheck = new Position(position.Item1 + possibleXMove, position.Item2 + possibleYMove);
 
                     // If the move is valid, add it to the list of neighbours.
-                    if (ValidMove(mapHeightLevels/*, mapItems*/, position, posToCheck))
+                    if (ValidMove(mapHeightLevels, position, posToCheck))
                         neighbours.Add(posToCheck);
                 }
             }
@@ -189,28 +189,20 @@ namespace OPMGFS.Map
 
             if (mapHeightLevels[toPos.Item1, toPos.Item2] == Enums.HeightLevel.Cliff) return false;
 
-            // If the target contains a cliff or a Xel'Naga tower, it is not a valid move.
-            // switch (mapItems[toPos.Item1, toPos.Item2])
-            // {
-            //    case Enums.Item.Cliff:
-            //    case Enums.Item.XelNagaTower:
-            //        return false;
-            // }
-
             return true;
         }
 
         /// <summary>
         /// Checks if a position is within the bounds of the map.
         /// </summary>
-        /// <param name="height">Height of the map.</param>
-        /// <param name="width">Width of the map.</param>
+        /// <param name="xSize">Height of the map.</param>
+        /// <param name="ySize">Width of the map.</param>
         /// <param name="position">Position to check.</param>
         /// <returns>True if within the bounds of the map; false otherwise.</returns>
-        private static bool WithinMapBounds(int height, int width, Position position)
+        private static bool WithinMapBounds(int xSize, int ySize, Position position)
         {
-            if (position.Item1 < 0 || position.Item1 >= height) return false;
-            if (position.Item2 < 0 || position.Item2 >= width) return false;
+            if (position.Item1 < 0 || position.Item1 >= xSize) return false;
+            if (position.Item2 < 0 || position.Item2 >= ySize) return false;
             return true;
         }
 
