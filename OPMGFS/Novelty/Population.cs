@@ -3,8 +3,6 @@
     using System;
     using System.Collections.Generic;
 
-    using OPMGFS.Novelty.IntegerNoveltySearch;
-
     /// <summary>
     /// A population in a novelty search.
     /// </summary>

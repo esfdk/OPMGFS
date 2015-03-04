@@ -4,12 +4,11 @@
 
     public class IntegerSearcher : NoveltySearcher
     {
-        public IntegerSearcher(int feasibleSize, int infeasibleSize)
+        public IntegerSearcher(Random r, int feasibleSize, int infeasibleSize) : base(r)
         {
             this.FeasiblePopulation = new IntegerPopulation(true, feasibleSize);
             this.InfeasiblePopulation = new IntegerPopulation(false, infeasibleSize);
             this.Archive = new IntegerNovelArchive();
-            Random = new Random();
 
             for (var i = 0; i < feasibleSize; i++)
             {

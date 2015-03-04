@@ -199,7 +199,7 @@
                 Console.Write("-");
 
             Console.WriteLine();
-            for (var i = 0; i < items.GetLength(0); i++)
+            for (var i = items.GetLength(0)-1; i >= 0; i--)
             {
                 Console.Write("|");
                 for (int j = 0; j < items.GetLength(1); j++)
@@ -268,9 +268,11 @@
 
         private static void TestNovelty()
         {
-            var ms = new MapSearcher(5, 5);
+            var ms = new MapSearcher(new Random(), 5, 5);
+
+
             //var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
-            var solution = new MapSolution(new List<MapPoint>() { /*new MapPoint(0.9, 90, Enums.MapPointType.StartBase), new MapPoint(0.5, 45, Enums.MapPointType.Base),*/ new MapPoint(0.9, 178, Enums.MapPointType.XelNagaTower) });
+            var solution = new MapSolution(new List<MapPoint>() { new MapPoint(1.0, 45, Enums.MapPointType.XelNagaTower) });
             var map = solution.ConvertToPhenotype(32, 32);
             printMap(map.MapItems);
             Console.WriteLine(solution);

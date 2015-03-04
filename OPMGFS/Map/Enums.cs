@@ -174,7 +174,7 @@ namespace OPMGFS.Map
 
         public enum MapPointType
         {
-            Base, XelNagaTower, GoldBase, Ramp, StartBase
+            Base, XelNagaTower, GoldBase, Ramp, StartBase, DestructibleRocks
         }
 
         /// <summary>

@@ -8,12 +8,11 @@
 
     public class MapSearcher : NoveltySearcher
     {
-        public MapSearcher(int feasibleSize, int infeasibleSize)
+        public MapSearcher(Random r, int feasibleSize, int infeasibleSize) : base(r)
         {
             this.FeasiblePopulation = new MapPopulation(true, feasibleSize);
             this.InfeasiblePopulation = new MapPopulation(false, infeasibleSize);
             this.Archive = new MapNovelArchive();
-            this.Random = new Random();
 
             for (var i = 0; i < feasibleSize; i++)
             {

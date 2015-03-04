@@ -129,5 +129,10 @@ namespace OPMGFS.Map
             var newMap = new MapPhenotype(newHeightLevels, newMapItems);
             return newMap;
         }
+
+        public bool InsideBounds(int x, int y)
+        {
+            return !(x < 0 || y < 0 || x >= this.Width || y >= this.Height);
+        }
     }
 }

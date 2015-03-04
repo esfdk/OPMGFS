@@ -8,14 +8,14 @@
     public abstract class Solution
     {
         /// <summary>
+        /// Controls whether the feasibility should be calculated when asked whether the solution is feasible.
+        /// </summary>
+        private bool isFeasibilityCalculated;
+
+        /// <summary>
         /// Keeps track of the feasibility of the solution.
         /// </summary>
         private bool isFeasible;
-
-        /// <summary>
-        /// Controls whether the feasibility should be calculated when asked whether the solution is feasible.
-        /// </summary>
-        protected bool isFeasibilityCalculated;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Solution"/> class.
@@ -86,7 +86,10 @@
             this.CalculateDistanceToFeasibility();
             this.isFeasibilityCalculated = true;
 
-            if (!(this.DistanceToFeasibility <= 0)) return false;
+            if (!(this.DistanceToFeasibility <= 0))
+            {
+                return false;
+            }
 
             this.IsFeasible = true;
 

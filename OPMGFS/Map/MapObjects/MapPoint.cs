@@ -1,9 +1,24 @@
-﻿using System;
-
-namespace OPMGFS.Map.MapObjects
+﻿namespace OPMGFS.Map.MapObjects
 {
+    using System;
+
+    /// <summary>
+    /// A point on the map described as percentage of distance to edge at a specific angle.
+    /// </summary>
     public class MapPoint
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapPoint"/> class.
+        /// </summary>
+        /// <param name="distance">
+        /// The distance in percent.
+        /// </param>
+        /// <param name="degree">
+        /// The degree.
+        /// </param>
+        /// <param name="type">
+        /// The type of the point.
+        /// </param>
         public MapPoint(double distance, double degree, Enums.MapPointType type)
         {
             Distance = distance;
