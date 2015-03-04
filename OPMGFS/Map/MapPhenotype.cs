@@ -82,8 +82,8 @@ namespace OPMGFS.Map
             // Figures out which part of the map that should be looked at.
             var xStart = (half == Half.Right) ? this.XSize / 2 : 0;
             var xEnd = (half == Half.Left) ? this.XSize / 2 : this.XSize;
-            var yStart = (half == Half.Bottom) ? this.YSize / 2 : 0;
-            var yEnd = (half == Half.Top) ? this.YSize / 2 : this.YSize;
+            var yStart = (half == Half.Top) ? this.YSize / 2 : 0;
+            var yEnd = (half == Half.Bottom) ? this.YSize / 2 : this.YSize;
 
             for (var y = yStart; y < yEnd; y++)
             {

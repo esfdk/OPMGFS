@@ -18,42 +18,42 @@ namespace OPMGFS.Map.CellularAutomata
     {
         public Enums.HeightLevel[,] Map { get; protected set; }
 
-        private int Height { get; set; }
+        private int YSize { get; set; }
 
-        private int Width { get; set; }
+        private int XSize { get; set; }
 
-        private int caStartHeight, caEndHeight, caStartWidth, caEndWidth;
+        private int caYStart, caYEnd, caXStart, caXEnd;
 
         protected Random Random { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="height"></param>
-        /// <param name="width"></param>
+        /// <param name="ySize"></param>
+        /// <param name="xSize"></param>
         /// <param name="oddsOfHeight1"></param>
         /// <param name="oddsOfHeight2"></param>
-        public CellularAutomata(int height, int width, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25)
+        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25)
         {
-            this.Map = new Enums.HeightLevel[height, width];
+            this.Map = new Enums.HeightLevel[xSize, ySize];
 
             this.Random = new Random();
 
-            this.Height = height;
-            this.Width = width;
+            this.XSize = xSize;
+            this.YSize = ySize;
 
             // Figures out which part of the map that should be looked at.
-            this.caStartHeight = (half == Enums.Half.Bottom) ? (this.Height / 2) - 2 : 0;
-            this.caEndHeight = (half == Enums.Half.Top) ? (this.Height / 2) + 2 : this.Height;
-            this.caStartWidth = (half == Enums.Half.Right) ? (this.Width / 2) - 2 : 0;
-            this.caEndWidth = (half == Enums.Half.Left) ? (this.Width / 2) + 2 : this.Width;
+            caXStart = (half == Enums.Half.Right) ? this.XSize / 2 : 0;
+            caXEnd = (half == Enums.Half.Left) ? this.XSize / 2 : this.XSize;
+            caYStart = (half == Enums.Half.Top) ? this.YSize / 2 : 0;
+            caYEnd = (half == Enums.Half.Bottom) ? this.YSize / 2 : this.YSize;
 
-            for (int tempHeight = this.caStartHeight; tempHeight < this.caEndHeight; tempHeight++)
+            for (int y = this.caYStart; y < this.caYEnd; y++)
             {
-                for (int tempWidth = this.caStartHeight; tempWidth < this.caEndWidth; tempWidth++)
+                for (int x = this.caXStart; x < this.caXEnd; x++)
                 {
-                    if (this.Random.NextDouble() < oddsOfHeight1) this.Map[tempHeight, tempWidth] = Enums.HeightLevel.Height1;
-                    if (this.Random.NextDouble() < oddsOfHeight2) this.Map[tempHeight, tempWidth] = Enums.HeightLevel.Height2;
+                    if (this.Random.NextDouble() < oddsOfHeight1) this.Map[x, y] = Enums.HeightLevel.Height1;
+                    if (this.Random.NextDouble() < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
                 }
             }
         }
