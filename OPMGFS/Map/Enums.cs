@@ -9,6 +9,7 @@
 
 namespace OPMGFS.Map
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
 
@@ -182,10 +183,20 @@ namespace OPMGFS.Map
         /// </summary>
         /// <param name="item">The item to get the char value of</param>
         /// <returns>A string containing the char value of the item.</returns>
-        public static string GetItemCharValue(Item item)
+        public static string GetCharValue(Item item)
         {
             if (item == Item.None) return ".";
             return ((char)item).ToString(CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Gets the char value of a Heightlevel.
+        /// </summary>
+        /// <param name="level">The heightlevel to get the char value of</param>
+        /// <returns>A string containing the char value of the item.</returns>
+        public static string GetCharValue(HeightLevel level)
+        {
+            return string.Empty + (int)level;
         }
     }
 }

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
 
+    using OPMGFS.Map.CellularAutomata;
     using OPMGFS.Map;
     using OPMGFS.Map.MapObjects;
     using OPMGFS.Novelty.MapNoveltySearch;
@@ -16,21 +17,32 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             //TestEvolution();
             //TestPhenotype();
-            TestNovelty();
+            //TestNovelty();
+            TestCA();
 
             Console.ReadKey();
+        }
+
+        private static void TestCA()
+        {
+            var ca = new CellularAutomata(50, 50, Enums.Half.Top);
+            var map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
+            string heights, items;
+            map.GetMapStrings(out heights, out items);
+            Console.WriteLine(heights);
         }
 
         private static void TestPhenotype()
         {
             Console.WriteLine(Enums.Item.BlueMinerals);
-            Console.WriteLine(Enums.GetItemCharValue(Enums.Item.BlueMinerals));
+            Console.WriteLine(Enums.GetCharValue(Enums.Item.BlueMinerals));
+            Console.WriteLine(Enums.GetCharValue(Enums.HeightLevel.Cliff));
 
-            var height = 256;
-            var width = 256;
+            var xSize = 50;
+            var ySize = 30;
 
-            var mapHeights = new Enums.HeightLevel[height, width];
-            var mapItems = new Enums.Item[height, width];
+            var mapHeights = new Enums.HeightLevel[xSize, ySize];
+            var mapItems = new Enums.Item[xSize, ySize];
 
             for (int i = 0; i <= 3; i++)
             {
@@ -79,8 +91,14 @@
             mapHeights[6, 7] = Enums.HeightLevel.Cliff;
 
             var mapPhenotype = new MapPhenotype(mapHeights, mapItems);
-            //printHeightLevels(mapPhenotype.HeightLevels);
+            
+            // printHeightLevels(mapPhenotype.HeightLevels);
 
+
+            // ---------------------------
+            // CreateCompleteMap Timing test
+            // ---------------------------
+            /*
             var sw = new Stopwatch();
             var turnTime = 0d;
             var mirrorTime = 0d;
@@ -106,11 +124,21 @@
             Console.WriteLine("Average turn time:   " + turnTime / iterations);
             //printHeightLevels(mapPhenotype.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn).HeightLevels);
 
-            //mapItems[1, 0] = Enums.Item.Cliff;
-            //mapHeights[1, 1] = Enums.HeightLevel.Ramp01;
-            //var neighbours = MapPathfinding.Neighbours(mapHeights, mapItems, new Tuple<int, int>(1, 1));
+            //string heightLevels, items;
+            //mapPhenotype.GetMapStrings(out heightLevels, out items);
+            //Console.WriteLine(heightLevels);
+            //Console.WriteLine(items);
+             */
 
-            /*var path = MapPathfinding.FindPathFromTo(mapHeights, new Tuple<int, int>(0, 0), new Tuple<int, int>(9, 0));
+            // mapItems[1, 0] = Enums.Item.Cliff;
+            // mapHeights[1, 1] = Enums.HeightLevel.Ramp01;
+            // var neighbours = MapPathfinding.Neighbours(mapHeights, mapItems, new Tuple<int, int>(1, 1));
+
+            // ---------------------------
+            // Pathfinding test
+            // ---------------------------
+            /*
+            var path = MapPathfinding.FindPathFromTo(mapHeights, new Tuple<int, int>(0, 0), new Tuple<int, int>(9, 0));
 
 
             foreach (var tuple in path)
@@ -119,56 +147,27 @@
                 mapItems[tuple.Item1, tuple.Item2] = Enums.Item.XelNagaTower;
             }
 
-            printHeightLevels(mapHeights);
-            //Console.WriteLine("-------------");
-            printMap(mapItems);
-            //Console.WriteLine("-------------");
+            string heightLevels, items;
+            mapPhenotype.GetMapStrings(out heightLevels, out items);
+            Console.WriteLine(heightLevels);
+            Console.WriteLine(items);
 
-            Console.WriteLine((int)Enums.Item.XelNagaTower);*/
+            Console.WriteLine((int)Enums.Item.XelNagaTower);
+            */
+            //// ---------------------------
 
-            //foreach (var neighbour in neighbours)
-            //{
-            //    Console.WriteLine(neighbour.Item1 + ", " + neighbour.Item2);
-            //}
-
-
+            // ---------------------------
+            // CreateCompleteMap test
+            // ---------------------------
             /*
-            for (var i = 0; i < mapItems.GetLength(0); i++)
-            {
-                for (int j = 0; j < mapItems.GetLength(1); j++)
-                {
-                    mapItems[i, j] = Enums.Item.None;
-                }
-            }
-
-            mapHeights[1, 1] = Enums.HeightLevel.Height1;
-            mapHeights[4, 6] = Enums.HeightLevel.Height1;
-            mapHeights[2, 4] = Enums.HeightLevel.Height1;
-            mapHeights[1, 8] = Enums.HeightLevel.Height1;
-            mapHeights[4, 3] = Enums.HeightLevel.Height1;
-
-            mapItems[1, 1] = Enums.Item.Base;
-            mapItems[0, 1] = Enums.Item.Gas;
-            mapItems[1, 0] = Enums.Item.BlueMinerals;
-            mapItems[1, 7] = Enums.Item.XelNagaTower;
-            mapItems[4, 1] = Enums.Item.Cliff;
-
-            var mp = new MapPhenotype(mapHeights, mapItems);
-
             // Change the parameters here to test different functionalities
-            var newMap = mp.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror); 
+            var newMap = mapPhenotype.CreateCompleteMap(Enums.Half.Bottom, Enums.MapFunction.Mirror);
 
-            printHeightLevels(mapHeights);
-            Console.WriteLine("-------------");
-            printMap(mapItems);
-
-            Console.WriteLine("-------------");
-            Console.WriteLine("-------------");
-            Console.WriteLine("-------------");
-
-            printHeightLevels(newMap.HeightLevels);
-            Console.WriteLine("-------------");
-            printMap(newMap.MapItems);*/
+            string heightLevels, items;
+            newMap.GetMapStrings(out heightLevels, out items);
+            Console.WriteLine(heightLevels);
+            Console.WriteLine(items);
+             * */
         }
 
         private static void printHeightLevels(Enums.HeightLevel[,] heightLevels)
@@ -204,7 +203,7 @@
                 Console.Write("|");
                 for (int j = 0; j < items.GetLength(1); j++)
                 {
-                    Console.Write(Enums.GetItemCharValue(items[i, j]));
+                    Console.Write(Enums.GetCharValue(items[i, j]));
                 }
                 Console.Write("|");
                 Console.WriteLine();

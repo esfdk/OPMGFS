@@ -9,6 +9,8 @@
 
 namespace OPMGFS.Map
 {
+    using System.Text;
+
     using Half = Enums.Half;
     using HeightLevel = Enums.HeightLevel;
     using Item = Enums.Item;
@@ -21,15 +23,15 @@ namespace OPMGFS.Map
         /// <summary>
         /// Initializes a new instance of the <see cref="MapPhenotype"/> class. 
         /// </summary>
-        /// <param name="height"> The height of the map. </param>
-        /// <param name="width"> The width of the map. </param>
-        public MapPhenotype(int height, int width)
+        /// <param name="xSize"> The height of the map. </param>
+        /// <param name="ySize"> The width of the map. </param>
+        public MapPhenotype(int xSize, int ySize)
         {
-            this.HeightLevels = new HeightLevel[height, width];
-            this.MapItems = new Item[height, width];
+            this.HeightLevels = new HeightLevel[xSize, ySize];
+            this.MapItems = new Item[xSize, ySize];
 
-            this.Height = this.HeightLevels.GetLength(0);
-            this.Width = this.HeightLevels.GetLength(1);
+            this.XSize = this.HeightLevels.GetLength(0);
+            this.YSize = this.HeightLevels.GetLength(1);
         }
 
         /// <summary>
@@ -42,19 +44,19 @@ namespace OPMGFS.Map
             this.HeightLevels = heightLevels;
             this.MapItems = mapItems;
 
-            this.Height = this.HeightLevels.GetLength(0);
-            this.Width = this.HeightLevels.GetLength(1);
+            this.XSize = this.HeightLevels.GetLength(0);
+            this.YSize = this.HeightLevels.GetLength(1);
         }
 
         /// <summary>
         /// Gets the height of the map.
         /// </summary>
-        public int Height { get; private set; }
+        public int XSize { get; private set; }
 
         /// <summary>
         /// Gets the width of the map.
         /// </summary>
-        public int Width { get; private set; }
+        public int YSize { get; private set; }
 
         /// <summary>
         /// Gets the height levels at various parts of the map.
@@ -78,51 +80,31 @@ namespace OPMGFS.Map
             var newMapItems = (Item[,])this.MapItems.Clone();
 
             // Figures out which part of the map that should be looked at.
-            var startHeight = (half == Half.Bottom) ? this.Height / 2 : 0;
-            var endHeight = (half == Half.Top) ? this.Height / 2 : this.Height;
-            var startWidth = (half == Half.Right) ? this.Width / 2 : 0;
-            var endWidth = (half == Half.Left) ? this.Width / 2 : this.Width;
+            var xStart = (half == Half.Right) ? this.XSize / 2 : 0;
+            var xEnd = (half == Half.Left) ? this.XSize / 2 : this.XSize;
+            var yStart = (half == Half.Top) ? this.YSize / 2 : 0;
+            var yEnd = (half == Half.Bottom) ? this.YSize / 2 : this.YSize;
 
-            for (var tempHeight = startHeight; tempHeight < endHeight; tempHeight++)
+            for (var y = yStart; y < yEnd; y++)
             {
-                var otherHeight = tempHeight;
+                var otherY = y;
 
                 // If we mirror top or bottom or turn the map, find the height to copy to.
                 if ((function == Enums.MapFunction.Mirror && (half == Half.Top || half == Half.Bottom)) 
                     || function == Enums.MapFunction.Turn)
-                    otherHeight = this.Height - tempHeight - 1;
+                    otherY = this.YSize - y - 1;
 
-                for (var tempWidth = startWidth; tempWidth < endWidth; tempWidth++)
+                for (var x = xStart; x < xEnd; x++)
                 {
-                    var otherWidth = tempWidth;
+                    var otherX = x;
 
                     // If we mirror left or right or turn the map, find the width to copy to.
                     if ((function == Enums.MapFunction.Mirror && (half == Half.Left || half == Half.Right))
                         || function == Enums.MapFunction.Turn)
-                        otherWidth = this.Width - tempWidth - 1;
+                        otherX = this.XSize - x - 1;
 
-                    switch (half)
-                    {
-                        case Half.Top:
-                            newHeightLevels[otherHeight, otherWidth] = this.HeightLevels[tempHeight, tempWidth];
-                            newMapItems[otherHeight, otherWidth] = this.MapItems[tempHeight, tempWidth];
-                            break;
-
-                        case Half.Bottom:
-                            newHeightLevels[otherHeight, otherWidth] = this.HeightLevels[tempHeight, tempWidth];
-                            newMapItems[otherHeight, otherWidth] = this.MapItems[tempHeight, tempWidth];
-                            break;
-
-                        case Half.Left:
-                            newHeightLevels[otherHeight, otherWidth] = this.HeightLevels[tempHeight, tempWidth];
-                            newMapItems[otherHeight, otherWidth] = this.MapItems[tempHeight, tempWidth];
-                            break;
-
-                        case Half.Right:
-                            newHeightLevels[otherHeight, otherWidth] = this.HeightLevels[tempHeight, tempWidth];
-                            newMapItems[otherHeight, otherWidth] = this.MapItems[tempHeight, tempWidth];
-                            break;
-                    }
+                    newHeightLevels[otherX, otherY] = this.HeightLevels[x, y];
+                    newMapItems[otherX, otherY] = this.MapItems[x, y];
                 }
             }
 
@@ -130,9 +112,67 @@ namespace OPMGFS.Map
             return newMap;
         }
 
+        /// <summary>
+        /// Checks if a point is inside the boundaries of the map.
+        /// </summary>
+        /// <param name="x">The x-coordinate.</param>
+        /// <param name="y">The y-coordinate.</param>
+        /// <returns>True if the point is inside, otherwise false.</returns>
         public bool InsideBounds(int x, int y)
         {
-            return !(x < 0 || y < 0 || x >= this.Width || y >= this.Height);
+            return !(x < 0 || y < 0 || x >= this.XSize || y >= this.YSize);
+        }
+
+        /// <summary>
+        /// Builds both maps as strings.
+        /// </summary>
+        /// <param name="mapHeightLevels"> The string to return the heightlevel map to. </param>
+        /// <param name="mapItems"> The string to return the item map to. </param>
+        public void GetMapStrings(out string mapHeightLevels, out string mapItems)
+        {
+            var heightLevelBuilder = new StringBuilder();
+            var itemBuilder = new StringBuilder();
+
+            // Top border
+            for (var x = 0; x < this.XSize + 2; x++)
+            {
+                heightLevelBuilder.Append("-");
+                itemBuilder.Append("-");
+            }
+
+            heightLevelBuilder.AppendLine();
+            itemBuilder.AppendLine();
+
+            for (var y = this.YSize - 1; y >= 0; y--)
+            {
+                // Left border
+                heightLevelBuilder.Append("|");
+                itemBuilder.Append("|");
+
+                // Actual map values
+                for (int x = 0; x < this.XSize; x++)
+                {
+                    heightLevelBuilder.Append(Enums.GetCharValue(this.HeightLevels[x, y]));
+                    itemBuilder.Append(Enums.GetCharValue(this.MapItems[x, y]));
+                }
+
+                // Right border
+                heightLevelBuilder.Append("| " + y);
+                itemBuilder.Append("|");
+
+                heightLevelBuilder.AppendLine();
+                itemBuilder.AppendLine();
+            }
+
+            // Bottom border
+            for (var x = 0; x < this.XSize + 2; x++)
+            {
+                heightLevelBuilder.Append("-");
+                itemBuilder.Append("-");
+            }
+
+            mapHeightLevels = heightLevelBuilder.ToString();
+            mapItems = itemBuilder.ToString();
         }
     }
 }

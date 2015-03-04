@@ -140,25 +140,25 @@ namespace OPMGFS.Map
         /// <param name="mapHeightLevels"> The height levels of the map. </param>
         /// <param name="position"> The position to find neighbours for. </param>
         /// <returns> A list of the neighbours. </returns>
-        private static List<Position> Neighbours(Enums.HeightLevel[,] mapHeightLevels, Position position)
+        private static IEnumerable<Position> Neighbours(Enums.HeightLevel[,] mapHeightLevels, Position position)
         {
             var neighbours = new List<Position>();
             var possibleMoves = new[] { -1, 0, 1 };
 
             // Iterate over all combinations of neighbours.
             // Don't even bother converting this to LINQ :D
-            foreach (var possibleHeightMove in possibleMoves)
+            foreach (var possibleXMove in possibleMoves)
             {
-                foreach (var possibleWidthMove in possibleMoves)
+                foreach (var possibleYMove in possibleMoves)
                 {
                     // If we are looking at the current position, don't do anything.
-                    if (possibleHeightMove == 0 && possibleWidthMove == 0)
+                    if (possibleXMove == 0 && possibleYMove == 0)
                         continue;
 
-                    var posToCheck = new Position(position.Item1 + possibleHeightMove, position.Item2 + possibleWidthMove);
+                    var posToCheck = new Position(position.Item1 + possibleXMove, position.Item2 + possibleYMove);
 
                     // If the move is valid, add it to the list of neighbours.
-                    if (ValidMove(mapHeightLevels/*, mapItems*/, position, posToCheck))
+                    if (ValidMove(mapHeightLevels, position, posToCheck))
                         neighbours.Add(posToCheck);
                 }
             }
@@ -189,123 +189,21 @@ namespace OPMGFS.Map
 
             if (mapHeightLevels[toPos.Item1, toPos.Item2] == Enums.HeightLevel.Cliff) return false;
 
-            // If the target contains a cliff or a Xel'Naga tower, it is not a valid move.
-            // switch (mapItems[toPos.Item1, toPos.Item2])
-            // {
-            //    case Enums.Item.Cliff:
-            //    case Enums.Item.XelNagaTower:
-            //        return false;
-            // }
-
             return true;
         }
 
         /// <summary>
         /// Checks if a position is within the bounds of the map.
         /// </summary>
-        /// <param name="height">Height of the map.</param>
-        /// <param name="width">Width of the map.</param>
+        /// <param name="xSize">Height of the map.</param>
+        /// <param name="ySize">Width of the map.</param>
         /// <param name="position">Position to check.</param>
         /// <returns>True if within the bounds of the map; false otherwise.</returns>
-        private static bool WithinMapBounds(int height, int width, Position position)
+        private static bool WithinMapBounds(int xSize, int ySize, Position position)
         {
-            if (position.Item1 < 0 || position.Item1 >= height) return false;
-            if (position.Item2 < 0 || position.Item2 >= width) return false;
+            if (position.Item1 < 0 || position.Item1 >= xSize) return false;
+            if (position.Item2 < 0 || position.Item2 >= ySize) return false;
             return true;
-        }
-
-        /// <summary>
-        /// Checks if the move is valid.
-        /// </summary>
-        /// <param name="fromPos"> The position to move from. </param>
-        /// <param name="toPos"> The position to move to. </param>
-        /// <param name="heightDifference">The height difference between from and to. Do NOT use Math.Abs for this, as it
-        /// is important if from is higher or lower than to.</param>
-        /// <param name="fromItem"> The item at the start position. </param>
-        /// <param name="toItem"> The item at the end position. </param>
-        /// <returns> True if the move is valid; false otherwise. </returns>
-        private static bool ValidMove(Position fromPos, Position toPos, int heightDifference, Enums.Item fromItem, Enums.Item toItem)
-        {
-            // TODO: Remove is the other method works properly.
-            switch (heightDifference)
-            {
-                // If toPos is 2 higher, it is never a valid move.
-                case 3:
-                case 2:
-                    return false;
-
-                // If toPos is 1 higher, it is only a valid move if fromPos has a ramp that leads in the correct direction.
-                case 1:
-                    // If height is equal, we are only ever checking for east-west.
-                    if (fromPos.Item1 == toPos.Item1 && fromItem == Enums.Item.RampEastWest) return true;
-
-                    // If width is the same, we are only ever checking for north-south.
-                    if (fromPos.Item2 == toPos.Item2 && fromItem == Enums.Item.RampNorthSouth) return true;
-
-                    // If both height and width are lower or higher, we are checking for northwest-southeast.
-                    if (((fromPos.Item1 < toPos.Item1 && fromPos.Item2 < toPos.Item2) || (fromPos.Item1 > toPos.Item1 && fromPos.Item2 > toPos.Item2))
-                        && fromItem == Enums.Item.RampNorthwestSoutheast) return true;
-
-                    // If height is higher and width lower (or the other way around), we are checking for northeast-southwest.
-                    if (((fromPos.Item1 < toPos.Item1 && fromPos.Item2 > toPos.Item2) || (fromPos.Item1 > toPos.Item1 && fromPos.Item2 < toPos.Item2))
-                        && fromItem == Enums.Item.RampNorthwestSoutheast) return true;
-
-                    return false;
-
-                // If fromPos is 1 higher, it is only a valid move if toPos has a ramp that leads in the correct direction.
-                case -1:
-                    // If height is equal, we are only ever checking for east-west.
-                    if (fromPos.Item1 == toPos.Item1 && toItem == Enums.Item.RampEastWest) return true;
-
-                    // If width is the same, we are only ever checking for north-south.
-                    if (fromPos.Item2 == toPos.Item2 && toItem == Enums.Item.RampNorthSouth) return true;
-
-                    // If both height and width are lower or higher, we are checking for northwest-southeast.
-                    if (((fromPos.Item1 < toPos.Item1 && fromPos.Item2 < toPos.Item2) || (fromPos.Item1 > toPos.Item1 && fromPos.Item2 > toPos.Item2))
-                        && toItem == Enums.Item.RampNorthwestSoutheast) return true;
-
-                    // If height is higher and width lower (or the other way around), we are checking for northeast-southwest.
-                    if (((fromPos.Item1 < toPos.Item1 && fromPos.Item2 > toPos.Item2) || (fromPos.Item1 > toPos.Item1 && fromPos.Item2 < toPos.Item2))
-                        && toItem == Enums.Item.RampNorthwestSoutheast) return true;
-
-                    return false;
-
-                // If fromPos is 2 or 3 higher, it is never a valid move.
-                case -2:
-                case -3:
-                    return false;
-
-                // If there is no height difference, it is a valid move as long as we do not hit a cliff or the side of a ramp.
-                case 0:
-                    if (toItem == Enums.Item.Cliff) return false;
-
-                    // If height is equal, we are only ever checking for east-west.
-                    if (fromPos.Item1 == toPos.Item1)
-                    {
-                        // If fromPos is an east-west ramp and toPos isn't (or the other way around), valid move.
-                        if (fromItem != Enums.Item.RampEastWest && toItem == Enums.Item.RampEastWest) return true;
-                        if (fromItem == Enums.Item.RampEastWest && toItem != Enums.Item.RampEastWest) return true;
-
-                        // If both fromPos and toPos are north-south ramps, they are connected and it is a valid move.
-                        if (fromItem == Enums.Item.RampNorthSouth && toItem == Enums.Item.RampNorthSouth) return true;
-
-                        return true;
-                    }
-
-                    // If width is the same, we are only ever checking for north-south.
-                    if (fromPos.Item2 == toPos.Item2 && toItem == Enums.Item.RampNorthSouth) return true;
-
-                    // If both height and width are lower or higher, we are checking for northwest-southeast.
-                    if (((fromPos.Item1 < toPos.Item1 && fromPos.Item2 < toPos.Item2) || (fromPos.Item1 > toPos.Item1 && fromPos.Item2 > toPos.Item2))
-                        && toItem == Enums.Item.RampNorthwestSoutheast) return true;
-
-                    // If height is higher and width lower (or the other way around), we are checking for northeast-southwest.
-                    if (((fromPos.Item1 < toPos.Item1 && fromPos.Item2 > toPos.Item2) || (fromPos.Item1 > toPos.Item1 && fromPos.Item2 < toPos.Item2))
-                        && toItem == Enums.Item.RampNorthwestSoutheast) return true;
-                    break;
-            }
-
-            return false;
         }
 
         /// <summary>
