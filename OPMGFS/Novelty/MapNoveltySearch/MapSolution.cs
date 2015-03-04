@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using OPMGFS.Map.MapObjects;
-
-namespace OPMGFS.Novelty.MapNoveltySearch
+﻿namespace OPMGFS.Novelty.MapNoveltySearch
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using OPMGFS.Map;
+    using OPMGFS.Map.MapObjects;
+
     public class MapSolution : Solution
     {
         public List<MapPoint> MapPoints { get; private set; }
@@ -22,14 +24,13 @@ namespace OPMGFS.Novelty.MapNoveltySearch
         public override Solution Mutate(Random r)
         {
             var chance = 0.3;
-            var maxDistMod = 10.0;
+            var maxDistMod = 0;
             var maxDegreeMod = 10.0;
             var maxDist = 128;
             var maxDegree = 180;
 
             // TODO: Figure out settings locations
-            // TODO: Should ALL variables change when searching?
-            // TODO: Should we limit mutation to be ONLY towards feasibility? (eg. when degree > maxDegree, only allow it to go lower?)
+            // TODO: Should we limit mutation to be ONLY towards feasibility? (eg. when degree > maxDegree, only allow it to go lower?) Probably
             var newPoints = new List<MapPoint>();
             
             foreach (var mp in MapPoints)
@@ -195,7 +196,7 @@ namespace OPMGFS.Novelty.MapNoveltySearch
         {
             // TODO: Fix min/max distance & degree
 
-            var maxDistance = 128;
+            var maxDistance = 1.0;
             var maxDegree = 180;
             var minDegree = 0;
             var minDistance = 0;
@@ -219,7 +220,7 @@ namespace OPMGFS.Novelty.MapNoveltySearch
                 {
                     distance += mp.Distance - maxDistance;
                 }
-                else if (mp.Degree < minDegree)
+                else if (mp.Degree < minDistance)
                 {
                     distance += maxDistance - mp.Distance;
                 }
@@ -228,6 +229,95 @@ namespace OPMGFS.Novelty.MapNoveltySearch
             this.DistanceToFeasibility = distance;
 
             return DistanceToFeasibility;
+        }
+
+        public MapPhenotype ConvertToPhenotype(int xSize, int ySize)
+        {
+            var map = new MapPhenotype(xSize, ySize);
+
+            foreach (var mp in this.MapPoints)
+            {
+                var maxDistance = MaxDistanceAtDegree(xSize / 2.0, ySize / 2.0, mp.Degree);
+                Console.WriteLine(maxDistance);
+                var point = FindPoint(mp.Degree, maxDistance * mp.Distance);
+
+                var xPos = point.Item1 + (xSize / 2.0);
+                var yPos = point.Item2 + (ySize / 2.0);
+
+                switch (mp.Type)
+                {
+                    case Enums.MapPointType.Base:
+                        map.MapItems[(int)yPos, (int)xPos] = Enums.Item.BlueMinerals;
+                        break;
+                    case Enums.MapPointType.GoldBase:
+                        map.MapItems[(int)yPos, (int)xPos] = Enums.Item.GoldMinerals;
+                        break;
+                    case Enums.MapPointType.StartBase:
+                        map.MapItems[(int)yPos, (int)xPos] = Enums.Item.Base;
+                        break;
+                    case Enums.MapPointType.XelNagaTower:
+                        map.MapItems[(int)yPos, (int)xPos] = Enums.Item.XelNagaTower;
+                        break;
+                    default:
+                        map.MapItems[(int)yPos, (int)xPos] = Enums.Item.DestructibleRocks;
+                        break;
+                }
+            }
+
+            return map;
+        }
+
+        private static double MaxDistanceAtDegree(double xSize, double ySize, double degree)
+        {
+            var cSquared = Math.Pow(xSize, 2) + Math.Pow(ySize, 2);
+            var maxDistance = Math.Sqrt(cSquared);
+            var radians = ConvertToRadians(degree);
+            var cos = Math.Cos(radians);
+            var sin = Math.Sin(radians);
+
+            var stop = false;
+
+            do
+            {
+                // TODO: Optimize distance function calculation
+                var point = FindPoint(maxDistance, cos, sin);
+
+                if (
+                    (!(point.Item1 <= xSize) || (point.Item1 < -xSize))
+                    || (!(point.Item2 <= ySize) || (point.Item2 < -ySize)))
+                {
+                    maxDistance--;
+                }
+                else
+                {
+                    stop = true;
+                }
+            }
+            while (!stop);
+
+            return maxDistance;
+        }
+
+        private static double ConvertToRadians(double angle)
+        {
+            return (Math.PI / 180) * angle;
+        }
+
+        private static Tuple<double, double> FindPoint(double degree, double distance)
+        {
+            var radians = ConvertToRadians(degree);
+            var cos = Math.Cos(radians);
+            var sin = Math.Sin(radians);
+
+            return FindPoint(distance, cos, sin);
+        }
+
+        private static Tuple<double, double> FindPoint(double distance, double cos, double sin)
+        {
+            var xDist = cos * distance;
+            var yDist = sin * distance;
+
+            return new Tuple<double, double>(xDist, yDist);
         }
 
         public override string ToString()

@@ -1,13 +1,13 @@
-﻿using System;
-using OPMGFS.Map;
-using OPMGFS.Novelty.MapNoveltySearch;
-
-namespace OPMGFS
+﻿namespace OPMGFS
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
 
     using OPMGFS.Map.CellularAutomata;
+    using OPMGFS.Map;
+    using OPMGFS.Map.MapObjects;
+    using OPMGFS.Novelty.MapNoveltySearch;
 
     class Program
     {
@@ -17,7 +17,7 @@ namespace OPMGFS
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             //TestEvolution();
             //TestPhenotype();
-            //TestNovelty();
+            TestNovelty();
             //TestCA();
 
             Console.ReadKey();
@@ -289,7 +289,12 @@ namespace OPMGFS
         private static void TestNovelty()
         {
             var ms = new MapSearcher(5, 5);
-            ms.RunGenerations(1);
+            //var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
+            var solution = new MapSolution(new List<MapPoint>() { /*new MapPoint(0.9, 90, Enums.MapPointType.StartBase), new MapPoint(0.5, 45, Enums.MapPointType.Base),*/ new MapPoint(0.9, 178, Enums.MapPointType.XelNagaTower) });
+            var map = solution.ConvertToPhenotype(32, 32);
+            printMap(map.MapItems);
+            Console.WriteLine(solution);
+            //ms.RunGenerations(1);
         }
     }
 }

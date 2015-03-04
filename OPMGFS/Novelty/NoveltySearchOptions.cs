@@ -20,7 +20,12 @@
         /// <param name="twoPointCrossover">
         /// Whether the novelty search should use single point or two point crossover when recombining.
         /// </param>
-        /// <param name="numberOfNeighbours">The number of neighbours to use in calculation of novelty.</param>
+        /// <param name="numberOfNeighbours">
+        /// The number of neighbours to use in calculation of novelty.
+        /// </param>
+        /// <param name="addToArchive">
+        /// The amount of individuals to add to the novel archive.
+        /// </param>
         public NoveltySearchOptions(bool mutate = true, bool recombine = false, double mutationChance = 0.3, bool twoPointCrossover = false, int numberOfNeighbours = 1, int addToArchive = 1)
         {
             this.TwoPointCrossover = twoPointCrossover;
