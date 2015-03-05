@@ -9,8 +9,6 @@
 
 namespace OPMGFS.Map
 {
-    using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
 
     /// <summary>
@@ -117,7 +115,6 @@ namespace OPMGFS.Map
             /// <summary>
             /// Xel'naga tower.
             /// </summary>
-            [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
             XelNagaTower = 'x',
 
             /// <summary>

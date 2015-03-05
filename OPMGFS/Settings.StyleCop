@@ -7,12 +7,14 @@
       <Value>heightlevel</Value>
       <Value>neighbours</Value>
       <Value>pathfinding</Value>
+      <Value>xel'naga</Value>
     </CollectionProperty>
   </GlobalSettings>
   <Analyzers>
     <Analyzer AnalyzerId="StyleCop.CSharp.NamingRules">
       <AnalyzerSettings>
         <CollectionProperty Name="Hungarian">
+          <Value>ca</Value>
           <Value>x</Value>
           <Value>y</Value>
         </CollectionProperty>

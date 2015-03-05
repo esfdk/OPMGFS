@@ -20,6 +20,11 @@ namespace OPMGFS.Map
     /// </summary>
     public class MapPhenotype
     {
+        #region Fields
+
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="MapPhenotype"/> class. 
         /// </summary>
@@ -47,7 +52,9 @@ namespace OPMGFS.Map
             this.XSize = this.HeightLevels.GetLength(0);
             this.YSize = this.HeightLevels.GetLength(1);
         }
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Gets the height of the map.
         /// </summary>
@@ -67,7 +74,9 @@ namespace OPMGFS.Map
         /// Gets the items in the map.
         /// </summary>
         public Item[,] MapItems { get; private set; }
+        #endregion
 
+        #region Public Methods
         /// <summary>
         /// Creates a map where one part has been turned onto the other part of the map.
         /// </summary>
@@ -174,5 +183,6 @@ namespace OPMGFS.Map
             mapHeightLevels = heightLevelBuilder.ToString();
             mapItems = itemBuilder.ToString();
         }
+        #endregion
     }
 }

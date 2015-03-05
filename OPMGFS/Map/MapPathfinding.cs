@@ -20,6 +20,16 @@ namespace OPMGFS.Map
     /// </summary>
     public static class MapPathfinding
     {
+        #region Fields
+        #endregion
+
+        #region Constructors
+        #endregion
+
+        #region Properties
+        #endregion
+
+        #region Public Methods
         /// <summary>
         /// Finds the shortest path on a map using A*.
         /// </summary>
@@ -99,7 +109,9 @@ namespace OPMGFS.Map
             var list = new List<Position>();
             return list;
         }
+        #endregion
 
+        #region Private Methods
         /// <summary>
         /// Reconstructs a path starting at the given node.
         /// </summary>
@@ -205,6 +217,7 @@ namespace OPMGFS.Map
             if (position.Item2 < 0 || position.Item2 >= ySize) return false;
             return true;
         }
+        #endregion
 
         /// <summary>
         /// The node used in A* pathfinding.
