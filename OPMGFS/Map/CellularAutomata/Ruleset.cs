@@ -1,19 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Ruleset.cs" company="Derps">
+//   jmel & jcgr
+// </copyright>
+// <summary>
+//   Defines the MapPhenotype type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace OPMGFS.Map.CellularAutomata
 {
-    using Position = Tuple<int, int>;
+    using System.Collections.Generic;
+
+    using Position = System.Tuple<int, int>;
 
     /// <summary>
     /// The abstract ruleset.
-    /// Idea from http://www.primaryobjects.com/CMS/Article106
     /// </summary>
-    public abstract class Ruleset
+    public class Ruleset
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ruleset"/> class with an empty list of rules. 
+        /// </summary>
+        public Ruleset()
+        {
+            this.Rules = new List<Rule>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ruleset"/> class. 
+        /// </summary>
+        /// <param name="cellularAutomataRules"> The list of rules for the ruleset to use. </param>
+        public Ruleset(IEnumerable<Rule> cellularAutomataRules)
+            : this()
+        {
+            this.Rules.AddRange(cellularAutomataRules);
+        }
+
+        /// <summary>
+        /// Gets or sets the rules used by the ruleset.
+        /// </summary>
+        private List<Rule> Rules { get; set; }
+
         /// <summary>
         /// Gets the next generation following the ruleset.
         /// </summary>
@@ -23,12 +50,55 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="caYStart"> The y start position of the cellular automata. </param>
         /// <param name="caYEnd"> The y end position of the cellular automata. </param>
         /// <returns> A map representing the next generation. </returns>
-        public abstract Enums.HeightLevel[,] NextGeneration(
+        public Enums.HeightLevel[,] NextGeneration(
             Enums.HeightLevel[,] map,
             int caXStart,
             int caXEnd,
             int caYStart,
-            int caYEnd);
+            int caYEnd)
+        {
+            var tempMap = (Enums.HeightLevel[,])map.Clone();
+
+            // Iterate over every row and column
+            for (var y = caYStart; y < caYEnd; y++)
+            {
+                for (var x = caXStart; x < caXEnd; x++)
+                {
+                    var ruleApplied = false;
+
+                    // Iterate over every rule
+                    foreach (var rule in this.Rules)
+                    {
+                        // TODO: Should only one rule be applied for every position?
+                        if (ruleApplied) break;
+
+                        // If the rule is deterministic, check if all its conditions are fulfilled
+                        if (rule.Deterministic)
+                        {
+                            var applyRule = true;
+                            var tempRule = (RuleDeterministic)rule;
+                            if (rule.Self != null && map[x, y] != rule.Self) continue;
+
+                            foreach (var condition in tempRule.Conditions)
+                            {
+                                if (!(this.NumberOfNeighboursOfType(x, y, map, condition.Item2) >= condition.Item1)) applyRule = false;
+                            }
+
+                            if (!applyRule) continue;
+                            tempMap[x, y] = rule.TransformTo;
+                            ruleApplied = true;
+                        }
+                        else
+                        {
+                            // If the rule is probabilistic, figure out if a change should happen.
+                            // TODO: Do probabilistic stuff here.
+                        }
+                    }
+                }
+            }
+
+            return tempMap;
+        }
 
         /// <summary>
         /// Counts the number of neighbours to (x, y) of the the given type.
@@ -38,7 +108,7 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="map"> The map. </param>
         /// <param name="type"> The type to count for. </param>
         /// <returns> The number of neighbours of the given type. </returns>
-        protected int NumberOfNeighboursOfType(int x, int y, Enums.HeightLevel[,] map, Enums.HeightLevel type)
+        private int NumberOfNeighboursOfType(int x, int y, Enums.HeightLevel[,] map, Enums.HeightLevel type)
         {
             var moves = new[] { -1, 0, 1 };
             var neighbours = 0;
@@ -67,7 +137,7 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="sizeX">The size of the map on the x-axis.</param>
         /// <param name="sizeY">The size of the map on the y-axis.</param>
         /// <returns>True if within the bounds of the map; false otherwise.</returns>
-        protected bool WithinMapBounds(Position position, int sizeX, int sizeY)
+        private bool WithinMapBounds(Position position, int sizeX, int sizeY)
         {
             if (position.Item1 < 0 || position.Item1 >= sizeX) return false;
             if (position.Item2 < 0 || position.Item2 >= sizeY) return false;

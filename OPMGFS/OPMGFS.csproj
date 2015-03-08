@@ -46,8 +46,9 @@
     <Compile Include="Evolution\IEvolvable.cs" />
     <Compile Include="Evolution\EvolutionOptions.cs" />
     <Compile Include="Map\CellularAutomata\CellularAutomata.cs" />
+    <Compile Include="Map\CellularAutomata\Rule.cs" />
+    <Compile Include="Map\CellularAutomata\RuleDeterministic.cs" />
     <Compile Include="Map\CellularAutomata\Ruleset.cs" />
-    <Compile Include="Map\CellularAutomata\SpecificRuleset.cs" />
     <Compile Include="Map\Enums.cs" />
     <Compile Include="Map\MapObjects\MapPoint.cs" />
     <Compile Include="Map\MapPathfinding.cs" />

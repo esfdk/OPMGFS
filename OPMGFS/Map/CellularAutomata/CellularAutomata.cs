@@ -15,11 +15,9 @@ namespace OPMGFS.Map.CellularAutomata
     using Position = System.Tuple<int, int>;
 
     /// <summary>
-    /// TODO: Separate place cliff function
     /// The class that contains the cellular automata.
     /// </summary>
-    /// <typeparam name="T"> The ruleset the cellular automata should use. </typeparam>
-    public class CellularAutomata<T> where T : Ruleset
+    public class CellularAutomata
     {
         #region Fields
         /// <summary>
@@ -45,7 +43,7 @@ namespace OPMGFS.Map.CellularAutomata
         /// <summary>
         /// The ruleset used by the cellular automata.
         /// </summary>
-        private readonly T ruleSet;
+        private readonly Ruleset ruleSet;
         #endregion
 
         #region Constructors
@@ -82,7 +80,46 @@ namespace OPMGFS.Map.CellularAutomata
                 }
             }
 
-            this.ruleSet = (T)Activator.CreateInstance(typeof(T));
+            var ruleList = new List<Rule>();
+            ruleList.Add(
+                new RuleDeterministic
+                {
+                    Conditions = new List<Tuple<int, Enums.HeightLevel>>
+                                         {
+                                             new Tuple<int, Enums.HeightLevel>(8, Enums.HeightLevel.Height0)
+                                         },
+                    TransformTo = Enums.HeightLevel.Height0
+                });
+            ruleList.Add(
+                new RuleDeterministic 
+                {
+                        Conditions = new List<Tuple<int, Enums.HeightLevel>>
+                                         {
+                                             new Tuple<int, Enums.HeightLevel>(5, Enums.HeightLevel.Height1)
+                                         }, 
+                        TransformTo = Enums.HeightLevel.Height1
+                });
+            ruleList.Add(
+                new RuleDeterministic
+                {
+                    Conditions = new List<Tuple<int, Enums.HeightLevel>>
+                                         {
+                                             new Tuple<int, Enums.HeightLevel>(5, Enums.HeightLevel.Height2)
+                                         },
+                    TransformTo = Enums.HeightLevel.Height2
+                });
+            ruleList.Add(
+                new RuleDeterministic
+                {
+                    Conditions = new List<Tuple<int, Enums.HeightLevel>>
+                                         {
+                                             new Tuple<int, Enums.HeightLevel>(5, Enums.HeightLevel.Height1),
+                                             new Tuple<int, Enums.HeightLevel>(2, Enums.HeightLevel.Height2)
+                                         },
+                    TransformTo = Enums.HeightLevel.Height2
+                });
+
+            this.ruleSet = new Ruleset(ruleList);
         }
         #endregion
 

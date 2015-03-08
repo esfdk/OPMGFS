@@ -25,7 +25,7 @@
 
         private static void TestCA()
         {
-            var ca = new CellularAutomata<SpecificRuleset>(50, 50, Enums.Half.Top);
+            var ca = new CellularAutomata(50, 50, Enums.Half.Top);
             var map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
             string heights, items;
             //map.GetMapStrings(out heights, out items);
