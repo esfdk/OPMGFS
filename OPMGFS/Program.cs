@@ -17,8 +17,8 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             //TestEvolution();
             //TestPhenotype();
-            //TestNovelty();
-            TestCA();
+            TestNovelty();
+            //TestCA();
 
             Console.ReadKey();
         }
@@ -291,10 +291,12 @@
 
 
             //var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
-            var solution = new MapSolution(new List<MapPoint>() { new MapPoint(1.0, 45, Enums.MapPointType.XelNagaTower) });
-            var map = solution.ConvertToPhenotype(32, 32);
-            printMap(map.MapItems);
-            Console.WriteLine(solution);
+            var solution = new MapSolution(new List<MapPoint>() { new MapPoint(0.5, 90, Enums.MapPointType.StartBase) });
+            var map = solution.ConvertToPhenotype(64, 64);
+            string heights, items;
+            map.GetMapStrings(out heights, out items);
+            Console.WriteLine(items);
+            //Console.WriteLine(solution);
             //ms.RunGenerations(1);
         }
     }

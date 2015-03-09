@@ -120,7 +120,12 @@ namespace OPMGFS.Map
             /// <summary>
             /// The location contains destructible rocks.
             /// </summary>
-            DestructibleRocks = 'd'
+            DestructibleRocks = 'd',
+            
+            /// <summary>
+            /// The location contains a starting base.
+            /// </summary>
+            StartBase = 's'
         }
 
         /// <summary>

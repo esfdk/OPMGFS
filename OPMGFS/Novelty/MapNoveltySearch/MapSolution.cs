@@ -36,7 +36,7 @@
         /// Gets the map points of this solution.
         /// </summary>
         public List<MapPoint> MapPoints { get; private set; }
-        
+
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         public override Solution Mutate(Random r)
         {
@@ -53,7 +53,7 @@
             // TODO: Should we ever remove a point? When? When do we stop adding?
             return new MapSolution(newPoints);
         }
-        
+
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         public override Solution Recombine(Solution other)
         {
@@ -170,11 +170,11 @@
 
             foreach (var mp in this.MapPoints)
             {
-                var maxDistance = MaxDistanceAtDegree(map.Width / 2.0, map.Height / 2.0, mp.Degree);
+                var maxDistance = MaxDistanceAtDegree(map.XSize / 2.0, map.YSize / 2.0, mp.Degree);
                 var point = FindPoint(mp.Degree, maxDistance * mp.Distance);
 
-                var xPos = (int)(point.Item1 + (map.Width / 2.0));
-                var yPos = (int)(point.Item2 + (map.Height / 2.0));
+                var xPos = (int)(point.Item1 + (map.XSize / 2.0));
+                var yPos = (int)(point.Item2 + (map.YSize / 2.0));
 
                 Console.WriteLine(xPos + " " + yPos);
 
@@ -189,7 +189,7 @@
                         PlaceBase(xPos, yPos, map);
                         break;
                     case Enums.MapPointType.GoldBase:
-                        PlaceBase(xPos, yPos, map, IsGoldBase: true);
+                        PlaceBase(xPos, yPos, map, isGoldBase: true);
                         break;
                     case Enums.MapPointType.StartBase:
                         PlaceStartBase(xPos, yPos, map);
@@ -301,6 +301,7 @@
         private static void PlaceXelNagaTower(int y, int x, MapPhenotype mp)
         {
             // TODO: Add check to not overwrite base
+            // TODO: Height level adjustment
             if (!mp.InsideBounds(x, y))
             {
                 return;
@@ -340,16 +341,83 @@
             }
         }
 
-        private static void PlaceBase(int x, int y, MapPhenotype mp, bool IsGoldBase = false)
+        private static void PlaceMinerals(int x, int y, MapPhenotype mp, bool isGold = false)
         {
-            // TODO: Implement placing a base
-            throw new NotImplementedException();
+            if (!mp.InsideBounds(x, y) || !mp.InsideBounds(x + 1, y))
+            {
+                return;
+            }
+
+            FlattenArea(x,y,2,1, mp);
+
+            mp.MapItems[x, y] = isGold ? Enums.Item.GoldMinerals : Enums.Item.BlueMinerals;
+            mp.MapItems[x+1, y] = isGold ? Enums.Item.GoldMinerals : Enums.Item.BlueMinerals;
+        }
+
+        private static void PlaceGas(int x, int y, MapPhenotype mp)
+        {
+            if (!mp.InsideBounds(x, y) || !mp.InsideBounds(x + 2, y) || !mp.InsideBounds(x, y + 2) || !mp.InsideBounds(x + 2, y + 2))
+            {
+                return;
+            }
+
+            FlattenArea(x, y, 3, 3, mp);
+
+            for (var i = x; i < x + 3; i++)
+            {
+                for (var j = y; j < y + 3; j++)
+                {
+                    mp.MapItems[i, j] = Enums.Item.Gas;
+                }
+            }
         }
 
         private static void PlaceStartBase(int x, int y, MapPhenotype mp)
         {
-            // TODO: Implement place starting base
-            throw new NotImplementedException();
+            // TODO: Height level adjustment
+
+            if (!mp.InsideBounds(x, y))
+            {
+                return;
+            }
+
+            if (!mp.InsideBounds(x - 11, y - 11) || !mp.InsideBounds(x - 11, y + 12) || !mp.InsideBounds(x + 12, y - 11) ||
+                !mp.InsideBounds(x + 11, y + 12))
+            {
+                return;
+            }
+
+            for (var sbx = (x - 2); sbx < (x -2 + 5); sbx++)
+            {
+                for (var sby = (y - 2); sby < (y - 2 + 5); sby++)
+                {
+                    mp.MapItems[sbx, sby] = Enums.Item.StartBase;
+                }
+            }
+
+            // Minerals
+            PlaceMinerals(x - 2, y + 7, mp);
+            PlaceMinerals(x, y + 6, mp);
+            PlaceMinerals(x - 3, y + 6, mp);
+            PlaceMinerals(x - 6, y + 5, mp);
+            PlaceMinerals(x - 7, y + 4, mp);
+            PlaceMinerals(x - 7, y + 2, mp);
+            PlaceMinerals(x - 8, y + 1, mp);
+            PlaceMinerals(x - 7, y - 1, mp);
+            // Gas
+            PlaceGas(x - 8, y - 5, mp);
+            PlaceGas(x + 3, y + 6, mp);
+
+        }
+
+        private static void FlattenArea(int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
+        {
+            // TODO: Implement flattening
+        }
+
+        private static void PlaceBase(int x, int y, MapPhenotype mp, bool isGoldBase = false)
+        {
+            // TODO: Implement placing a base
         }
 
         private static void PlaceDestructibleRocks(int x, int y, MapPhenotype mp)
