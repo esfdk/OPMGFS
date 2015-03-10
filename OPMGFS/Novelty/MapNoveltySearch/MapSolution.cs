@@ -348,10 +348,10 @@
                 return;
             }
 
-            FlattenArea(x,y,2,1, mp);
+            FlattenArea(mp.HeightLevels[x, y], x, y, 2, 1, mp);
 
             mp.MapItems[x, y] = isGold ? Enums.Item.GoldMinerals : Enums.Item.BlueMinerals;
-            mp.MapItems[x+1, y] = isGold ? Enums.Item.GoldMinerals : Enums.Item.BlueMinerals;
+            mp.MapItems[x + 1, y] = isGold ? Enums.Item.GoldMinerals : Enums.Item.BlueMinerals;
         }
 
         private static void PlaceGas(int x, int y, MapPhenotype mp)
@@ -361,7 +361,7 @@
                 return;
             }
 
-            FlattenArea(x, y, 3, 3, mp);
+            FlattenArea(mp.HeightLevels[x, y], x, y, 3, 3, mp);
 
             for (var i = x; i < x + 3; i++)
             {
@@ -374,20 +374,20 @@
 
         private static void PlaceStartBase(int x, int y, MapPhenotype mp)
         {
-            // TODO: Height level adjustment
-
             if (!mp.InsideBounds(x, y))
             {
                 return;
             }
 
             if (!mp.InsideBounds(x - 11, y - 11) || !mp.InsideBounds(x - 11, y + 12) || !mp.InsideBounds(x + 12, y - 11) ||
-                !mp.InsideBounds(x + 11, y + 12))
+                !mp.InsideBounds(x + 12, y + 12))
             {
                 return;
             }
 
-            for (var sbx = (x - 2); sbx < (x -2 + 5); sbx++)
+            FlattenArea(mp.HeightLevels[x, y], x - 11, y - 11, 24, 24, mp); // TODO: Test
+
+            for (var sbx = (x - 2); sbx < (x - 2 + 5); sbx++)
             {
                 for (var sby = (y - 2); sby < (y - 2 + 5); sby++)
                 {
@@ -408,16 +408,89 @@
             PlaceGas(x - 8, y - 5, mp);
             PlaceGas(x + 3, y + 6, mp);
 
-        }
+            for (var i = x - 11; i < x + 12; i++)
+            {
+                mp.MapItems[i, y - 11] = Enums.Item.DestructibleRocks;
+            }
 
-        private static void FlattenArea(int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
-        {
-            // TODO: Implement flattening
+            for (var i = x - 11; i < x + 12; i++)
+            {
+                mp.MapItems[i, y + 12] = Enums.Item.DestructibleRocks;
+            }
+
+            for (var i = x - 11; i < x + 12; i++)
+            {
+                mp.MapItems[i, y + 3] = Enums.Item.DestructibleRocks;
+            }
+
+            for (var i = x - 11; i < x + 12; i++)
+            {
+                mp.MapItems[i, y - 4] = Enums.Item.DestructibleRocks;
+            }
+
+            for (var i = y - 11; i < y + 12; i++)
+            {
+                mp.MapItems[x - 11, i] = Enums.Item.DestructibleRocks;
+            }
+
+            for (var i = y - 11; i < y + 12; i++)
+            {
+                mp.MapItems[x + 12, i] = Enums.Item.DestructibleRocks;
+            }
+
+            for (var i = y - 11; i < y + 12; i++)
+            {
+                mp.MapItems[x - 3, i] = Enums.Item.DestructibleRocks;
+            }
+
+            for (var i = y - 11; i < y + 12; i++)
+            {
+                mp.MapItems[x + 4, i] = Enums.Item.DestructibleRocks;
+            }
         }
 
         private static void PlaceBase(int x, int y, MapPhenotype mp, bool isGoldBase = false)
         {
-            // TODO: Implement placing a base
+            // TODO: Height level adjustment
+            if (!mp.InsideBounds(x, y))
+            {
+                return;
+            }
+
+            if (!mp.InsideBounds(x - 7, y - 7) || !mp.InsideBounds(x - 7, y + 8) || !mp.InsideBounds(x + 8, y - 7) ||
+                !mp.InsideBounds(x + 8, y + 8))
+            {
+                return;
+            }
+
+            var rx = x - 1;
+            var ry = y - 3;
+
+            for (var sbx = (rx); sbx < (rx + 5); sbx++)
+            {
+                for (var sby = (ry); sby < (ry + 5); sby++)
+                {
+                    mp.MapItems[sbx, sby] = Enums.Item.Base;
+                }
+            }
+
+            // Minerals
+            PlaceMinerals(rx, ry + 9, mp, isGoldBase);
+            PlaceMinerals(rx - 1, ry + 8, mp, isGoldBase);
+            PlaceMinerals(rx + 2, ry + 8, mp, isGoldBase);
+            PlaceMinerals(rx - 4, ry + 7, mp, isGoldBase);
+            PlaceMinerals(rx - 5, ry + 6, mp, isGoldBase);
+            PlaceMinerals(rx - 5, ry + 4, mp, isGoldBase);
+            PlaceMinerals(rx - 6, ry + 3, mp, isGoldBase);
+            PlaceMinerals(rx - 5, ry + 1, mp, isGoldBase);
+            // Gas
+            PlaceGas(rx - 6, ry - 3, mp);
+            PlaceGas(rx + 5, ry + 8, mp);
+        }
+
+        private static void FlattenArea(Enums.HeightLevel height, int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
+        {
+            // TODO: Implement flattening
         }
 
         private static void PlaceDestructibleRocks(int x, int y, MapPhenotype mp)

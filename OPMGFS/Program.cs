@@ -1,4 +1,6 @@
-﻿namespace OPMGFS
+﻿using System.Threading;
+
+namespace OPMGFS
 {
     using System;
     using System.Collections.Generic;
@@ -291,12 +293,12 @@
 
 
             //var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
-            var solution = new MapSolution(new List<MapPoint>() { new MapPoint(0.5, 90, Enums.MapPointType.StartBase) });
+            var solution = new MapSolution(new List<MapPoint>() { new MapPoint(0.5, 45, Enums.MapPointType.StartBase), new MapPoint(0.5, 135, Enums.MapPointType.Base) });
             var map = solution.ConvertToPhenotype(64, 64);
             string heights, items;
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(items);
-            //Console.WriteLine(solution);
+            Console.WriteLine(solution);
             //ms.RunGenerations(1);
         }
     }
