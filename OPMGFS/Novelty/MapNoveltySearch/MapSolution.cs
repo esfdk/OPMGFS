@@ -310,34 +310,34 @@
             if (mp.InsideBounds(x + 1, y) && mp.InsideBounds(x, y + 1) && mp.InsideBounds(x + 1, y + 1))
             {
                 // Top-left
-                mp.MapItems[y, x] = Enums.Item.XelNagaTower;
-                mp.MapItems[y + 1, x] = Enums.Item.XelNagaTower;
-                mp.MapItems[y, x + 1] = Enums.Item.XelNagaTower;
-                mp.MapItems[y + 1, x + 1] = Enums.Item.XelNagaTower;
+                mp.MapItems[x, y] = Enums.Item.XelNagaTower;
+                mp.MapItems[x + 1, y] = Enums.Item.XelNagaTower;
+                mp.MapItems[x, y + 1] = Enums.Item.XelNagaTower;
+                mp.MapItems[x + 1, y + 1] = Enums.Item.XelNagaTower;
             }
             else if (mp.InsideBounds(x - 1, y) && mp.InsideBounds(x, y + 1) && mp.InsideBounds(x - 1, y + 1))
             {
                 // Top-right
-                mp.MapItems[y, x] = Enums.Item.XelNagaTower;
-                mp.MapItems[y - 1, x] = Enums.Item.XelNagaTower;
-                mp.MapItems[y, x + 1] = Enums.Item.XelNagaTower;
-                mp.MapItems[y - 1, x + 1] = Enums.Item.XelNagaTower;
+                mp.MapItems[x, y] = Enums.Item.XelNagaTower;
+                mp.MapItems[x - 1, y] = Enums.Item.XelNagaTower;
+                mp.MapItems[x, y + 1] = Enums.Item.XelNagaTower;
+                mp.MapItems[x - 1, y + 1] = Enums.Item.XelNagaTower;
             }
             else if (mp.InsideBounds(x + 1, y) && mp.InsideBounds(x, y - 1) && mp.InsideBounds(x + 1, y - 1))
             {
                 // Bottom-left
-                mp.MapItems[y, x] = Enums.Item.XelNagaTower;
-                mp.MapItems[y + 1, x] = Enums.Item.XelNagaTower;
-                mp.MapItems[y, x - 1] = Enums.Item.XelNagaTower;
-                mp.MapItems[y + 1, x - 1] = Enums.Item.XelNagaTower;
+                mp.MapItems[x, y] = Enums.Item.XelNagaTower;
+                mp.MapItems[x + 1, y] = Enums.Item.XelNagaTower;
+                mp.MapItems[x, y - 1] = Enums.Item.XelNagaTower;
+                mp.MapItems[x + 1, y - 1] = Enums.Item.XelNagaTower;
             }
             else if (mp.InsideBounds(x - 1, y) && mp.InsideBounds(x, y - 1) && mp.InsideBounds(x - 1, y - 1))
             {
                 // Bottom-right
-                mp.MapItems[y, x] = Enums.Item.XelNagaTower;
-                mp.MapItems[y - 1, x] = Enums.Item.XelNagaTower;
-                mp.MapItems[y, x - 1] = Enums.Item.XelNagaTower;
-                mp.MapItems[y - 1, x - 1] = Enums.Item.XelNagaTower;
+                mp.MapItems[x, y] = Enums.Item.XelNagaTower;
+                mp.MapItems[x - 1, y] = Enums.Item.XelNagaTower;
+                mp.MapItems[x, y - 1] = Enums.Item.XelNagaTower;
+                mp.MapItems[x - 1, y - 1] = Enums.Item.XelNagaTower;
             }
         }
 
