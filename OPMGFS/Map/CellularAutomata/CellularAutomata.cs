@@ -43,7 +43,7 @@ namespace OPMGFS.Map.CellularAutomata
         /// <summary>
         /// The ruleset used by the cellular automata.
         /// </summary>
-        private readonly Ruleset ruleSet;
+        private Ruleset ruleSet;
         #endregion
 
         #region Constructors
@@ -80,46 +80,8 @@ namespace OPMGFS.Map.CellularAutomata
                 }
             }
 
-            var ruleList = new List<Rule>();
-            ruleList.Add(
-                new RuleDeterministic
-                {
-                    Conditions = new List<Tuple<int, Enums.HeightLevel>>
-                                         {
-                                             new Tuple<int, Enums.HeightLevel>(8, Enums.HeightLevel.Height0)
-                                         },
-                    TransformTo = Enums.HeightLevel.Height0
-                });
-            ruleList.Add(
-                new RuleDeterministic 
-                {
-                        Conditions = new List<Tuple<int, Enums.HeightLevel>>
-                                         {
-                                             new Tuple<int, Enums.HeightLevel>(5, Enums.HeightLevel.Height1)
-                                         }, 
-                        TransformTo = Enums.HeightLevel.Height1
-                });
-            ruleList.Add(
-                new RuleDeterministic
-                {
-                    Conditions = new List<Tuple<int, Enums.HeightLevel>>
-                                         {
-                                             new Tuple<int, Enums.HeightLevel>(5, Enums.HeightLevel.Height2)
-                                         },
-                    TransformTo = Enums.HeightLevel.Height2
-                });
-            ruleList.Add(
-                new RuleDeterministic
-                {
-                    Conditions = new List<Tuple<int, Enums.HeightLevel>>
-                                         {
-                                             new Tuple<int, Enums.HeightLevel>(5, Enums.HeightLevel.Height1),
-                                             new Tuple<int, Enums.HeightLevel>(2, Enums.HeightLevel.Height2)
-                                         },
-                    TransformTo = Enums.HeightLevel.Height2
-                });
-
-            this.ruleSet = new Ruleset(ruleList);
+            this.ruleSet = new Ruleset();
+            this.LoadBasicRuleset();
         }
         #endregion
 
@@ -155,6 +117,16 @@ namespace OPMGFS.Map.CellularAutomata
         }
 
         /// <summary>
+        /// Gives the cellular automata a new ruleset to work with.
+        /// Overwrites old ruleset.
+        /// </summary>
+        /// <param name="newRuleSet"> The new ruleset. </param>
+        public void SetRuleset(List<Rule> newRuleSet)
+        {
+            this.ruleSet = new Ruleset(newRuleSet);
+        }
+
+        /// <summary>
         /// Places cliffs in the map.
         /// </summary>
         public void PlaceCliffs()
@@ -179,9 +151,98 @@ namespace OPMGFS.Map.CellularAutomata
 
             this.Map = tempMap;
         }
+
+        public void AddImpassableTerrain(int drops, int radius)
+        {
+            // TODO: Still needs work.
+            var tempMap = (Enums.HeightLevel[,])this.Map.Clone();
+            var moves = new int[(radius * 2) + 1];
+            var movesPosition = 1;
+
+            moves[0] = 0;
+            for (int r = 1; r <= radius; r++)
+            {
+                moves[movesPosition] = r;
+                moves[movesPosition + 1] = -r;
+
+                movesPosition += 2;
+            }
+
+            for (int drop = 0; drop < drops; drop++)
+            {
+                var startX = Random.Next(this.caXStart, this.caXEnd);
+                var startY = Random.Next(this.caYStart, this.caYEnd);
+
+                Console.WriteLine("Placing shit around " + startX + " - " + startY);
+
+                foreach (var moveX in moves)
+                {
+                    foreach (var moveY in moves)
+                    {
+                        if (moveX == 0 && moveY == 0) continue;
+                        if (moveX + moveY > 5) continue;
+
+                        var posToCheck = new Position(startX + moveX, startY + moveY);
+                        if (!this.WithinMapBounds(posToCheck)) continue;
+
+                        if (Random.NextDouble() <= 0.66)
+                            tempMap[posToCheck.Item1, posToCheck.Item2] = Enums.HeightLevel.Impassable;
+                    }
+                }
+            }
+
+            var ruleSmoothImpassable = new RuleDeterministic(Enums.HeightLevel.Impassable);
+            ruleSmoothImpassable.AddCondition(4, Enums.HeightLevel.Impassable);
+            
+            var ruleList = new List<Rule>();
+            ruleList.Add(ruleSmoothImpassable);
+
+            var tempRuleSet = new Ruleset(ruleList);
+
+            for (int g = 0; g < 10; g++)
+            {
+                tempMap = tempRuleSet.NextGeneration(tempMap, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd);
+            }
+
+            this.Map = tempMap;
+        }
+
         #endregion
 
         #region Private Methods
+
+        private void LoadBasicRuleset()
+        {
+            var ruleList = new List<Rule>();
+            var ruleNoInterestingNeighbours = new RuleDeterministic(Enums.HeightLevel.Height0);
+            ruleNoInterestingNeighbours.AddCondition(8, Enums.HeightLevel.Height0);
+
+            var ruleSmoothLandscape = new RuleDeterministic(Enums.HeightLevel.Height1);
+            ruleSmoothLandscape.AddCondition(3, Enums.HeightLevel.Height2);
+            ruleSmoothLandscape.AddCondition(3, Enums.HeightLevel.Height0);
+
+            var ruleSimpleHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
+            ruleSimpleHeight1.AddCondition(5, Enums.HeightLevel.Height1);
+
+            var ruleSimpleHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2, Enums.HeightLevel.Height1);
+            ruleSimpleHeight2.AddCondition(5, Enums.HeightLevel.Height2);
+
+            var ruleSimpleHeight2Again = new RuleDeterministic(Enums.HeightLevel.Height2, Enums.HeightLevel.Height1);
+            ruleSimpleHeight2Again.AddCondition(5, Enums.HeightLevel.Height1);
+            ruleSimpleHeight2Again.AddCondition(2, Enums.HeightLevel.Height2);
+
+            var ruleShrinkHeight2 = new RuleDeterministic(Enums.HeightLevel.Height1, Enums.HeightLevel.Height2);
+            ruleShrinkHeight2.AddCondition(0, Enums.HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
+
+            ruleList.Add(ruleNoInterestingNeighbours);
+            //ruleList.Add(ruleSmoothLandscape);
+            ruleList.Add(ruleSimpleHeight2);
+            ruleList.Add(ruleSimpleHeight2Again);
+            ruleList.Add(ruleSimpleHeight1);
+            ruleList.Add(ruleShrinkHeight2);
+
+            this.ruleSet = new Ruleset(ruleList);
+        }
 
         private List<Position> getNeighbourPositions(int x, int y)
         {
@@ -192,6 +253,7 @@ namespace OPMGFS.Map.CellularAutomata
             {
                 foreach (var moveY in moves)
                 {
+                    // Uses Von Neumann right now. Remove second check to use Moore.
                     if (moveX == 0 && moveY == 0) continue;
                     if (moveX != 0 && moveY != 0) continue;
 

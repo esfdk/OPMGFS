@@ -9,6 +9,7 @@
 
 namespace OPMGFS.Map.CellularAutomata
 {
+    using System;
     using System.Collections.Generic;
 
     using Position = System.Tuple<int, int>;
@@ -65,6 +66,7 @@ namespace OPMGFS.Map.CellularAutomata
                 for (var x = caXStart; x < caXEnd; x++)
                 {
                     var ruleApplied = false;
+                    var neighbours = this.GetNeighbours(x, y, map);
 
                     // Iterate over every rule
                     foreach (var rule in this.Rules)
@@ -81,7 +83,28 @@ namespace OPMGFS.Map.CellularAutomata
 
                             foreach (var condition in tempRule.Conditions)
                             {
-                                if (!(this.NumberOfNeighboursOfType(x, y, map, condition.Item2) >= condition.Item1)) applyRule = false;
+                                switch (condition.Item3)
+                                {
+                                    case RuleEnums.Comparison.EqualTo:
+                                        if (neighbours[condition.Item2] != condition.Item1) applyRule = false;
+                                        break;
+
+                                    case RuleEnums.Comparison.GreaterThan:
+                                        if (!(neighbours[condition.Item2] > condition.Item1)) applyRule = false;
+                                        break;
+
+                                    case RuleEnums.Comparison.GreaterThanEqualTo:
+                                        if (!(neighbours[condition.Item2] >= condition.Item1)) applyRule = false;
+                                        break;
+
+                                    case RuleEnums.Comparison.LessThan:
+                                        if (!(neighbours[condition.Item2] < condition.Item1)) applyRule = false;
+                                        break;
+
+                                    case RuleEnums.Comparison.LessThanEqualTo:
+                                        if (!(neighbours[condition.Item2] <= condition.Item1)) applyRule = false;
+                                        break;
+                                }
                             }
 
                             if (!applyRule) continue;
@@ -100,6 +123,42 @@ namespace OPMGFS.Map.CellularAutomata
             return tempMap;
         }
 
+        /// <summary>
+        /// Gets the number of different neighbours surrounding the given position.
+        /// </summary>
+        /// <param name="x"> The x-coordinate to check neighbours for. </param>
+        /// <param name="y"> The y-coordinate to check neighbours for. </param>
+        /// <param name="map"> The map. </param>
+        /// <returns> A dictionary containing the neighbours and the count of them. </returns>
+        private Dictionary<Enums.HeightLevel, int> GetNeighbours(int x, int y, Enums.HeightLevel[,] map)
+        {
+            var neighbours = new Dictionary<Enums.HeightLevel, int>();
+            var moves = new[] { -1, 0, 1 };
+            var sizeX = map.GetLength(0);
+            var sizeY = map.GetLength(1);
+
+            // Ensure that all keys are in the dictionary
+            neighbours[Enums.HeightLevel.Height0] = 0;
+            neighbours[Enums.HeightLevel.Height1] = 0;
+            neighbours[Enums.HeightLevel.Height2] = 0;
+            neighbours[Enums.HeightLevel.Impassable] = 0;
+
+            foreach (var moveX in moves)
+            {
+                foreach (var moveY in moves)
+                {
+                    if (moveX == 0 && moveY == 0) continue;
+
+                    var posToCheck = new Position(x + moveX, y + moveY);
+                    if (!this.WithinMapBounds(posToCheck, sizeX, sizeY)) continue;
+                    neighbours[map[posToCheck.Item1, posToCheck.Item2]]++;
+                }
+            }
+
+            return neighbours;
+        }
+
+        /*
         /// <summary>
         /// Counts the number of neighbours to (x, y) of the the given type.
         /// </summary>
@@ -128,7 +187,7 @@ namespace OPMGFS.Map.CellularAutomata
             }
 
             return neighbours;
-        }
+        }*/
 
         /// <summary>
         /// Checks if a position is within the bounds of the map.

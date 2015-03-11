@@ -47,6 +47,11 @@ namespace OPMGFS.Map
             Height2 = 4,
 
             /// <summary>
+            /// Terrain that is impassable by ground movement.
+            /// </summary>
+            Impassable = 8,
+
+            /// <summary>
             /// Represents a cliff.
             /// </summary>
             Cliff = 9
