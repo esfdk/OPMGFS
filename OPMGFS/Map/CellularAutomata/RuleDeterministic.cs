@@ -51,7 +51,7 @@ namespace OPMGFS.Map.CellularAutomata
         }
 
         /// <summary>
-        /// Gets conditions the rule should fulfill in order to be applied.
+        /// Gets the conditions the rule should fulfill in order to be applied.
         /// </summary>
         public List<Tuple<int, Enums.HeightLevel, RuleEnums.Comparison>> Conditions { get; private set; }
 

@@ -20,7 +20,7 @@ namespace OPMGFS
             //TestEvolution();
             //TestPhenotype();
             //TestNovelty();
-            TestCA();
+            //TestCA();
 
             Console.ReadKey();
         }

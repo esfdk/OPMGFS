@@ -188,7 +188,7 @@ namespace OPMGFS.Map
         private static bool ValidMove(Enums.HeightLevel[,] mapHeightLevels, Position fromPos, Position toPos)
         {
             // If not within map, it is not a valid move.
-            if (!WithinMapBounds(mapHeightLevels.GetLength(0), mapHeightLevels.GetLength(1), toPos)) return false;
+            if (!MapHelper.WithinMapBounds(toPos, mapHeightLevels.GetLength(0), mapHeightLevels.GetLength(1))) return false;
 
             // If the height difference is 2 or higher, it is not a valid move.
             if (
@@ -201,20 +201,6 @@ namespace OPMGFS.Map
 
             if (mapHeightLevels[toPos.Item1, toPos.Item2] == Enums.HeightLevel.Cliff) return false;
 
-            return true;
-        }
-
-        /// <summary>
-        /// Checks if a position is within the bounds of the map.
-        /// </summary>
-        /// <param name="xSize">Height of the map.</param>
-        /// <param name="ySize">Width of the map.</param>
-        /// <param name="position">Position to check.</param>
-        /// <returns>True if within the bounds of the map; false otherwise.</returns>
-        private static bool WithinMapBounds(int xSize, int ySize, Position position)
-        {
-            if (position.Item1 < 0 || position.Item1 >= xSize) return false;
-            if (position.Item2 < 0 || position.Item2 >= ySize) return false;
             return true;
         }
         #endregion
@@ -266,7 +252,7 @@ namespace OPMGFS.Map
                     return false;
                 }
 
-                return Equals((AStarNode)obj);
+                return this.Equals((AStarNode)obj);
             }
 
             /// <summary>

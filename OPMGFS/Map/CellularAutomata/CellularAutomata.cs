@@ -47,36 +47,34 @@ namespace OPMGFS.Map.CellularAutomata
         #endregion
 
         #region Constructors
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="CellularAutomata{T}"/> class. 
+        /// Initializes a new instance of the <see cref="CellularAutomata"/> class. 
         /// </summary>
-        /// <param name="xSize"> The x size of the map. </param>
-        /// <param name="ySize"> The y size of the map. </param>
+        /// <param name="sizeX"> The x size of the map. </param>
+        /// <param name="sizeY"> The y size of the map. </param>
         /// <param name="half"> The half of the map to work on. </param>
-        /// <param name="generations"> The number of generations to run. </param>
         /// <param name="oddsOfHeight1"> The odds of a tile being changed to height 1. </param>
         /// <param name="oddsOfHeight2"> The odds of a tile being changed to height 2. </param>
-        public CellularAutomata(int xSize, int ySize, Enums.Half half, int generations = 5, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25)
+        public CellularAutomata(int sizeX, int sizeY, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25)
         {
-            this.Map = new Enums.HeightLevel[xSize, ySize];
+            this.Map = new Enums.HeightLevel[sizeX, sizeY];
 
-            this.Random = new Random();
-
-            this.XSize = xSize;
-            this.YSize = ySize;
+            this.SizeX = sizeX;
+            this.SizeY = sizeY;
 
             // Figures out which part of the map that should be looked at.
-            this.caXStart = (half == Enums.Half.Right) ? this.XSize / 2 : 0;
-            this.caXEnd = (half == Enums.Half.Left) ? this.XSize / 2 : this.XSize;
-            this.caYStart = (half == Enums.Half.Top) ? this.YSize / 2 : 0;
-            this.caYEnd = (half == Enums.Half.Bottom) ? this.YSize / 2 : this.YSize;
+            this.caXStart = (half == Enums.Half.Right) ? this.SizeX / 2 : 0;
+            this.caXEnd = (half == Enums.Half.Left) ? this.SizeX / 2 : this.SizeX;
+            this.caYStart = (half == Enums.Half.Top) ? this.SizeY / 2 : 0;
+            this.caYEnd = (half == Enums.Half.Bottom) ? this.SizeY / 2 : this.SizeY;
 
             for (var y = this.caYStart; y < this.caYEnd; y++)
             {
                 for (var x = this.caXStart; x < this.caXEnd; x++)
                 {
-                    if (this.Random.NextDouble() < oddsOfHeight1) this.Map[x, y] = Enums.HeightLevel.Height1;
-                    if (this.Random.NextDouble() < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
+                    if (MapHelper.Random.NextDouble() < oddsOfHeight1) this.Map[x, y] = Enums.HeightLevel.Height1;
+                    if (MapHelper.Random.NextDouble() < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
                 }
             }
 
@@ -92,19 +90,14 @@ namespace OPMGFS.Map.CellularAutomata
         public Enums.HeightLevel[,] Map { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the random generator.
-        /// </summary>
-        protected Random Random { get; set; }
-
-        /// <summary>
         /// Gets or sets the x size.
         /// </summary>
-        private int XSize { get; set; }
+        private int SizeX { get; set; }
 
         /// <summary>
         /// Gets or sets the y size.
         /// </summary>
-        private int YSize { get; set; }
+        private int SizeY { get; set; }
         #endregion
 
         #region Public Methods
@@ -138,7 +131,7 @@ namespace OPMGFS.Map.CellularAutomata
             {
                 for (var x = this.caXStart; x < this.caXEnd; x++)
                 {
-                    foreach (var neighbourPosition in this.getNeighbourPositions(x, y))
+                    foreach (var neighbourPosition in MapHelper.GetNeighbourPositions(x, y, this.Map))
                     {
                         if (this.Map[x, y] == Enums.HeightLevel.Cliff
                             || this.Map[neighbourPosition.Item1, neighbourPosition.Item2] == Enums.HeightLevel.Cliff) continue;
@@ -152,6 +145,11 @@ namespace OPMGFS.Map.CellularAutomata
             this.Map = tempMap;
         }
 
+        /// <summary>
+        /// Adds impassable terrain at random positions in the map.
+        /// </summary>
+        /// <param name="drops"> The number of impassable terrain drops. </param>
+        /// <param name="radius"> The radius of each drop zone. </param>
         public void AddImpassableTerrain(int drops, int radius)
         {
             // TODO: Still needs work.
@@ -159,6 +157,7 @@ namespace OPMGFS.Map.CellularAutomata
             var moves = new int[(radius * 2) + 1];
             var movesPosition = 1;
 
+            // Get the moves to make to reach the entire area around the drop zone.
             moves[0] = 0;
             for (int r = 1; r <= radius; r++)
             {
@@ -168,10 +167,11 @@ namespace OPMGFS.Map.CellularAutomata
                 movesPosition += 2;
             }
 
+            // Randomly choses an area and drops impassable terrain in it.
             for (int drop = 0; drop < drops; drop++)
             {
-                var startX = Random.Next(this.caXStart, this.caXEnd);
-                var startY = Random.Next(this.caYStart, this.caYEnd);
+                var startX = MapHelper.Random.Next(this.caXStart, this.caXEnd);
+                var startY = MapHelper.Random.Next(this.caYStart, this.caYEnd);
 
                 Console.WriteLine("Placing shit around " + startX + " - " + startY);
 
@@ -183,9 +183,9 @@ namespace OPMGFS.Map.CellularAutomata
                         if (moveX + moveY > 5) continue;
 
                         var posToCheck = new Position(startX + moveX, startY + moveY);
-                        if (!this.WithinMapBounds(posToCheck)) continue;
+                        if (MapHelper.WithinMapBounds(posToCheck, this.SizeX, this.SizeY)) continue;
 
-                        if (Random.NextDouble() <= 0.66)
+                        if (MapHelper.Random.NextDouble() <= 0.66)
                             tempMap[posToCheck.Item1, posToCheck.Item2] = Enums.HeightLevel.Impassable;
                     }
                 }
@@ -194,8 +194,7 @@ namespace OPMGFS.Map.CellularAutomata
             var ruleSmoothImpassable = new RuleDeterministic(Enums.HeightLevel.Impassable);
             ruleSmoothImpassable.AddCondition(4, Enums.HeightLevel.Impassable);
             
-            var ruleList = new List<Rule>();
-            ruleList.Add(ruleSmoothImpassable);
+            var ruleList = new List<Rule> { ruleSmoothImpassable };
 
             var tempRuleSet = new Ruleset(ruleList);
 
@@ -242,40 +241,6 @@ namespace OPMGFS.Map.CellularAutomata
             ruleList.Add(ruleShrinkHeight2);
 
             this.ruleSet = new Ruleset(ruleList);
-        }
-
-        private List<Position> getNeighbourPositions(int x, int y)
-        {
-            var list = new List<Position>();
-            var moves = new[] { -1, 0, 1 };
-
-            foreach (var moveX in moves)
-            {
-                foreach (var moveY in moves)
-                {
-                    // Uses Von Neumann right now. Remove second check to use Moore.
-                    if (moveX == 0 && moveY == 0) continue;
-                    if (moveX != 0 && moveY != 0) continue;
-
-                    var posToCheck = new Position(x + moveX, y + moveY);
-                    if (!this.WithinMapBounds(posToCheck)) continue;
-                    list.Add(posToCheck);
-                }
-            }
-
-            return list;
-        }
-
-        /// <summary>
-        /// Checks if a position is within the bounds of the map.
-        /// </summary>
-        /// <param name="position">Position to check.</param>
-        /// <returns>True if within the bounds of the map; false otherwise.</returns>
-        private bool WithinMapBounds(Position position)
-        {
-            if (position.Item1 < 0 || position.Item1 >= this.XSize) return false;
-            if (position.Item2 < 0 || position.Item2 >= this.YSize) return false;
-            return true;
         }
         #endregion
     }
