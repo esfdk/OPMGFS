@@ -1,6 +1,7 @@
 ﻿namespace OPMGFS.Map.MapObjects
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// A point on the map described as percentage of distance to edge at a specific angle.
@@ -21,17 +22,35 @@
         /// </param>
         public MapPoint(double distance, double degree, Enums.MapPointType type)
         {
-            Distance = distance;
-            Degree = degree;
-            Type = type;
+            this.Distance = distance;
+            this.Degree = degree;
+            this.Type = type;
         }
 
+        /// <summary>
+        /// Gets the distance from the center of the map to this point.
+        /// </summary>
         public double Distance { get; private set; }
 
+        /// <summary>
+        /// Gets the angle of the point from the center of the map.
+        /// </summary>
         public double Degree { get; private set; }
 
+        /// <summary>
+        /// Gets the type of the point.
+        /// </summary>
         public Enums.MapPointType Type { get; private set; }
 
+        /// <summary>
+        /// Mutates the point into a new point of the same type, but with different distance and angle.
+        /// </summary>
+        /// <param name="r">
+        /// The random generator to use for mutation.
+        /// </param>
+        /// <returns>
+        /// The <see cref="MapPoint"/> created by the mutation.
+        /// </returns>
         public MapPoint Mutate(Random r)
         {
             var maxDistMod = 0.05;
@@ -40,14 +59,17 @@
             var positiveChange = r.Next(2);
             var newDistance = positiveChange == 1 ? this.Distance + (r.NextDouble() * maxDistMod) : this.Distance - (r.NextDouble() * maxDistMod);
             positiveChange = r.Next(2);
-            var newDegree = positiveChange == 1 ? this.Degree + (r.NextDouble() * maxDegreeMod) : this.Degree - (r.NextDouble() * maxDegreeMod);
-            newDegree = (newDegree + 360)%360;
+            var newDegree = positiveChange == 1
+                                ? this.Degree + (r.NextDouble() * maxDegreeMod)
+                                : this.Degree - (r.NextDouble() * maxDegreeMod);
+            newDegree = (newDegree + 360) % 360;
             return new MapPoint(newDistance, newDegree, this.Type);
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         public override string ToString()
         {
-            return string.Format("Distance: {0}, Degree: {1}, Type: {2}", Distance, Degree, Type);
+            return string.Format("Distance: {0}, Degree: {1}, Type: {2}", this.Distance, this.Degree, this.Type);
         }
     }
 }

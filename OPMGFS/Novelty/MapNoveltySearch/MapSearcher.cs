@@ -6,8 +6,17 @@
     using OPMGFS.Map;
     using OPMGFS.Map.MapObjects;
 
+    /// <summary>
+    /// Searches for novel maps.
+    /// </summary>
     public class MapSearcher : NoveltySearcher
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapSearcher"/> class.
+        /// </summary>
+        /// <param name="r"> The random to use in searching. </param>
+        /// <param name="feasibleSize"> The feasible size. </param>
+        /// <param name="infeasibleSize"> The infeasible size. </param>
         public MapSearcher(Random r, int feasibleSize, int infeasibleSize) : base(r)
         {
             this.FeasiblePopulation = new MapPopulation(true, feasibleSize);
@@ -45,7 +54,7 @@
                             break;
                     }
 
-                    list.Add(new MapPoint(dist, degree,mpt));
+                    list.Add(new MapPoint(dist, degree, mpt));
                 }
 
                 var ms = new MapSolution(list);
@@ -121,8 +130,13 @@
             }
         }
 
+        /// <summary>
+        /// Runs a number of generations to search for maps.
+        /// </summary>
+        /// <param name="generations">Number of generations to run.</param>
         public void RunGenerations(int generations)
-        {/*
+        {
+            /*
             Console.WriteLine("Generation 0");
 
             Console.WriteLine("-----------------");
@@ -149,7 +163,9 @@
             }*/
         }
 
-
+        /// <summary>
+        /// Advances the search to the next generation.
+        /// </summary>
         protected override void NextGeneration()
         {
             var infeasibleIndividuals = FeasiblePopulation.AdvanceGeneration(
@@ -170,15 +186,16 @@
             Console.WriteLine("Feasible Population");
             foreach (var ms in FeasiblePopulation.CurrentGeneration)
             {
-                Console.WriteLine(((MapSolution)ms));
+                Console.WriteLine(ms);
             }
 
             Console.WriteLine("------------------");
             Console.WriteLine("Infeasible Population");
             foreach (var ms in InfeasiblePopulation.CurrentGeneration)
             {
-                Console.WriteLine(((MapSolution)ms));
+                Console.WriteLine(ms);
             }
+
             Console.WriteLine("------------------");
         }
     }

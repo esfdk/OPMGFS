@@ -1,18 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using OPMGFS.Novelty.IntegerNoveltySearch;
-
-namespace OPMGFS.Novelty.MapNoveltySearch
+﻿namespace OPMGFS.Novelty.MapNoveltySearch
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    /// <summary>
+    /// A population of maps used in map novelty search.
+    /// </summary>
     public class MapPopulation : Population
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapPopulation"/> class.
+        /// </summary>
+        /// <param name="isFeasiblePopulation"> Whether this is a feasible or infeasible population. </param>
+        /// <param name="populationSize"> The population size. </param>
         public MapPopulation(bool isFeasiblePopulation, int populationSize)
             : base(isFeasiblePopulation, populationSize)
         {
             this.CurrentGeneration = new List<Solution>();
         }
 
+        /// <summary>
+        /// Advances a generation of map solutions using mutation.
+        /// </summary>
+        /// <param name="nso"> The search options. </param>
+        /// <param name="other"> The other population (infeasible or feasible). </param>
+        /// <param name="na"> The novel archive. </param>
+        /// <param name="r"> The random used in mutation. </param>
+        /// <returns> The list of solutions in the next generation. </returns>
         public override List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r)
         {
             var children = this.CurrentGeneration.Select(individual => (MapSolution)individual.Mutate(r)).ToList();
@@ -44,7 +59,7 @@ namespace OPMGFS.Novelty.MapNoveltySearch
 
             allIndividuals.RemoveAll(returnedPopulation.Contains);
 
-            if (IsFeasiblePopulation)
+            if (this.IsFeasiblePopulation)
             {
                 var newToArchive = nso.AddToArchive;
 
@@ -55,13 +70,14 @@ namespace OPMGFS.Novelty.MapNoveltySearch
 
                     for (var j = 0; j < allIndividuals.Count; j++)
                     {
-                        if (allIndividuals[j].Novelty > highestNovelty)
+                        if (!(allIndividuals[j].Novelty > highestNovelty))
                         {
-                            highestNovelty = allIndividuals[j].Novelty;
-                            index = j;
+                            continue;
                         }
-                    }
 
+                        highestNovelty = allIndividuals[j].Novelty;
+                        index = j;
+                    }
 
                     if (newToArchive > 0)
                     {
@@ -77,7 +93,7 @@ namespace OPMGFS.Novelty.MapNoveltySearch
                 }   
             }
 
-            if (!IsFeasiblePopulation)
+            if (!this.IsFeasiblePopulation)
             {
                 for (var i = 0; i < this.PopulationSize; i++)
                 {
@@ -86,11 +102,13 @@ namespace OPMGFS.Novelty.MapNoveltySearch
 
                     for (var j = 0; j < allIndividuals.Count; j++)
                     {
-                        if (allIndividuals[j].DistanceToFeasibility < highestDistance)
+                        if (!(allIndividuals[j].DistanceToFeasibility < highestDistance))
                         {
-                            highestDistance = allIndividuals[j].Novelty;
-                            index = j;
+                            continue;
                         }
+
+                        highestDistance = allIndividuals[j].Novelty;
+                        index = j;
                     }
 
                     newPopulation.Add(allIndividuals[index]);

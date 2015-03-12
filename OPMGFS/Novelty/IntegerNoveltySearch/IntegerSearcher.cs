@@ -1,9 +1,25 @@
 ﻿namespace OPMGFS.Novelty.IntegerNoveltySearch
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
+    /// <summary>
+    /// Searches for novelty in integers.
+    /// </summary>
     public class IntegerSearcher : NoveltySearcher
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntegerSearcher"/> class.
+        /// </summary>
+        /// <param name="r">
+        /// The r.
+        /// </param>
+        /// <param name="feasibleSize">
+        /// The feasible size.
+        /// </param>
+        /// <param name="infeasibleSize">
+        /// The infeasible size.
+        /// </param>
         public IntegerSearcher(Random r, int feasibleSize, int infeasibleSize) : base(r)
         {
             this.FeasiblePopulation = new IntegerPopulation(true, feasibleSize);
@@ -21,6 +37,10 @@
             }
         }
 
+        /// <summary>
+        /// Runs a number of generations on this novelty searcher.
+        /// </summary>
+        /// <param name="generations">Number of generations to run.</param>
         public void RunGenerations(int generations)
         {
             Console.WriteLine("Generation 0");
@@ -38,6 +58,7 @@
             {
                 Console.WriteLine(((IntegerSolution)i).Number);
             }
+
             Console.WriteLine("------------------");
 
             Console.WriteLine("-------------------");
@@ -49,6 +70,7 @@
             }
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         protected override void NextGeneration()
         {
             var infeasibleIndividuals = FeasiblePopulation.AdvanceGeneration(
@@ -65,7 +87,6 @@
             FeasiblePopulation.CurrentGeneration.AddRange(feasibleIndividuals);
             InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);
 
-
             Console.WriteLine("-----------------");
             Console.WriteLine("Feasible Population");
             foreach (var i in FeasiblePopulation.CurrentGeneration)
@@ -79,6 +100,7 @@
             {
                 Console.WriteLine(((IntegerSolution)i).Number);
             }
+
             Console.WriteLine("------------------");
         }
     }
