@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
 
     using Map;
     using Map.MapObjects;
@@ -521,6 +522,9 @@
         private static Tuple<int, int> FindClosestCliff(int startX, int startY, MapPhenotype mp)
         {
             // TODO: Implement searching for cliff
+
+
+
             throw new NotImplementedException();
         }
 
@@ -529,6 +533,53 @@
             // TODO: Find ramps
             throw new NotImplementedException();
         }
+
+        public static Tuple<int, int> FindNearestTileofType(int x, int y, MapPhenotype mp, Enums.HeightLevel goal)
+        {
+
+            //TODO: test this
+            var queue = new List<Tuple<int, int>>();
+            var discovered = new List<Tuple<int, int>>();
+
+            var v = new Tuple<int, int>(x, y);
+
+            queue.Add(v);
+            
+            while (queue.Count != 0)
+            {
+                v = queue[0];
+                queue.RemoveAt(0);
+
+                for (var i = -1; i <= 1; i++)
+                {
+                    for (var j = -1; j <= 1; j++)
+                    {
+                        var w = new Tuple<int,int>(v.Item1 + i, v.Item2 + j);
+
+                        if (!mp.InsideBounds(v.Item1 + i, v.Item2 + y))
+                        {
+                            continue;
+                        }
+
+                        if (mp.HeightLevels[w.Item1, w.Item2] == Enums.HeightLevel.Cliff)
+                        {
+                            return w;
+                        }
+
+                        if (discovered.Contains(new Tuple<int, int>(v.Item1 + i, v.Item2 + j)))
+                        {
+                            continue;
+                        }
+
+                        queue.Add(w);
+                        discovered.Add(w);
+                    }
+                }
+            }
+
+            return null;
+        }
+
 
         /// <summary>
         /// Calculates the distance to the edge of the map from the centre at a given angle.
