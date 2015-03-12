@@ -180,9 +180,40 @@ namespace OPMGFS.Map
             Turn
         }
 
+        /// <summary>
+        /// A point on the map in a solution.
+        /// </summary>
         public enum MapPointType
         {
-            Base, XelNagaTower, GoldBase, Ramp, StartBase, DestructibleRocks
+            /// <summary>
+            /// A base on the map.
+            /// </summary>
+            Base,
+
+            /// <summary>
+            /// A Xel'Naga tower on the map.
+            /// </summary>
+            XelNagaTower, 
+            
+            /// <summary>
+            /// A gold base on the map.
+            /// </summary>
+            GoldBase, 
+            
+            /// <summary>
+            /// A ramp on the map.
+            /// </summary>
+            Ramp, 
+            
+            /// <summary>
+            /// A starting base on the map.
+            /// </summary>
+            StartBase, 
+            
+            /// <summary>
+            /// Destructible rocks on the map.
+            /// </summary>
+            DestructibleRocks
         }
 
         /// <summary>

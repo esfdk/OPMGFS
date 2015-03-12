@@ -1,13 +1,10 @@
-﻿using System.Threading;
-
-namespace OPMGFS
+﻿namespace OPMGFS
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
 
-    using OPMGFS.Map.CellularAutomata;
     using OPMGFS.Map;
+    using OPMGFS.Map.CellularAutomata;
     using OPMGFS.Map.MapObjects;
     using OPMGFS.Novelty.MapNoveltySearch;
 
@@ -15,11 +12,11 @@ namespace OPMGFS
     {
         static void Main(string[] args)
         {
-            //Console.SetWindowPosition();
+            ////Console.SetWindowPosition();
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
-            //TestEvolution();
-            //TestPhenotype();
-            //TestNovelty();
+            ////TestEvolution();
+            ////TestPhenotype();
+            ////TestNovelty();
             TestCA();
 
             Console.ReadKey();
@@ -33,10 +30,10 @@ namespace OPMGFS
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(heights);
 
-            //ca.NextGeneration();
-            //map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
-            //map.GetMapStrings(out heights, out items);
-            //Console.WriteLine(heights);
+            ////ca.NextGeneration();
+            ////map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
+            ////map.GetMapStrings(out heights, out items);
+            ////Console.WriteLine(heights);
 
             for (int generations = 0; generations < 10; generations++)
             {
@@ -47,11 +44,10 @@ namespace OPMGFS
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(heights);
 
-            //ca.PlaceCliffs();
-
-            //map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
-            //map.GetMapStrings(out heights, out items);
-            //Console.WriteLine(heights);
+            ////ca.PlaceCliffs();
+            ////map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
+            ////map.GetMapStrings(out heights, out items);
+            ////Console.WriteLine(heights);
 
             ca.AddImpassableTerrain(3, 5);
 
@@ -66,22 +62,22 @@ namespace OPMGFS
             Console.WriteLine(Enums.GetCharValue(Enums.Item.BlueMinerals));
             Console.WriteLine(Enums.GetCharValue(Enums.HeightLevel.Cliff));
 
-            var xSize = 50;
-            var ySize = 30;
+            const int XSize = 50;
+            const int YSize = 30;
 
-            var mapHeights = new Enums.HeightLevel[xSize, ySize];
-            var mapItems = new Enums.Item[xSize, ySize];
+            var mapHeights = new Enums.HeightLevel[XSize, YSize];
+            var mapItems = new Enums.Item[XSize, YSize];
 
-            for (int i = 0; i <= 3; i++)
+            for (var i = 0; i <= 3; i++)
             {
-                for (int j = 0; j < 8; j++)
+                for (var j = 0; j < 8; j++)
                 {
                     mapHeights[i, j] = Enums.HeightLevel.Height1;
                     if (j <= 4) mapHeights[i, j] = Enums.HeightLevel.Height2;
                 }
             }
 
-            //mapHeights[10, 5] = Enums.HeightLevel.Cliff;
+            ////mapHeights[10, 5] = Enums.HeightLevel.Cliff;
 
             mapHeights[1, 4] = Enums.HeightLevel.Ramp12;
             mapHeights[2, 4] = Enums.HeightLevel.Ramp12;
@@ -98,8 +94,8 @@ namespace OPMGFS
             mapHeights[0, 4] = Enums.HeightLevel.Cliff;
             mapHeights[0, 5] = Enums.HeightLevel.Cliff;
             mapHeights[0, 6] = Enums.HeightLevel.Cliff;
-            //mapItems[1, 4] = Enums.Item.Cliff;
-            //mapItems[2, 4] = Enums.Item.Cliff;
+            ////mapItems[1, 4] = Enums.Item.Cliff;
+            ////mapItems[2, 4] = Enums.Item.Cliff;
             mapHeights[3, 4] = Enums.HeightLevel.Cliff;
             mapHeights[3, 5] = Enums.HeightLevel.Cliff;
             mapHeights[3, 6] = Enums.HeightLevel.Cliff;
@@ -112,8 +108,8 @@ namespace OPMGFS
             mapHeights[4, 5] = Enums.HeightLevel.Cliff;
             mapHeights[4, 6] = Enums.HeightLevel.Cliff;
             mapHeights[4, 7] = Enums.HeightLevel.Cliff;
-            //mapItems[4, 8] = Enums.Item.Cliff;
-            //mapItems[4, 9] = Enums.Item.Cliff;
+            ////mapItems[4, 8] = Enums.Item.Cliff;
+            ////mapItems[4, 9] = Enums.Item.Cliff;
 
             mapHeights[5, 7] = Enums.HeightLevel.Cliff;
             mapHeights[6, 7] = Enums.HeightLevel.Cliff;
@@ -121,8 +117,6 @@ namespace OPMGFS
             var mapPhenotype = new MapPhenotype(mapHeights, mapItems);
             
             // printHeightLevels(mapPhenotype.HeightLevels);
-
-
             // ---------------------------
             // CreateCompleteMap Timing test
             // ---------------------------
@@ -198,114 +192,69 @@ namespace OPMGFS
              * */
         }
 
-        private static void printHeightLevels(Enums.HeightLevel[,] heightLevels)
-        {
-            for (int i = 0; i < heightLevels.GetLength(0) + 2; i++)
-                Console.Write("-");
-
-            Console.WriteLine();
-            for (var i = 0; i < heightLevels.GetLength(0); i++)
-            {
-                Console.Write("|");
-                for (int j = 0; j < heightLevels.GetLength(1); j++)
-                {
-                    Console.Write((int)heightLevels[i, j]);
-                }
-                Console.Write("|");
-                Console.WriteLine();
-            }
-
-            for (int i = 0; i < heightLevels.GetLength(0) + 2; i++)
-                Console.Write("-");
-            Console.WriteLine();
-        }
-
-        private static void printMap(Enums.Item[,] items)
-        {
-            for (int i = 0; i < items.GetLength(0) + 2; i++)
-                Console.Write("-");
-
-            Console.WriteLine();
-            for (var i = items.GetLength(0)-1; i >= 0; i--)
-            {
-                Console.Write("|");
-                for (int j = 0; j < items.GetLength(1); j++)
-                {
-                    Console.Write(Enums.GetCharValue(items[i, j]));
-                }
-                Console.Write("|");
-                Console.WriteLine();
-            }
-
-            for (int i = 0; i < items.GetLength(0) + 2; i++)
-                Console.Write("-");
-            Console.WriteLine();
-        }
-
         private static void TestEvolution()
         {
-            //var evolverTest = new Evolver<EvolvableDoubleArray>(10, 10, 2, 10, 0.3);
-            //evolverTest.ParentSelectionStrategy = Options.SelectionStrategy.ChanceBased;
-            //evolverTest.PopulationSelectionStrategy = Options.SelectionStrategy.ChanceBased;
-            //evolverTest.PopulationStrategy = Options.PopulationStrategy.Recombination;
+            ////var evolverTest = new Evolver<EvolvableDoubleArray>(10, 10, 2, 10, 0.3);
+            ////evolverTest.ParentSelectionStrategy = Options.SelectionStrategy.ChanceBased;
+            ////evolverTest.PopulationSelectionStrategy = Options.SelectionStrategy.ChanceBased;
+            ////evolverTest.PopulationStrategy = Options.PopulationStrategy.Recombination;
 
-            //for (var i = 0; i < evolverTest.Population.Count; i++)
-            //{
-            //    Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
-            //    //foreach (var number in evolvableDoubleArray.Numbers)
-            //    //{
-            //    //    Console.Write(number + ", ");
-            //    //}
-            //    Console.Write("]");
-            //    Console.WriteLine();
-            //}
+            ////for (var i = 0; i < evolverTest.Population.Count; i++)
+            ////{
+            ////    Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
+            ////    //foreach (var number in evolvableDoubleArray.Numbers)
+            ////    //{
+            ////    //    Console.Write(number + ", ");
+            ////    //}
+            ////    Console.Write("]");
+            ////    Console.WriteLine();
+            ////}
 
-            //Console.WriteLine();
-            //Console.WriteLine("------------------");
-            //Console.WriteLine("Starting Evolution");
-            //Console.WriteLine("------------------");
-            //Console.WriteLine();
+            ////Console.WriteLine();
+            ////Console.WriteLine("------------------");
+            ////Console.WriteLine("Starting Evolution");
+            ////Console.WriteLine("------------------");
+            ////Console.WriteLine();
 
-            //var best = (EvolvableDoubleArray)evolverTest.Evolve();
+            ////var best = (EvolvableDoubleArray)evolverTest.Evolve();
 
-            //for (var i = 0; i < evolverTest.Population.Count; i++)
-            //{
-            //    Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
-            //    //foreach (var number in evolvableDoubleArray.Numbers)
-            //    //{
-            //    //    Console.Write(number + ", ");
-            //    //}
-            //    Console.Write("]");
-            //    Console.WriteLine();
-            //}
+            ////for (var i = 0; i < evolverTest.Population.Count; i++)
+            ////{
+            ////    Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
+            ////    //foreach (var number in evolvableDoubleArray.Numbers)
+            ////    //{
+            ////    //    Console.Write(number + ", ");
+            ////    //}
+            ////    Console.Write("]");
+            ////    Console.WriteLine();
+            ////}
 
-            //Console.WriteLine();
-            //Console.WriteLine("The best one had fitness " + best.Fitness + " and looked like this: [");
-            //foreach (var number in best.Numbers)
-            //{
-            //    Console.Write(number + ", ");
-            //}
-            //Console.Write("]");
+            ////Console.WriteLine();
+            ////Console.WriteLine("The best one had fitness " + best.Fitness + " and looked like this: [");
+            ////foreach (var number in best.Numbers)
+            ////{
+            ////    Console.Write(number + ", ");
+            ////}
+            ////Console.Write("]");
 
-            //Console.ReadLine();
+            ////Console.ReadLine();
 
-            //var integersearcher  = new IntegerSearcher(20, 20);
-            //integersearcher.RunGenerations(10);
+            ////var integersearcher  = new IntegerSearcher(20, 20);
+            ////integersearcher.RunGenerations(10);
         }
 
         private static void TestNovelty()
         {
             var ms = new MapSearcher(new Random(), 5, 5);
 
-
-            //var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
+            ////var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
             var solution = new MapSolution(new List<MapPoint>() { new MapPoint(0.5, 45, Enums.MapPointType.StartBase), new MapPoint(0.5, 135, Enums.MapPointType.Base) });
             var map = solution.ConvertToPhenotype(64, 64);
             string heights, items;
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(items);
             Console.WriteLine(solution);
-            //ms.RunGenerations(1);
+            ////ms.RunGenerations(1);
         }
     }
 }

@@ -21,7 +21,7 @@
         /// <summary>
         /// Gets or sets the random object used to generate numbers.
         /// </summary>
-        public Random Random { get; protected set;}
+        public Random Random { get; protected set; }
 
         /// <summary>
         /// Gets or sets the feasible population of the searcher.
@@ -42,6 +42,5 @@
         /// Advances the search to the next generation.
         /// </summary>
         protected abstract void NextGeneration();
-
     }
 }

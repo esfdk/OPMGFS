@@ -2,16 +2,30 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
+    /// <summary>
+    /// A population in Integer Novelty Search.
+    /// </summary>
     public class IntegerPopulation : Population
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntegerPopulation"/> class.
+        /// </summary>
+        /// <param name="isFeasiblePopulation">
+        /// The is feasible population.
+        /// </param>
+        /// <param name="populationSize">
+        /// The population size.
+        /// </param>
         public IntegerPopulation(bool isFeasiblePopulation, int populationSize)
             : base(isFeasiblePopulation, populationSize)
         {
             this.CurrentGeneration = new List<Solution>();
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         public override List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r)
         {
             var children = this.CurrentGeneration.Select(individual => (IntegerSolution)individual.Mutate(r)).ToList();
@@ -19,7 +33,6 @@
             allIndividuals.AddRange(children);
 
             var newPopulation = new List<Solution>();
-
             var returnedPopulation = new List<Solution>();
 
             foreach (var i in children)
@@ -43,7 +56,7 @@
 
             allIndividuals.RemoveAll(returnedPopulation.Contains);
 
-            if (IsFeasiblePopulation)
+            if (this.IsFeasiblePopulation)
             {
                 var newToArchive = nso.AddToArchive;
 
@@ -54,13 +67,14 @@
 
                     for (var j = 0; j < allIndividuals.Count; j++)
                     {
-                        if (allIndividuals[j].Novelty > highestNovelty)
+                        if (!(allIndividuals[j].Novelty > highestNovelty))
                         {
-                            highestNovelty = allIndividuals[j].Novelty;
-                            index = j;
+                            continue;
                         }
-                    }
 
+                        highestNovelty = allIndividuals[j].Novelty;
+                        index = j;
+                    }
 
                     if (newToArchive > 0)
                     {
@@ -76,7 +90,7 @@
                 }   
             }
 
-            if (!IsFeasiblePopulation)
+            if (!this.IsFeasiblePopulation)
             {
                 for (var i = 0; i < this.PopulationSize; i++)
                 {
@@ -85,11 +99,13 @@
 
                     for (var j = 0; j < allIndividuals.Count; j++)
                     {
-                        if (allIndividuals[j].DistanceToFeasibility < highestDistance)
+                        if (!(allIndividuals[j].DistanceToFeasibility < highestDistance))
                         {
-                            highestDistance = allIndividuals[j].Novelty;
-                            index = j;
+                            continue;
                         }
+
+                        highestDistance = allIndividuals[j].Novelty;
+                        index = j;
                     }
 
                     newPopulation.Add(allIndividuals[index]);

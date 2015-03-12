@@ -12,7 +12,7 @@
         /// </summary>
         protected NovelArchive()
         {
-            Archive = new List<Solution>();
+            this.Archive = new List<Solution>();
         }
 
         /// <summary>

@@ -189,7 +189,7 @@
                         PlaceBase(xPos, yPos, map);
                         break;
                     case Enums.MapPointType.GoldBase:
-                        PlaceBase(xPos, yPos, map, isGoldBase: true);
+                        PlaceBase(xPos, yPos, map, true);
                         break;
                     case Enums.MapPointType.StartBase:
                         PlaceStartBase(xPos, yPos, map);
@@ -298,8 +298,8 @@
         /// <param name="x">The starting x-coordinate.</param>
         /// <param name="y">The starting y-coordinate.</param>
         /// <param name="mp">The map phenotype to place the object on.</param>
-        /// <param name="ItemToPlace">The item to place on the map.</param>
-        private static void PlaceTwoByTwo(int x, int y, MapPhenotype mp, Enums.Item ItemToPlace)
+        /// <param name="itemToPlace">The item to place on the map.</param>
+        private static void PlaceTwoByTwo(int x, int y, MapPhenotype mp, Enums.Item itemToPlace)
         {
             // TODO: Add check to not overwrite base
             if (!mp.InsideBounds(x, y))
@@ -311,51 +311,58 @@
             {
                 // Bottom-left
                 FlattenArea(mp.HeightLevels[x, y], x, y, 2, 2, mp);
-                mp.MapItems[x, y] = ItemToPlace;
-                mp.MapItems[x + 1, y] = ItemToPlace;
-                mp.MapItems[x, y + 1] = ItemToPlace;
-                mp.MapItems[x + 1, y + 1] = ItemToPlace;
+                mp.MapItems[x, y] = itemToPlace;
+                mp.MapItems[x + 1, y] = itemToPlace;
+                mp.MapItems[x, y + 1] = itemToPlace;
+                mp.MapItems[x + 1, y + 1] = itemToPlace;
             }
             else if (mp.InsideBounds(x - 1, y) && mp.InsideBounds(x, y + 1) && mp.InsideBounds(x - 1, y + 1))
             {
                 // Bottom-right
                 FlattenArea(mp.HeightLevels[x - 1, y], x, y, 2, 2, mp);
-                mp.MapItems[x, y] = ItemToPlace;
-                mp.MapItems[x - 1, y] = ItemToPlace;
-                mp.MapItems[x, y + 1] = ItemToPlace;
-                mp.MapItems[x - 1, y + 1] = ItemToPlace;
+                mp.MapItems[x, y] = itemToPlace;
+                mp.MapItems[x - 1, y] = itemToPlace;
+                mp.MapItems[x, y + 1] = itemToPlace;
+                mp.MapItems[x - 1, y + 1] = itemToPlace;
             }
             else if (mp.InsideBounds(x + 1, y) && mp.InsideBounds(x, y - 1) && mp.InsideBounds(x + 1, y - 1))
             {
                 // Top-left
                 FlattenArea(mp.HeightLevels[x, y - 1], x, y, 2, 2, mp);
-                mp.MapItems[x, y] = ItemToPlace;
-                mp.MapItems[x + 1, y] = ItemToPlace;
-                mp.MapItems[x, y - 1] = ItemToPlace;
-                mp.MapItems[x + 1, y - 1] = ItemToPlace;
+                mp.MapItems[x, y] = itemToPlace;
+                mp.MapItems[x + 1, y] = itemToPlace;
+                mp.MapItems[x, y - 1] = itemToPlace;
+                mp.MapItems[x + 1, y - 1] = itemToPlace;
             }
             else if (mp.InsideBounds(x - 1, y) && mp.InsideBounds(x, y - 1) && mp.InsideBounds(x - 1, y - 1))
             {
                 // Top-right
                 FlattenArea(mp.HeightLevels[x - 1, y - 1], x, y, 2, 2, mp);
-                mp.MapItems[x, y] = ItemToPlace;
-                mp.MapItems[x - 1, y] = ItemToPlace;
-                mp.MapItems[x, y - 1] = ItemToPlace;
-                mp.MapItems[x - 1, y - 1] = ItemToPlace;
+                mp.MapItems[x, y] = itemToPlace;
+                mp.MapItems[x - 1, y] = itemToPlace;
+                mp.MapItems[x, y - 1] = itemToPlace;
+                mp.MapItems[x - 1, y - 1] = itemToPlace;
             }
         }
 
         /// <summary>
         /// Places a Xel'Naga Tower taking up 2x2 spaces on the given map. The tower will not be placed if it is put outside bounds. It will also not overwrite any bases/minerals.
         /// </summary>
-        /// <param name="y">The y-location to attempt to place the Xel'Naga tower.</param>
-        /// <param name="x">The x-location to attempt to place the Xel'Naga tower.</param>
+        /// <param name="x">The y-location to attempt to place the Xel'Naga tower.</param>
+        /// <param name="y">The x-location to attempt to place the Xel'Naga tower.</param>
         /// <param name="mp">The map phenotype to place the tower on.</param>
         private static void PlaceXelNagaTower(int x, int y, MapPhenotype mp)
         {
-            PlaceTwoByTwo(x,y,mp,Enums.Item.XelNagaTower);
+            PlaceTwoByTwo(x, y, mp, Enums.Item.XelNagaTower);
         }
 
+        /// <summary>
+        /// Places minerals at x,y and x+1,y positions on a map.
+        /// </summary>
+        /// <param name="x"> The x-coordinate. </param>
+        /// <param name="y"> The y-coordinate. </param>
+        /// <param name="mp"> The map phenotype to place minerals in. </param>
+        /// <param name="isGold"> Whether this ia a gold mineral or not. </param>
         private static void PlaceMinerals(int x, int y, MapPhenotype mp, bool isGold = false)
         {
             if (!mp.InsideBounds(x, y) || !mp.InsideBounds(x + 1, y))
@@ -369,6 +376,12 @@
             mp.MapItems[x + 1, y] = isGold ? Enums.Item.GoldMinerals : Enums.Item.BlueMinerals;
         }
 
+        /// <summary>
+        /// Places gas in a 3x3 square using x,y as the bottom-left tile.
+        /// </summary>
+        /// <param name="x"> The x-coordinate. </param>
+        /// <param name="y"> The y-coordinate. </param>
+        /// <param name="mp"> The map phenotype to place gas in. </param>
         private static void PlaceGas(int x, int y, MapPhenotype mp)
         {
             if (!mp.InsideBounds(x, y) || !mp.InsideBounds(x + 2, y) || !mp.InsideBounds(x, y + 2) || !mp.InsideBounds(x + 2, y + 2))
@@ -387,6 +400,12 @@
             }
         }
 
+        /// <summary>
+        /// Places a starting base (24x24) around the given coordinates.
+        /// </summary>
+        /// <param name="x">The x-coordinate.</param>
+        /// <param name="y">The y-coordinate.</param>
+        /// <param name="mp">The map phenotype to place the base in.</param>
         private static void PlaceStartBase(int x, int y, MapPhenotype mp)
         {
             if (!mp.InsideBounds(x, y))
@@ -402,9 +421,9 @@
 
             FlattenArea(mp.HeightLevels[x, y], x - 11, y - 11, 24, 24, mp); // TODO: Test
 
-            for (var sbx = (x - 2); sbx < (x - 2 + 5); sbx++)
+            for (var sbx = x - 2; sbx < (x - 2 + 5); sbx++)
             {
-                for (var sby = (y - 2); sby < (y - 2 + 5); sby++)
+                for (var sby = y - 2; sby < (y - 2 + 5); sby++)
                 {
                     mp.MapItems[sbx, sby] = Enums.Item.StartBase;
                 }
@@ -419,11 +438,19 @@
             PlaceMinerals(x - 7, y + 2, mp);
             PlaceMinerals(x - 8, y + 1, mp);
             PlaceMinerals(x - 7, y - 1, mp);
+
             // Gas
             PlaceGas(x - 8, y - 5, mp);
             PlaceGas(x + 3, y + 6, mp);
         }
 
+        /// <summary>
+        /// Places a base (16x16) around a given location.
+        /// </summary>
+        /// <param name="x"> The x-coordinate. </param>
+        /// <param name="y"> The y-coordinate. </param>
+        /// <param name="mp"> The map phenotype to place the base in. </param>
+        /// <param name="isGoldBase"> Whether this is a gold base or not. </param>
         private static void PlaceBase(int x, int y, MapPhenotype mp, bool isGoldBase = false)
         {
             // TODO: Height level adjustment
@@ -438,14 +465,14 @@
                 return;
             }
 
-            FlattenArea(mp.HeightLevels[x,y], x - 7, y - 7, 16, 16, mp);
+            FlattenArea(mp.HeightLevels[x, y], x - 7, y - 7, 16, 16, mp);
 
             var rx = x - 1;
             var ry = y - 3;
 
-            for (var sbx = (rx); sbx < (rx + 5); sbx++)
+            for (var sbx = rx; sbx < (rx + 5); sbx++)
             {
-                for (var sby = (ry); sby < (ry + 5); sby++)
+                for (var sby = ry; sby < (ry + 5); sby++)
                 {
                     mp.MapItems[sbx, sby] = Enums.Item.Base;
                 }
@@ -460,6 +487,7 @@
             PlaceMinerals(rx - 5, ry + 4, mp, isGoldBase);
             PlaceMinerals(rx - 6, ry + 3, mp, isGoldBase);
             PlaceMinerals(rx - 5, ry + 1, mp, isGoldBase);
+
             // Gas
             PlaceGas(rx - 6, ry - 3, mp);
             PlaceGas(rx + 5, ry + 8, mp);
@@ -482,9 +510,9 @@
         /// <summary>
         /// Places destructible debris taking up 2x2 spaces on the given map. The debris will not be placed if it is put outside bounds. It will also not overwrite any bases/minerals.
         /// </summary>
-        /// <param name="y">The y-location to attempt to place the debris.</param>
-        /// <param name="x">The x-location to attempt to place the debris.</param>
-        /// <param name="mp">The map phenotype to place the debris on.</param>
+        /// <param name="x"> The x-location to attempt to place the debris. </param>
+        /// <param name="y"> The y-location to attempt to place the debris. </param>
+        /// <param name="mp"> The map phenotype to place the debris on. </param>
         private static void PlaceDestructibleRocks(int x, int y, MapPhenotype mp)
         {
             PlaceTwoByTwo(x,y,mp,Enums.Item.DestructibleRocks);

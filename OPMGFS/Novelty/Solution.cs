@@ -38,7 +38,7 @@
 
             protected set
             {
-                isFeasible = value;
+                this.isFeasible = value;
             }
         }
 
@@ -67,10 +67,10 @@
         public abstract Solution Recombine(Solution other);
 
         /// <summary>
-        /// Calculates the novelty of the solution based on the current populations and the novel Archive.
+        /// Calculates the novelty of the solution based on the current population and the novel Archive.
         /// </summary>
         /// <param name="feasible">The population of feasible solutions.</param>
-        /// <param name="archive">The Archive of novel solultions.</param>
+        /// <param name="archive">The Archive of novel solutions.</param>
         /// <param name="numberOfNeighbours">The number of neighbours that the novelty should be averaged over.</param>
         /// <returns>The novelty of the solution.</returns>
         public abstract double CalculateNovelty(Population feasible, NovelArchive archive, int numberOfNeighbours);
