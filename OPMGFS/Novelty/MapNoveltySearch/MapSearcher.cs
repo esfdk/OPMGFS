@@ -54,7 +54,7 @@
                             break;
                     }
 
-                    list.Add(new MapPoint(dist, degree, mpt));
+                    list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
                 }
 
                 var ms = new MapSolution(list);
@@ -92,7 +92,7 @@
                             break;
                     }
 
-                    list.Add(new MapPoint(dist, degree, mpt));
+                    list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
                 }
 
                 for (var j = 0; j < 2; j++)
@@ -122,7 +122,7 @@
                             break;
                     }
 
-                    list.Add(new MapPoint(dist, degree, mpt));
+                    list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
                 }
 
                 var ms = new MapSolution(list);

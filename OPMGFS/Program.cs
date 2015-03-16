@@ -16,8 +16,8 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             ////TestEvolution();
             ////TestPhenotype();
-            ////TestNovelty();
-            TestCA();
+            TestNovelty();
+            ////TestCA();
 
             Console.ReadKey();
         }
@@ -289,11 +289,64 @@
             var ms = new MapSearcher(new Random(), 5, 5);
 
             ////var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
-            var solution = new MapSolution(new List<MapPoint>() { new MapPoint(0.5, 45, Enums.MapPointType.StartBase), new MapPoint(0.5, 135, Enums.MapPointType.Base) });
-            var map = solution.ConvertToPhenotype(64, 64);
+            var solution = new MapSolution(new List<MapPoint>() { new MapPoint(0.5, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)});
+            var map = new MapPhenotype(64, 64);
+
+            bool test1 = false;
+
+            //test1 = true;
+
+            if (test1)
+            {
+                map.HeightLevels[32, 35] = Enums.HeightLevel.Height2;
+                map.HeightLevels[33, 35] = Enums.HeightLevel.Height2;
+
+                map.HeightLevels[32, 34] = Enums.HeightLevel.Height2;
+                map.HeightLevels[33, 34] = Enums.HeightLevel.Height2;
+
+                map.HeightLevels[32, 33] = Enums.HeightLevel.Height0;
+                map.HeightLevels[33, 33] = Enums.HeightLevel.Height0;
+
+                map.HeightLevels[32, 32] = Enums.HeightLevel.Cliff;
+                map.HeightLevels[33, 32] = Enums.HeightLevel.Cliff;
+
+                map.HeightLevels[32, 31] = Enums.HeightLevel.Height1;
+                map.HeightLevels[33, 31] = Enums.HeightLevel.Height1;
+
+                map.HeightLevels[32, 30] = Enums.HeightLevel.Height1;
+                map.HeightLevels[33, 30] = Enums.HeightLevel.Height1;
+
+                map.HeightLevels[32, 29] = Enums.HeightLevel.Height2;
+                map.HeightLevels[33, 29] = Enums.HeightLevel.Height2;
+            }
+            else
+            {
+                map.HeightLevels[32, 35] = Enums.HeightLevel.Height2;
+                map.HeightLevels[33, 35] = Enums.HeightLevel.Height2;
+
+                map.HeightLevels[32, 34] = Enums.HeightLevel.Height0;
+                map.HeightLevels[33, 34] = Enums.HeightLevel.Height0;
+
+                map.HeightLevels[32, 33] = Enums.HeightLevel.Height0;
+                map.HeightLevels[33, 33] = Enums.HeightLevel.Height0;
+
+                map.HeightLevels[32, 32] = Enums.HeightLevel.Cliff;
+                map.HeightLevels[33, 32] = Enums.HeightLevel.Cliff;
+
+                map.HeightLevels[32, 31] = Enums.HeightLevel.Height1;
+                map.HeightLevels[33, 31] = Enums.HeightLevel.Height1;
+
+                map.HeightLevels[32, 30] = Enums.HeightLevel.Height2;
+                map.HeightLevels[33, 30] = Enums.HeightLevel.Height2;
+
+                map.HeightLevels[32, 29] = Enums.HeightLevel.Height2;
+                map.HeightLevels[33, 29] = Enums.HeightLevel.Height2;
+            }
+
+            solution.ConvertToPhenotype(map);
             string heights, items;
             map.GetMapStrings(out heights, out items);
-            Console.WriteLine(items);
+            Console.WriteLine(heights);
             Console.WriteLine(solution);
             ////ms.RunGenerations(1);
         }

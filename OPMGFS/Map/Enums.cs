@@ -130,7 +130,12 @@ namespace OPMGFS.Map
             /// <summary>
             /// The location contains a starting base.
             /// </summary>
-            StartBase = 's'
+            StartBase = 's',
+
+            /// <summary>
+            /// 
+            /// </summary>
+            Occupied = 'o'
         }
 
         /// <summary>
@@ -214,6 +219,24 @@ namespace OPMGFS.Map
             /// Destructible rocks on the map.
             /// </summary>
             DestructibleRocks
+        }
+
+        public enum WasPlaced
+        {
+            /// <summary>
+            /// Placement has not yet been attemped.
+            /// </summary>
+            NotAttempted,
+            
+            /// <summary>
+            /// Placement was successful
+            /// </summary>
+            Yes,
+
+            /// <summary>
+            /// Placement was unsuccessful
+            /// </summary>
+            No
         }
 
         /// <summary>

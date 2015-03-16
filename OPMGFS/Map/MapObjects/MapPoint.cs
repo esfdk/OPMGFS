@@ -20,11 +20,12 @@
         /// <param name="type">
         /// The type of the point.
         /// </param>
-        public MapPoint(double distance, double degree, Enums.MapPointType type)
+        public MapPoint(double distance, double degree, Enums.MapPointType type, Enums.WasPlaced wasPlaced)
         {
             this.Distance = distance;
             this.Degree = degree;
             this.Type = type;
+            this.WasPlaced = wasPlaced;
         }
 
         /// <summary>
@@ -41,6 +42,8 @@
         /// Gets the type of the point.
         /// </summary>
         public Enums.MapPointType Type { get; private set; }
+
+        public Enums.WasPlaced WasPlaced { get; set; }
 
         /// <summary>
         /// Mutates the point into a new point of the same type, but with different distance and angle.
@@ -63,7 +66,7 @@
                                 ? this.Degree + (r.NextDouble() * maxDegreeMod)
                                 : this.Degree - (r.NextDouble() * maxDegreeMod);
             newDegree = (newDegree + 360) % 360;
-            return new MapPoint(newDistance, newDegree, this.Type);
+            return new MapPoint(newDistance, newDegree, this.Type, Enums.WasPlaced.NotAttempted);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
