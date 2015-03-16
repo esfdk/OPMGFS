@@ -29,5 +29,10 @@ namespace OPMGFS.Map.CellularAutomata
         /// Gets or sets a value that determines what to transform the position into, if the rule's conditions are fulfilled.
         /// </summary>
         public Enums.HeightLevel TransformTo { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that determines which neighbourhood the rule looks at.
+        /// </summary>
+        public RuleEnums.Neighbourhood Neighbourhood { get; set; }
     }
 }

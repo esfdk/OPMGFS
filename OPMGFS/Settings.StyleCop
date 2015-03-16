@@ -5,8 +5,11 @@
       <Value>enums</Value>
       <Value>hashcode</Value>
       <Value>heightlevel</Value>
+      <Value>Moore</Value>
       <Value>neighbour</Value>
+      <Value>neighbourhood</Value>
       <Value>neighbours</Value>
+      <Value>Neumann</Value>
       <Value>pathfinding</Value>
       <Value>xel'naga</Value>
     </CollectionProperty>

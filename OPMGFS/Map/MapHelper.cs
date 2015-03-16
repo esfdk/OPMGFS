@@ -12,6 +12,8 @@ namespace OPMGFS.Map
     using System;
     using System.Collections.Generic;
 
+    using OPMGFS.Map.CellularAutomata;
+
     using Position = System.Tuple<int, int>;
 
     /// <summary>
@@ -41,13 +43,20 @@ namespace OPMGFS.Map
         /// <param name="x"> The x-coordinate. </param>
         /// <param name="y"> The y-coordinate. </param>
         /// <param name="map"> The map to get positions for. </param>
+        /// <param name="neighbourhood"> The type of neighbourhood to look at. </param>
         /// <returns> A list of the coordinates for the neighbour positions. </returns>
-        public static List<Position> GetNeighbourPositions(int x, int y, Enums.HeightLevel[,] map)
+        public static List<Position> GetNeighbourPositions(int x, int y, Enums.HeightLevel[,] map, RuleEnums.Neighbourhood neighbourhood = RuleEnums.Neighbourhood.VonNeumann)
         {
             var list = new List<Position>();
             var moves = new[] { -1, 0, 1 };
             var sizeX = map.GetLength(0);
             var sizeY = map.GetLength(1);
+            var neumann = neighbourhood == RuleEnums.Neighbourhood.VonNeumann
+                           || neighbourhood == RuleEnums.Neighbourhood.VonNeumannExtended;
+
+            if (neighbourhood == RuleEnums.Neighbourhood.MooreExtended
+                || neighbourhood == RuleEnums.Neighbourhood.VonNeumannExtended)
+                moves = new[] { -2, -1, 0, 1, 2 };
 
             foreach (var moveX in moves)
             {
@@ -55,7 +64,7 @@ namespace OPMGFS.Map
                 {
                     // Uses Von Neumann right now. Remove second check to use Moore.
                     if (moveX == 0 && moveY == 0) continue;
-                    if (moveX != 0 && moveY != 0) continue;
+                    if (neumann && (moveX != 0 && moveY != 0)) continue;
 
                     var posToCheck = new Position(x + moveX, y + moveY);
                     if (!WithinMapBounds(posToCheck, sizeX, sizeY)) continue;
@@ -72,13 +81,20 @@ namespace OPMGFS.Map
         /// <param name="x"> The x-coordinate to check neighbours for. </param>
         /// <param name="y"> The y-coordinate to check neighbours for. </param>
         /// <param name="map"> The map. </param>
+        /// <param name="neighbourhood"> The type of neighbourhood to look at. </param>
         /// <returns> A dictionary containing the neighbours and the count of them. </returns>
-        public static Dictionary<Enums.HeightLevel, int> GetNeighbours(int x, int y, Enums.HeightLevel[,] map)
+        public static Dictionary<Enums.HeightLevel, int> GetNeighbours(int x, int y, Enums.HeightLevel[,] map, RuleEnums.Neighbourhood neighbourhood = RuleEnums.Neighbourhood.Moore)
         {
             var neighbours = new Dictionary<Enums.HeightLevel, int>();
             var moves = new[] { -1, 0, 1 };
             var sizeX = map.GetLength(0);
             var sizeY = map.GetLength(1);
+            var neumann = neighbourhood == RuleEnums.Neighbourhood.VonNeumann
+                           || neighbourhood == RuleEnums.Neighbourhood.VonNeumannExtended;
+
+            if (neighbourhood == RuleEnums.Neighbourhood.MooreExtended
+                || neighbourhood == RuleEnums.Neighbourhood.VonNeumannExtended)
+                moves = new[] { -2, -1, 0, 1, 2 };
 
             // Ensure that all keys are in the dictionary
             neighbours[Enums.HeightLevel.Height0] = 0;
@@ -91,6 +107,7 @@ namespace OPMGFS.Map
                 foreach (var moveY in moves)
                 {
                     if (moveX == 0 && moveY == 0) continue;
+                    if (neumann && (moveX != 0 && moveY != 0)) continue;
 
                     var posToCheck = new Position(x + moveX, y + moveY);
                     if (!WithinMapBounds(posToCheck, sizeX, sizeY)) continue;

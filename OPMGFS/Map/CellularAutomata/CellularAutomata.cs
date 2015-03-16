@@ -183,7 +183,7 @@ namespace OPMGFS.Map.CellularAutomata
                         if (moveX + moveY > 5) continue;
 
                         var posToCheck = new Position(startX + moveX, startY + moveY);
-                        if (MapHelper.WithinMapBounds(posToCheck, this.SizeX, this.SizeY)) continue;
+                        if (!MapHelper.WithinMapBounds(posToCheck, this.SizeX, this.SizeY)) continue;
 
                         if (MapHelper.Random.NextDouble() <= 0.66)
                             tempMap[posToCheck.Item1, posToCheck.Item2] = Enums.HeightLevel.Impassable;

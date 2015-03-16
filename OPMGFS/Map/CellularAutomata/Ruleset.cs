@@ -65,13 +65,13 @@ namespace OPMGFS.Map.CellularAutomata
                 for (var x = caXStart; x < caXEnd; x++)
                 {
                     var ruleApplied = false;
-                    var neighbours = MapHelper.GetNeighbours(x, y, map);
 
                     // Iterate over every rule
                     foreach (var rule in this.Rules)
                     {
                         // TODO: Should only one rule be applied for every position?
                         if (ruleApplied) break;
+                        var neighbours = MapHelper.GetNeighbours(x, y, map, rule.Neighbourhood);
 
                         if (rule.Deterministic)
                         {

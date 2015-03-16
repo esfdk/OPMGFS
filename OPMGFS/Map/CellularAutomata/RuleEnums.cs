@@ -21,29 +21,71 @@ namespace OPMGFS.Map.CellularAutomata
         public enum Comparison
         {
             /// <summary>
-            /// The number of neighbours must be equal to the given number.
+            /// The number of neighbours must be greater than, or equal to, the given number.
             /// </summary>
-            EqualTo,
+            GreaterThanEqualTo = 0,
 
             /// <summary>
             /// The number of neighbours must be greater than the given number.
             /// </summary>
-            GreaterThan,
+            GreaterThan = 1,
 
             /// <summary>
-            /// The number of neighbours must be greater than, or equal to, the given number.
+            /// The number of neighbours must be equal to the given number.
             /// </summary>
-            GreaterThanEqualTo,
+            EqualTo = 2,
 
             /// <summary>
             /// The number of neighbours must be less than the given number.
             /// </summary>
-            LessThan,
+            LessThan = 3,
 
             /// <summary>
             /// The number of neighbours must be less than, or equal to, the given number.
             /// </summary>
-            LessThanEqualTo
+            LessThanEqualTo = 4
+        }
+
+        /// <summary>
+        /// An enum that determines what kind of neighbourhood a rule is looking at.
+        /// </summary>
+        public enum Neighbourhood
+        {
+            /// <summary>
+            /// Standard Moore neighbourhood (8 tiles).
+            /// <para/>OOO
+            /// <para/>OXO
+            /// <para/>OOO
+            /// </summary>
+            Moore = 0,
+
+            /// <summary>
+            /// The extended Moore neighbourhood (24 tiles).
+            /// <para/>OOOOO
+            /// <para/>OOOOO
+            /// <para/>OOXOO
+            /// <para/>OOOOO
+            /// <para/>OOOOO
+            /// </summary>
+            MooreExtended = 1,
+
+            /// <summary>
+            /// Standard Von Neumann neighbourhood (4 tiles).
+            /// <para/>_o_
+            /// <para/>oxo
+            /// <para/>_o_
+            /// </summary>
+            VonNeumann = 2,
+
+            /// <summary>
+            /// The extended Von Neumann neighbourhood (8 tiles).
+            /// <para/>___o__
+            /// <para/>___o__
+            /// <para/>ooxoo
+            /// <para/>___o__
+            /// <para/>___o__
+            /// </summary>
+            VonNeumannExtended = 3
         }
     }
 }

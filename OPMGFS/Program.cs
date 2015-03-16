@@ -25,6 +25,7 @@
         private static void TestCA()
         {
             var ca = new CellularAutomata(50, 50, Enums.Half.Top);
+            ca.SetRuleset(getCARules());
             var map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
             string heights, items;
             map.GetMapStrings(out heights, out items);
@@ -35,7 +36,7 @@
             ////map.GetMapStrings(out heights, out items);
             ////Console.WriteLine(heights);
 
-            for (int generations = 0; generations < 10; generations++)
+            for (int generations = 0; generations < 25; generations++)
             {
                 ca.NextGeneration();
             }
@@ -44,16 +45,56 @@
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(heights);
 
+            foreach (var nb in MapHelper.GetNeighbours(3, 46, map.HeightLevels, RuleEnums.Neighbourhood.MooreExtended))
+            {
+                Console.WriteLine(nb.Key + " " + nb.Value);
+            }
+
             ////ca.PlaceCliffs();
             ////map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
             ////map.GetMapStrings(out heights, out items);
             ////Console.WriteLine(heights);
 
-            ca.AddImpassableTerrain(3, 5);
+            //ca.AddImpassableTerrain(3, 5);
 
-            map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
-            map.GetMapStrings(out heights, out items);
-            Console.WriteLine(heights);
+            //map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
+            //map.GetMapStrings(out heights, out items);
+            //Console.WriteLine(heights);
+        }
+
+        private static List<Rule> getCARules()
+        {
+            var ruleExtBasicHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2)
+                                          {
+                                              Neighbourhood =
+                                                  RuleEnums.Neighbourhood
+                                                  .MooreExtended
+                                          };
+            ruleExtBasicHeight2.AddCondition(18, Enums.HeightLevel.Height1);
+
+            var ruleBasicHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2);
+            ruleBasicHeight2.AddCondition(5, Enums.HeightLevel.Height2);
+
+            var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
+            ruleBasicHeight1.AddCondition(5, Enums.HeightLevel.Height1);
+
+            var ruleAdvHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1, Enums.HeightLevel.Height0);
+            ruleAdvHeight1.AddCondition(3, Enums.HeightLevel.Height1);
+            ruleAdvHeight1.AddCondition(3, Enums.HeightLevel.Height2);
+
+            var ruleAdvHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2, Enums.HeightLevel.Height1);
+            ruleAdvHeight2.AddCondition(3, Enums.HeightLevel.Height1);
+            ruleAdvHeight2.AddCondition(3, Enums.HeightLevel.Height2);
+
+            var ruleList = new List<Rule>
+                               {
+                                   ruleExtBasicHeight2
+                                   , ruleBasicHeight2
+                                   , ruleBasicHeight1
+                                   //, ruleAdvHeight1
+                                   //, ruleAdvHeight2
+                               };
+            return ruleList;
         }
 
         private static void TestPhenotype()
