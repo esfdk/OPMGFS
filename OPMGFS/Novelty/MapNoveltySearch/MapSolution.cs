@@ -560,7 +560,7 @@ namespace OPMGFS.Novelty.MapNoveltySearch
         }
 
         /// <summary>
-        /// 
+        /// Blocks an area for further use.
         /// </summary>
         /// <param name="startX">Start coordinate on the X-axis.</param>
         /// <param name="startY">Start coordinate on the Y-axis.</param>
@@ -589,6 +589,7 @@ namespace OPMGFS.Novelty.MapNoveltySearch
         /// <param name="x"> The x-location to attempt to place the debris. </param>
         /// <param name="y"> The y-location to attempt to place the debris. </param>
         /// <param name="mp"> The map phenotype to place the debris on. </param>
+        /// <returns>True if the rocks were placed, false if not</returns>
         private static bool PlaceDestructibleRocks(int x, int y, MapPhenotype mp)
         {
             return PlaceTwoByTwo(x, y, mp, Enums.Item.DestructibleRocks);
@@ -597,6 +598,286 @@ namespace OPMGFS.Novelty.MapNoveltySearch
         private static Tuple<int, int, int> FindClosestCliff(int startX, int startY, MapPhenotype mp)
         {
             return FindNearestHeightTileOfType(startX, startY, mp, Enums.HeightLevel.Cliff);
+        }
+
+        private static bool PlaceVerticalRamp(int x, int y, Enums.HeightLevel west, Enums.HeightLevel east, Enums.HeightLevel ramp, MapPhenotype mp)
+        {
+            if (mp.HeightLevels[x - 1, y] == west && mp.HeightLevels[x - 1, y + 1] == west
+                && mp.HeightLevels[x + 1, y] == east && mp.HeightLevels[x + 1, y + 1] == east)
+            {
+                if (mp.InsideBounds(x + 2, y) || mp.InsideBounds(x + 2, y + 1))
+                {
+                    if (!IsAreaOccupied(x - 1, y - 1, 4, 4, mp))
+                    {
+                        if (mp.HeightLevels[x + 2, y] == east
+                            && mp.HeightLevels[x + 2, y + 1] == east)
+                        {
+                            OccupyArea(x - 1, y - 1, 4, 4, mp);
+
+                            mp.MapItems[x - 1, y] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x - 1, y + 1] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x - 1, y] = ramp;
+                            mp.HeightLevels[x - 1, y + 1] = ramp;
+
+                            mp.MapItems[x, y] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x, y + 1] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x, y] = ramp;
+                            mp.HeightLevels[x, y + 1] = ramp;
+                            mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Cliff;
+                            mp.HeightLevels[x, y + 2] = Enums.HeightLevel.Cliff;
+
+                            mp.MapItems[x + 1, y] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x + 1, y + 1] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x + 1, y] = ramp;
+                            mp.HeightLevels[x + 1, y + 1] = ramp;
+                            mp.HeightLevels[x + 1, y - 1] = Enums.HeightLevel.Cliff;
+                            mp.HeightLevels[x + 1, y + 2] = Enums.HeightLevel.Cliff;
+
+                            mp.MapItems[x + 2, y] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x + 2, y + 1] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x + 2, y] = ramp;
+                            mp.HeightLevels[x + 2, y + 1] = ramp;
+
+                            return true;
+                        }
+                    }
+                }
+
+                if (mp.InsideBounds(x - 2, y) || mp.InsideBounds(x - 2, y + 1))
+                {
+                    if (!IsAreaOccupied(x - 2, y - 1, 4, 4, mp))
+                    {
+                        if (mp.HeightLevels[x - 2, y] == west
+                            && mp.HeightLevels[x - 2, y + 1] == west)
+                        {
+                            OccupyArea(x - 2, y - 1, 4, 4, mp);
+
+                            mp.MapItems[x - 2, y] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x - 2, y + 1] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x - 2, y] = ramp;
+                            mp.HeightLevels[x - 2, y + 1] = ramp;
+
+                            mp.MapItems[x - 1, y] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x - 1, y] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x - 1, y] = ramp;
+                            mp.HeightLevels[x - 1, y + 1] = ramp;
+                            mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
+                            mp.HeightLevels[x - 1, y + 2] = Enums.HeightLevel.Cliff;
+
+                            mp.MapItems[x, y] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x, y + 1] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x, y] = ramp;
+                            mp.HeightLevels[x, y + 1] = ramp;
+                            mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Cliff;
+                            mp.HeightLevels[x, y + 2] = Enums.HeightLevel.Cliff;
+
+                            mp.MapItems[x + 1, y] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x + 1, y + 1] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x + 1, y] = ramp;
+                            mp.HeightLevels[x + 1, y + 1] = ramp;
+
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static bool PlaceHorizontalRamp(int x, int y, Enums.HeightLevel north, Enums.HeightLevel south, Enums.HeightLevel ramp, MapPhenotype mp)
+        {
+            if (mp.HeightLevels[x, y + 1] == north && mp.HeightLevels[x + 1, y + 1] == north
+                && mp.HeightLevels[x, y - 1] == south && mp.HeightLevels[x + 1, y - 1] == south)
+            {
+                if (mp.InsideBounds(x, y - 2) || mp.InsideBounds(x + 1, y - 2))
+                {
+                    if (!IsAreaOccupied(x - 1, y - 2, 4, 4, mp))
+                    {
+                        if (mp.HeightLevels[x, y - 2] == south
+                            && mp.HeightLevels[x + 1, y - 2] == south)
+                        {
+                            OccupyArea(x - 1, y - 2, 4, 4, mp);
+
+                            mp.MapItems[x, y + 1] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x + 1, y + 1] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x, y + 1] = ramp;
+                            mp.HeightLevels[x + 1, y + 1] = ramp;
+
+                            mp.MapItems[x, y] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x + 1, y] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x, y] = ramp;
+                            mp.HeightLevels[x + 1, y] = ramp;
+                            mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
+                            mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
+
+                            mp.MapItems[x, y - 1] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x + 1, y - 1] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x, y - 1] = ramp;
+                            mp.HeightLevels[x + 1, y - 1] = ramp;
+                            mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
+                            mp.HeightLevels[x + 2, y - 1] = Enums.HeightLevel.Cliff;
+
+                            mp.MapItems[x, y - 2] = Enums.Item.RampNorthSouth;
+                            mp.MapItems[x + 1, y - 2] = Enums.Item.RampNorthSouth;
+                            mp.HeightLevels[x, y - 2] = ramp;
+                            mp.HeightLevels[x + 1, y - 2] = ramp;
+
+                            return true;
+                        }
+                    }
+                }
+
+                if (mp.InsideBounds(x, y + 2) || mp.InsideBounds(x + 1, y + 2))
+                {
+                    if (!IsAreaOccupied(x - 1, y - 1, 4, 4, mp))
+                    {
+                        if (mp.HeightLevels[x, y + 2] == north
+                            && mp.HeightLevels[x + 1, y + 2] == north)
+                        {
+                            OccupyArea(x - 1, y - 1, 4, 4, mp);
+
+                            mp.MapItems[x, y + 2] = Enums.Item.RampEastWest;
+                            mp.MapItems[x + 1, y + 2] = Enums.Item.RampEastWest;
+                            mp.HeightLevels[x, y + 2] = ramp;
+                            mp.HeightLevels[x + 1, y + 2] = ramp;
+
+                            mp.MapItems[x, y + 1] = Enums.Item.RampEastWest;
+                            mp.MapItems[x + 1, y + 1] = Enums.Item.RampEastWest;
+                            mp.HeightLevels[x, y + 1] = ramp;
+                            mp.HeightLevels[x + 1, y + 1] = ramp;
+                            mp.HeightLevels[x - 1, y + 1] = Enums.HeightLevel.Cliff;
+                            mp.HeightLevels[x + 2, y + 1] = Enums.HeightLevel.Cliff;
+
+                            mp.MapItems[x, y] = Enums.Item.RampEastWest;
+                            mp.MapItems[x + 1, y] = Enums.Item.RampEastWest;
+                            mp.HeightLevels[x, y] = ramp;
+                            mp.HeightLevels[x + 1, y] = ramp;
+                            mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
+                            mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
+
+                            mp.MapItems[x, y - 1] = Enums.Item.RampEastWest;
+                            mp.MapItems[x + 1, y - 1] = Enums.Item.RampEastWest;
+                            mp.HeightLevels[x, y - 1] = ramp;
+                            mp.HeightLevels[x + 1, y - 1] = ramp;
+
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static bool PlaceVerticalRamp(int x, int y, MapPhenotype mp)
+        {
+            if ((!mp.InsideBounds(x + 1, y) || !mp.InsideBounds(x + 1, y + 1))
+                    && (!mp.InsideBounds(x - 1, y) || !mp.InsideBounds(x - 1, y + 1)))
+            {
+                return false;
+            }
+
+            if (PlaceVerticalRamp(
+                x,
+                y,
+                Enums.HeightLevel.Height0,
+                Enums.HeightLevel.Height1,
+                Enums.HeightLevel.Ramp01,
+                mp))
+            {
+                return true;
+            }
+
+            if (PlaceVerticalRamp(
+                x,
+                y,
+                Enums.HeightLevel.Height1,
+                Enums.HeightLevel.Height0,
+                Enums.HeightLevel.Ramp01,
+                mp))
+            {
+                return true;
+            }
+
+            if (PlaceVerticalRamp(
+                x,
+                y,
+                Enums.HeightLevel.Height1,
+                Enums.HeightLevel.Height2,
+                Enums.HeightLevel.Ramp12,
+                mp))
+            {
+                return true;
+            }
+
+            if (PlaceVerticalRamp(
+                x,
+                y,
+                Enums.HeightLevel.Height2,
+                Enums.HeightLevel.Height1,
+                Enums.HeightLevel.Ramp12,
+                mp))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool PlaceHorizontalRamp(int x, int y, MapPhenotype mp)
+        {
+            if ((!mp.InsideBounds(x, y + 1) || !mp.InsideBounds(x + 1, y + 1))
+                    && (!mp.InsideBounds(x, y - 1) || !mp.InsideBounds(x + 1, y - 1)))
+            {
+                return false;
+            }
+
+            if (PlaceHorizontalRamp(
+                x,
+                y,
+                Enums.HeightLevel.Height0,
+                Enums.HeightLevel.Height1,
+                Enums.HeightLevel.Ramp01,
+                mp))
+            {
+                return true;
+            }
+
+            if (PlaceHorizontalRamp(
+                x,
+                y,
+                Enums.HeightLevel.Height1,
+                Enums.HeightLevel.Height0,
+                Enums.HeightLevel.Ramp01,
+                mp))
+            {
+                return true;
+            }
+
+            if (PlaceHorizontalRamp(
+                x,
+                y,
+                Enums.HeightLevel.Height1,
+                Enums.HeightLevel.Height2,
+                Enums.HeightLevel.Ramp12,
+                mp))
+            {
+                return true;
+            }
+
+            if (PlaceHorizontalRamp(
+                x,
+                y,
+                Enums.HeightLevel.Height2,
+                Enums.HeightLevel.Height1,
+                Enums.HeightLevel.Ramp12,
+                mp))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static bool PlaceRamp(int x, int y, MapPhenotype mp)
@@ -611,100 +892,44 @@ namespace OPMGFS.Novelty.MapNoveltySearch
 
             if (mp.HeightLevels[x + 1, y] == Enums.HeightLevel.Cliff)
             {
-                if (!mp.InsideBounds(x, y + 1) || !mp.InsideBounds(x + 1, y + 1)
-                    && !mp.InsideBounds(x, y - 1) || !mp.InsideBounds(x + 1, y - 1))
+                if (PlaceHorizontalRamp(x, y, mp))
                 {
-                    return false;
+                    return true;
                 }
-
-                if (mp.HeightLevels[x, y + 1] == Enums.HeightLevel.Height0 && mp.HeightLevels[x + 1, y + 1] == Enums.HeightLevel.Height0
-                    && mp.HeightLevels[x, y - 1] == Enums.HeightLevel.Height1 && mp.HeightLevels[x + 1, y - 1] == Enums.HeightLevel.Height1)
+            }
+            else if (mp.HeightLevels[x - 1, y] == Enums.HeightLevel.Cliff)
+            {
+                if (PlaceHorizontalRamp(x - 1, y, mp))
                 {
-                    if (mp.InsideBounds(x, y - 2) || mp.InsideBounds(x + 1, y - 2))
-                    {
-                        if (!IsAreaOccupied(x - 1, y - 2, 4, 4, mp))
-                        {
-                            if (mp.HeightLevels[x, y - 2] == Enums.HeightLevel.Height1 
-                                && mp.HeightLevels[x + 1, y - 2] == Enums.HeightLevel.Height1)
-                            {
-                                OccupyArea(x - 1, y - 2, 4, 4, mp);
-
-                                mp.MapItems[x, y + 1] = Enums.Item.RampNorthSouth;
-                                mp.MapItems[x + 1, y + 1] = Enums.Item.RampNorthSouth;
-                                mp.HeightLevels[x, y + 1] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x + 1, y + 1] = Enums.HeightLevel.Ramp01;
-
-                                mp.MapItems[x, y] = Enums.Item.RampNorthSouth;
-                                mp.MapItems[x + 1, y] = Enums.Item.RampNorthSouth;
-                                mp.HeightLevels[x, y] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x + 1, y] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
-                                mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
-
-                                mp.MapItems[x, y - 1] = Enums.Item.RampNorthSouth;
-                                mp.MapItems[x + 1, y - 1] = Enums.Item.RampNorthSouth;
-                                mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x + 1, y - 1] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
-                                mp.HeightLevels[x + 2, y - 1] = Enums.HeightLevel.Cliff;
-
-                                mp.MapItems[x, y - 2] = Enums.Item.RampNorthSouth;
-                                mp.MapItems[x + 1, y - 2] = Enums.Item.RampNorthSouth;
-                                mp.HeightLevels[x, y - 2] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x + 1, y - 2] = Enums.HeightLevel.Ramp01;
-
-                                return true;
-                            }
-                        }
-                    }
-
-                    if (mp.InsideBounds(x, y + 2) || mp.InsideBounds(x + 1, y + 2))
-                    {
-                        if (!IsAreaOccupied(x - 1, y - 1, 4, 4, mp))
-                        {
-                            if (mp.HeightLevels[x, y + 2] == Enums.HeightLevel.Height0
-                                && mp.HeightLevels[x + 1, y + 2] == Enums.HeightLevel.Height0)
-                            {
-                                OccupyArea(x - 1, y - 1, 4, 4, mp);
-
-                                mp.MapItems[x, y + 2] = Enums.Item.RampNorthSouth;
-                                mp.MapItems[x + 1, y + 2] = Enums.Item.RampNorthSouth;
-                                mp.HeightLevels[x, y + 2] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x + 1, y + 2] = Enums.HeightLevel.Ramp01;
-
-                                mp.MapItems[x, y + 1] = Enums.Item.RampNorthSouth;
-                                mp.MapItems[x + 1, y + 1] = Enums.Item.RampNorthSouth;
-                                mp.HeightLevels[x, y + 1] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x + 1, y + 1] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x - 1, y + 1] = Enums.HeightLevel.Cliff;
-                                mp.HeightLevels[x + 2, y + 1] = Enums.HeightLevel.Cliff;
-
-                                mp.MapItems[x, y] = Enums.Item.RampNorthSouth;
-                                mp.MapItems[x + 1, y] = Enums.Item.RampNorthSouth;
-                                mp.HeightLevels[x, y] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x + 1, y] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
-                                mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
-
-                                mp.MapItems[x, y - 1] = Enums.Item.RampNorthSouth;
-                                mp.MapItems[x + 1, y - 1] = Enums.Item.RampNorthSouth;
-                                mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Ramp01;
-                                mp.HeightLevels[x + 1, y - 1] = Enums.HeightLevel.Ramp01;
-
-                                return true;
-                            }
-                        }
-                    }
+                    return true;
                 }
             }
 
-                // Vertical
-
-                // Northwest-Southeast diagonal
-
-                // Northeast-Southwest diagonal
-
+            // Vertical
+            if (!mp.InsideBounds(x + 1, y + 1))
+            {
                 return false;
+            }
+
+            if (mp.HeightLevels[x, y + 1] == Enums.HeightLevel.Cliff)
+            {
+                if (PlaceVerticalRamp(x, y, mp))
+                {
+                    return true;
+                }
+            }
+            else if (mp.HeightLevels[x, y - 1] == Enums.HeightLevel.Cliff)
+            {
+                if (PlaceVerticalRamp(x, y - 1, mp))
+                {
+                    return true;
+                }
+            }
+
+            // Northwest-Southeast diagonal
+
+            // Northeast-Southwest diagonal
+            return false;
         }
 
         public static Tuple<int, int, int> FindNearestHeightTileOfType(int x, int y, MapPhenotype mp, Enums.HeightLevel goal)

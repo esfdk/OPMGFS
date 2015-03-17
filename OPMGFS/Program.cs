@@ -156,7 +156,7 @@
             mapHeights[6, 7] = Enums.HeightLevel.Cliff;
 
             var mapPhenotype = new MapPhenotype(mapHeights, mapItems);
-            
+
             // printHeightLevels(mapPhenotype.HeightLevels);
             // ---------------------------
             // CreateCompleteMap Timing test
@@ -289,59 +289,194 @@
             var ms = new MapSearcher(new Random(), 5, 5);
 
             ////var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
-            var solution = new MapSolution(new List<MapPoint>() { new MapPoint(0.5, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)});
+            var solution = new MapSolution(new List<MapPoint>()
+                                               {
+                                                   new MapPoint(0.9, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(0.2, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(1, 180, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(0.8, 0, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes),
+                                                   new MapPoint(0.9, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(0.2, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(1, 225, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(0.8, 315, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)
+                                               });
             var map = new MapPhenotype(64, 64);
 
-            bool test1 = false;
+            map.HeightLevels[1, 35] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[2, 35] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[3, 35] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[1, 34] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[2, 34] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[3, 34] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[1, 33] = Enums.HeightLevel.Height0;
+            map.HeightLevels[2, 33] = Enums.HeightLevel.Height0;
+            map.HeightLevels[3, 33] = Enums.HeightLevel.Height0;
+            map.HeightLevels[1, 32] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[2, 32] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[3, 32] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[1, 31] = Enums.HeightLevel.Height1;
+            map.HeightLevels[2, 31] = Enums.HeightLevel.Height1;
+            map.HeightLevels[3, 31] = Enums.HeightLevel.Height1;
+            map.HeightLevels[1, 30] = Enums.HeightLevel.Height1;
+            map.HeightLevels[2, 30] = Enums.HeightLevel.Height1;
+            map.HeightLevels[3, 30] = Enums.HeightLevel.Height1;
+            map.HeightLevels[1, 29] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[2, 29] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[3, 29] = Enums.HeightLevel.Impassable;
 
-            //test1 = true;
 
-            if (test1)
-            {
-                map.HeightLevels[32, 35] = Enums.HeightLevel.Height2;
-                map.HeightLevels[33, 35] = Enums.HeightLevel.Height2;
+            map.HeightLevels[58, 35] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[59, 35] = Enums.HeightLevel.Impassable;
 
-                map.HeightLevels[32, 34] = Enums.HeightLevel.Height2;
-                map.HeightLevels[33, 34] = Enums.HeightLevel.Height2;
+            map.HeightLevels[58, 34] = Enums.HeightLevel.Height0;
+            map.HeightLevels[59, 34] = Enums.HeightLevel.Height0;
 
-                map.HeightLevels[32, 33] = Enums.HeightLevel.Height0;
-                map.HeightLevels[33, 33] = Enums.HeightLevel.Height0;
+            map.HeightLevels[58, 33] = Enums.HeightLevel.Height0;
+            map.HeightLevels[59, 33] = Enums.HeightLevel.Height0;
 
-                map.HeightLevels[32, 32] = Enums.HeightLevel.Cliff;
-                map.HeightLevels[33, 32] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[58, 32] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[59, 32] = Enums.HeightLevel.Cliff;
 
-                map.HeightLevels[32, 31] = Enums.HeightLevel.Height1;
-                map.HeightLevels[33, 31] = Enums.HeightLevel.Height1;
+            map.HeightLevels[58, 31] = Enums.HeightLevel.Height1;
+            map.HeightLevels[59, 31] = Enums.HeightLevel.Height1;
 
-                map.HeightLevels[32, 30] = Enums.HeightLevel.Height1;
-                map.HeightLevels[33, 30] = Enums.HeightLevel.Height1;
+            map.HeightLevels[58, 30] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[59, 30] = Enums.HeightLevel.Impassable;
 
-                map.HeightLevels[32, 29] = Enums.HeightLevel.Height2;
-                map.HeightLevels[33, 29] = Enums.HeightLevel.Height2;
-            }
-            else
-            {
-                map.HeightLevels[32, 35] = Enums.HeightLevel.Height2;
-                map.HeightLevels[33, 35] = Enums.HeightLevel.Height2;
+            map.HeightLevels[58, 29] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[59, 29] = Enums.HeightLevel.Impassable;
 
-                map.HeightLevels[32, 34] = Enums.HeightLevel.Height0;
-                map.HeightLevels[33, 34] = Enums.HeightLevel.Height0;
 
-                map.HeightLevels[32, 33] = Enums.HeightLevel.Height0;
-                map.HeightLevels[33, 33] = Enums.HeightLevel.Height0;
+            map.HeightLevels[32, 55] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[33, 55] = Enums.HeightLevel.Impassable;
 
-                map.HeightLevels[32, 32] = Enums.HeightLevel.Cliff;
-                map.HeightLevels[33, 32] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[32, 54] = Enums.HeightLevel.Height1;
+            map.HeightLevels[33, 54] = Enums.HeightLevel.Height1;
 
-                map.HeightLevels[32, 31] = Enums.HeightLevel.Height1;
-                map.HeightLevels[33, 31] = Enums.HeightLevel.Height1;
+            map.HeightLevels[32, 53] = Enums.HeightLevel.Height1;
+            map.HeightLevels[33, 53] = Enums.HeightLevel.Height1;
 
-                map.HeightLevels[32, 30] = Enums.HeightLevel.Height2;
-                map.HeightLevels[33, 30] = Enums.HeightLevel.Height2;
+            map.HeightLevels[32, 52] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[33, 52] = Enums.HeightLevel.Cliff;
 
-                map.HeightLevels[32, 29] = Enums.HeightLevel.Height2;
-                map.HeightLevels[33, 29] = Enums.HeightLevel.Height2;
-            }
+            map.HeightLevels[32, 51] = Enums.HeightLevel.Height2;
+            map.HeightLevels[33, 51] = Enums.HeightLevel.Height2;
+
+            map.HeightLevels[32, 50] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[33, 50] = Enums.HeightLevel.Impassable;
+
+            map.HeightLevels[32, 49] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[33, 49] = Enums.HeightLevel.Impassable;
+
+
+            map.HeightLevels[32, 35] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[33, 35] = Enums.HeightLevel.Impassable;
+
+            map.HeightLevels[32, 34] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[33, 34] = Enums.HeightLevel.Impassable;
+
+            map.HeightLevels[32, 33] = Enums.HeightLevel.Height1;
+            map.HeightLevels[33, 33] = Enums.HeightLevel.Height1;
+
+            map.HeightLevels[32, 32] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[33, 32] = Enums.HeightLevel.Cliff;
+
+            map.HeightLevels[32, 31] = Enums.HeightLevel.Height2;
+            map.HeightLevels[33, 31] = Enums.HeightLevel.Height2;
+
+            map.HeightLevels[32, 30] = Enums.HeightLevel.Height2;
+            map.HeightLevels[33, 30] = Enums.HeightLevel.Height2;
+
+            map.HeightLevels[32, 29] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[33, 29] = Enums.HeightLevel.Impassable;
+
+            map.HeightLevels[1, 2] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[1, 3] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[1, 4] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[2, 2] = Enums.HeightLevel.Height0;
+            map.HeightLevels[2, 3] = Enums.HeightLevel.Height0;
+            map.HeightLevels[2, 4] = Enums.HeightLevel.Height0;
+            map.HeightLevels[3, 2] = Enums.HeightLevel.Height0;
+            map.HeightLevels[3, 3] = Enums.HeightLevel.Height0;
+            map.HeightLevels[3, 4] = Enums.HeightLevel.Height0;
+            map.HeightLevels[4, 2] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[4, 3] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[4, 4] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[5, 2] = Enums.HeightLevel.Height1;
+            map.HeightLevels[5, 3] = Enums.HeightLevel.Height1;
+            map.HeightLevels[5, 4] = Enums.HeightLevel.Height1;
+            map.HeightLevels[6, 2] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[6, 3] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[6, 4] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[7, 2] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[7, 3] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[7, 4] = Enums.HeightLevel.Impassable;
+
+            map.HeightLevels[31, 2] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[31, 3] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[31, 4] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[32, 2] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[32, 3] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[32, 4] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[33, 2] = Enums.HeightLevel.Height2;
+            map.HeightLevels[33, 3] = Enums.HeightLevel.Height2;
+            map.HeightLevels[33, 4] = Enums.HeightLevel.Height2;
+            map.HeightLevels[34, 2] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[34, 3] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[34, 4] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[35, 2] = Enums.HeightLevel.Height1;
+            map.HeightLevels[35, 3] = Enums.HeightLevel.Height1;
+            map.HeightLevels[35, 4] = Enums.HeightLevel.Height1;
+            map.HeightLevels[36, 2] = Enums.HeightLevel.Height1;
+            map.HeightLevels[36, 3] = Enums.HeightLevel.Height1;
+            map.HeightLevels[36, 4] = Enums.HeightLevel.Height1;
+            map.HeightLevels[37, 2] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[37, 3] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[37, 4] = Enums.HeightLevel.Impassable;
+
+            map.HeightLevels[31, 22] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[31, 23] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[31, 24] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[32, 22] = Enums.HeightLevel.Height2;
+            map.HeightLevels[32, 23] = Enums.HeightLevel.Height2;
+            map.HeightLevels[32, 24] = Enums.HeightLevel.Height2;
+            map.HeightLevels[33, 22] = Enums.HeightLevel.Height2;
+            map.HeightLevels[33, 23] = Enums.HeightLevel.Height2;
+            map.HeightLevels[33, 24] = Enums.HeightLevel.Height2;
+            map.HeightLevels[34, 22] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[34, 23] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[34, 24] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[35, 22] = Enums.HeightLevel.Height1;
+            map.HeightLevels[35, 23] = Enums.HeightLevel.Height1;
+            map.HeightLevels[35, 24] = Enums.HeightLevel.Height1;
+            map.HeightLevels[36, 22] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[36, 23] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[36, 24] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[37, 22] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[37, 23] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[37, 24] = Enums.HeightLevel.Impassable;
+
+            map.HeightLevels[51, 2] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[51, 3] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[51, 4] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[52, 2] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[52, 3] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[52, 4] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[53, 2] = Enums.HeightLevel.Height0;
+            map.HeightLevels[53, 3] = Enums.HeightLevel.Height0;
+            map.HeightLevels[53, 4] = Enums.HeightLevel.Height0;
+            map.HeightLevels[54, 2] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[54, 3] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[54, 4] = Enums.HeightLevel.Cliff;
+            map.HeightLevels[55, 2] = Enums.HeightLevel.Height1;
+            map.HeightLevels[55, 3] = Enums.HeightLevel.Height1;
+            map.HeightLevels[55, 4] = Enums.HeightLevel.Height1;
+            map.HeightLevels[56, 2] = Enums.HeightLevel.Height1;
+            map.HeightLevels[56, 3] = Enums.HeightLevel.Height1;
+            map.HeightLevels[56, 4] = Enums.HeightLevel.Height1;
+            map.HeightLevels[57, 2] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[57, 3] = Enums.HeightLevel.Impassable;
+            map.HeightLevels[57, 4] = Enums.HeightLevel.Impassable;
 
             solution.ConvertToPhenotype(map);
             string heights, items;
