@@ -90,4 +90,4 @@ Ankh.NoLoad
 # Specific files
 # =========================
 
-OPMGFS/Images/Finished Maps/
+OPMGFS/Images/Finished Maps/*.png
