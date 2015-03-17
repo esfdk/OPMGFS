@@ -57,6 +57,7 @@
     <Compile Include="Map\MapObjects\MapPoint.cs" />
     <Compile Include="Map\MapPathfinding.cs" />
     <Compile Include="Map\MapPhenotype.cs" />
+    <Compile Include="Map\MapSolutionConverter.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerNovelArchive.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerPopulation.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerSearcher.cs" />
