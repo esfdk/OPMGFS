@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
+    using System.IO;
 
     using OPMGFS.Map;
     using OPMGFS.Map.CellularAutomata;
@@ -16,17 +18,19 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             ////TestEvolution();
             ////TestPhenotype();
-            TestNovelty();
-            ////TestCA();
+            ////TestNovelty();
+            TestCA();
 
             Console.ReadKey();
         }
 
         private static void TestCA()
         {
-            var ca = new CellularAutomata(50, 50, Enums.Half.Top);
+            var height = 128;
+            var width = 128;
+            var ca = new CellularAutomata(width, height, Enums.Half.Top);
             ca.SetRuleset(getCARules());
-            var map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
+            var map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
             string heights, items;
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(heights);
@@ -41,14 +45,25 @@
                 ca.NextGeneration();
             }
 
-            map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
+            //ca.PlaceCliffs();
+            map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
+            map.MapItems[5, height - 5] = Enums.Item.StartBase;
+            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(heights);
 
-            foreach (var nb in MapHelper.GetNeighbours(3, 46, map.HeightLevels, RuleEnums.Neighbourhood.MooreExtended))
-            {
-                Console.WriteLine(nb.Key + " " + nb.Value);
-            }
+            map.SaveMapToPngFile();
+
+
+            //map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
+            //map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
+            //map.GetMapStrings(out heights, out items);
+            //Console.WriteLine(heights);
+
+            //foreach (var nb in MapHelper.GetNeighbours(3, height - 3, map.HeightLevels, RuleEnums.Neighbourhood.MooreExtended))
+            //{
+            //    Console.WriteLine(nb.Key + " " + nb.Value);
+            //}
 
             ////ca.PlaceCliffs();
             ////map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
@@ -86,13 +101,17 @@
             ruleAdvHeight2.AddCondition(3, Enums.HeightLevel.Height1);
             ruleAdvHeight2.AddCondition(3, Enums.HeightLevel.Height2);
 
+            var ruleRemoveHeight0 = new RuleDeterministic(Enums.HeightLevel.Height1, Enums.HeightLevel.Height0);
+            ruleRemoveHeight0.AddCondition(2, Enums.HeightLevel.Height0, RuleEnums.Comparison.LessThanEqualTo);
+
             var ruleList = new List<Rule>
                                {
                                    ruleExtBasicHeight2
                                    , ruleBasicHeight2
                                    , ruleBasicHeight1
-                                   //, ruleAdvHeight1
+                                   , ruleAdvHeight1
                                    //, ruleAdvHeight2
+                                   , ruleRemoveHeight0
                                };
             return ruleList;
         }

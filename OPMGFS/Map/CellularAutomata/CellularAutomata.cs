@@ -73,8 +73,9 @@ namespace OPMGFS.Map.CellularAutomata
             {
                 for (var x = this.caXStart; x < this.caXEnd; x++)
                 {
-                    if (MapHelper.Random.NextDouble() < oddsOfHeight1) this.Map[x, y] = Enums.HeightLevel.Height1;
-                    if (MapHelper.Random.NextDouble() < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
+                    var odds = MapHelper.Random.NextDouble();
+                    if (odds < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
+                    else if (odds < oddsOfHeight1) this.Map[x, y] = Enums.HeightLevel.Height1;
                 }
             }
 
@@ -210,6 +211,9 @@ namespace OPMGFS.Map.CellularAutomata
 
         #region Private Methods
 
+        /// <summary>
+        /// Loads the basic rulesets.
+        /// </summary>
         private void LoadBasicRuleset()
         {
             var ruleList = new List<Rule>();
@@ -234,7 +238,7 @@ namespace OPMGFS.Map.CellularAutomata
             ruleShrinkHeight2.AddCondition(0, Enums.HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
 
             ruleList.Add(ruleNoInterestingNeighbours);
-            //ruleList.Add(ruleSmoothLandscape);
+            ////ruleList.Add(ruleSmoothLandscape);
             ruleList.Add(ruleSimpleHeight2);
             ruleList.Add(ruleSimpleHeight2Again);
             ruleList.Add(ruleSimpleHeight1);

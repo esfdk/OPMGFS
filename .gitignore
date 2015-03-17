@@ -85,3 +85,9 @@ Ankh.NoLoad
 #*.pdf
 *.synctex.gz
 *.synctex.gz(Busy)
+
+# =========================
+# Specific files
+# =========================
+
+OPMGFS/Images/Finished Maps/

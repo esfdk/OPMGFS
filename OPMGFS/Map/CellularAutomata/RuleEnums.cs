@@ -9,6 +9,8 @@
 
 namespace OPMGFS.Map.CellularAutomata
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// A class that holds enums used by the cellular automata rules.
     /// </summary>
@@ -85,6 +87,7 @@ namespace OPMGFS.Map.CellularAutomata
             /// <para/>___o__
             /// <para/>___o__
             /// </summary>
+            [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
             VonNeumannExtended = 3
         }
     }

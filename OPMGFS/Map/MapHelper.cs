@@ -11,6 +11,8 @@ namespace OPMGFS.Map
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
+    using System.IO;
 
     using OPMGFS.Map.CellularAutomata;
 
@@ -27,6 +29,11 @@ namespace OPMGFS.Map
         private static Random random = new Random();
 
         /// <summary>
+        /// The size of map tiles.
+        /// </summary>
+        private static int sizeOfMapTiles = 17;
+
+        /// <summary>
         /// Gets the random generator.
         /// </summary>
         public static Random Random 
@@ -34,6 +41,17 @@ namespace OPMGFS.Map
             get
             {
                 return random;
+            }
+        }
+
+        /// <summary>
+        /// Gets the size of map tiles.
+        /// </summary>
+        public static int SizeOfMapTiles
+        {
+            get
+            {
+                return sizeOfMapTiles;
             }
         }
 
@@ -131,5 +149,64 @@ namespace OPMGFS.Map
             if (position.Item2 < 0 || position.Item2 >= sizeY) return false;
             return true;
         }
+
+        #region Map Drawing methods
+
+        /// <summary>
+        /// Gets the directory the Images folder is located at.
+        /// </summary>
+        /// <returns> The directory. </returns>
+        public static string GetImageDirectory()
+        {
+            var imgDir = Directory.GetCurrentDirectory();
+            imgDir = imgDir.Substring(0, imgDir.IndexOf(@"\bin", StringComparison.Ordinal));
+            return Path.Combine(imgDir, @"Images");
+        }
+
+        /// <summary>
+        /// Gets a dictionary that contains an image for every type of HeightLevel enum.
+        /// </summary>
+        /// <returns> A dictionary containing all the images. </returns>
+        public static Dictionary<Enums.HeightLevel, Image> GetHeightmapImageDictionary()
+        {
+            var imgDir = Path.Combine(GetImageDirectory(), @"Tiles");
+            var tileDic = new Dictionary<Enums.HeightLevel, Image>
+                              {
+                                  { Enums.HeightLevel.Height0, Image.FromFile(Path.Combine(imgDir, @"Height0.png")) },
+                                  { Enums.HeightLevel.Height1, Image.FromFile(Path.Combine(imgDir, @"Height1.png")) },
+                                  { Enums.HeightLevel.Height2, Image.FromFile(Path.Combine(imgDir, @"Height2.png")) },
+                                  { Enums.HeightLevel.Ramp01, Image.FromFile(Path.Combine(imgDir, @"Ramp01.png")) },
+                                  { Enums.HeightLevel.Ramp12, Image.FromFile(Path.Combine(imgDir, @"Ramp12.png")) },
+                                  { Enums.HeightLevel.Cliff, Image.FromFile(Path.Combine(imgDir, @"Cliff.png")) },
+                                  { Enums.HeightLevel.Impassable, Image.FromFile(Path.Combine(imgDir, @"Impassable.png")) }
+                              };
+
+            return tileDic;
+        }
+
+        /// <summary>
+        /// Gets a dictionary that contains an image for every type of Item enum.
+        /// </summary>
+        /// <returns> A dictionary containing all the images. </returns>
+        public static Dictionary<Enums.Item, Image> GetItemImageDictionary()
+        {
+            var imgDir = Path.Combine(GetImageDirectory(), @"Tiles");
+            var tileDic = new Dictionary<Enums.Item, Image>
+                              {
+                                  { Enums.Item.None, Image.FromFile(Path.Combine(imgDir, @"Transparent.png")) },
+                                  { Enums.Item.Base, Image.FromFile(Path.Combine(imgDir, @"Base.png")) },
+                                  { Enums.Item.StartBase, Image.FromFile(Path.Combine(imgDir, @"StartBase.png")) },
+                                  { Enums.Item.BlueMinerals, Image.FromFile(Path.Combine(imgDir, @"BlueMinerals.png")) },
+                                  { Enums.Item.GoldMinerals, Image.FromFile(Path.Combine(imgDir, @"GoldMinerals.png")) },
+                                  { Enums.Item.Gas, Image.FromFile(Path.Combine(imgDir, @"Gas.png")) },
+                                  { Enums.Item.XelNagaTower, Image.FromFile(Path.Combine(imgDir, @"XelNaga.png")) },
+                                  { Enums.Item.Occupied, Image.FromFile(Path.Combine(imgDir, @"Transparent.png")) },
+                                  { Enums.Item.DestructibleRocks, Image.FromFile(Path.Combine(imgDir, @"DestructibleRocks.png")) },
+                              };
+
+            return tileDic;
+        }
+
+        #endregion
     }
 }

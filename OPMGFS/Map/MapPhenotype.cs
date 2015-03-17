@@ -9,6 +9,9 @@
 
 namespace OPMGFS.Map
 {
+    using System;
+    using System.Drawing;
+    using System.IO;
     using System.Text;
 
     using Half = Enums.Half;
@@ -130,6 +133,65 @@ namespace OPMGFS.Map
         public bool InsideBounds(int x, int y)
         {
             return !(x < 0 || y < 0 || x >= this.XSize || y >= this.YSize);
+        }
+
+        /// <summary>
+        /// Saves the map to a PNG file.
+        /// </summary>
+        public void SaveMapToPngFile()
+        {
+            // The dictionaries and bitmap.
+            var heightDic = MapHelper.GetHeightmapImageDictionary();
+            var itemDic = MapHelper.GetItemImageDictionary();
+            var bm = new Bitmap((this.YSize * MapHelper.SizeOfMapTiles) + 1, (this.XSize * MapHelper.SizeOfMapTiles) + 1);
+
+            // The file names
+            var currentTime = string.Empty + DateTime.Now;
+            currentTime = currentTime.Replace("/", ".");
+            currentTime = currentTime.Replace(":", ".");
+            currentTime = currentTime.Replace(" ", "_");
+
+            var mapDir = Path.Combine(MapHelper.GetImageDirectory(), @"Finished Maps");
+            var mapHeightFile = @"Map_" + currentTime + ".png";
+            var mapItemFile = @"Map_" + currentTime + "_With_Items.png";
+
+            // Creating heightmap
+            using (var g = Graphics.FromImage(bm))
+            {
+                g.FillRectangle(new SolidBrush(Color.Gray), 0, 0, bm.Width, bm.Height);
+
+                for (var y = this.HeightLevels.GetLength(1) - 1; y >= 0; y--)
+                {
+                    var drawY = (y * MapHelper.SizeOfMapTiles) + 1;
+
+                    for (var x = 0; x < this.HeightLevels.GetLength(0); x++)
+                    {
+                        var drawX = (x * MapHelper.SizeOfMapTiles) + 1;
+                        g.DrawImage(heightDic[this.HeightLevels[x, y]], drawX, drawY);
+                    }
+                }
+            }
+
+            // Saving map
+            bm.Save(Path.Combine(mapDir, mapHeightFile));
+
+            // Adding Items to the map.
+            using (var g = Graphics.FromImage(bm))
+            {
+                for (var y = this.HeightLevels.GetLength(1) - 1; y >= 0; y--)
+                {
+                    var drawY = (y * MapHelper.SizeOfMapTiles) + 1;
+
+                    for (var x = 0; x < this.HeightLevels.GetLength(0); x++)
+                    {
+                        var drawX = (x * MapHelper.SizeOfMapTiles) + 1;
+                        g.DrawImage(itemDic[this.MapItems[x, y]], drawX, drawY);
+                    }
+                }
+            }
+
+            // Saving map
+            bm.Save(Path.Combine(mapDir, mapItemFile));
         }
 
         /// <summary>
