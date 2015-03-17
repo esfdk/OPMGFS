@@ -18,8 +18,8 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             ////TestEvolution();
             ////TestPhenotype();
-            ////TestNovelty();
-            TestCA();
+            TestNovelty();
+            ////TestCA();
 
             Console.ReadKey();
         }
@@ -502,6 +502,7 @@
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(heights);
             Console.WriteLine(solution);
+            map.SaveMapToPngFile();
             ////ms.RunGenerations(1);
         }
     }

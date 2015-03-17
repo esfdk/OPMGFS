@@ -143,7 +143,7 @@ namespace OPMGFS.Map
             // The dictionaries and bitmap.
             var heightDic = MapHelper.GetHeightmapImageDictionary();
             var itemDic = MapHelper.GetItemImageDictionary();
-            var bm = new Bitmap((this.YSize * MapHelper.SizeOfMapTiles) + 1, (this.XSize * MapHelper.SizeOfMapTiles) + 1);
+            var bm = new Bitmap((this.XSize * MapHelper.SizeOfMapTiles) + 1, (this.YSize * MapHelper.SizeOfMapTiles) + 1);
 
             // The file names
             var currentTime = string.Empty + DateTime.Now;
@@ -152,6 +152,9 @@ namespace OPMGFS.Map
             currentTime = currentTime.Replace(" ", "_");
 
             var mapDir = Path.Combine(MapHelper.GetImageDirectory(), @"Finished Maps");
+
+            Directory.CreateDirectory(mapDir);
+
             var mapHeightFile = @"Map_" + currentTime + ".png";
             var mapItemFile = @"Map_" + currentTime + "_With_Items.png";
 
@@ -160,11 +163,11 @@ namespace OPMGFS.Map
             {
                 g.FillRectangle(new SolidBrush(Color.Gray), 0, 0, bm.Width, bm.Height);
 
-                for (var y = this.HeightLevels.GetLength(1) - 1; y >= 0; y--)
+                for (var y = this.YSize - 1; y >= 0; y--)
                 {
-                    var drawY = (y * MapHelper.SizeOfMapTiles) + 1;
+                    var drawY = ((bm.Height - 1) - (y * MapHelper.SizeOfMapTiles) + 1) - MapHelper.SizeOfMapTiles;
 
-                    for (var x = 0; x < this.HeightLevels.GetLength(0); x++)
+                    for (var x = 0; x < this.XSize; x++)
                     {
                         var drawX = (x * MapHelper.SizeOfMapTiles) + 1;
                         g.DrawImage(heightDic[this.HeightLevels[x, y]], drawX, drawY);
@@ -178,11 +181,11 @@ namespace OPMGFS.Map
             // Adding Items to the map.
             using (var g = Graphics.FromImage(bm))
             {
-                for (var y = this.HeightLevels.GetLength(1) - 1; y >= 0; y--)
+                for (var y = this.YSize - 1; y >= 0; y--)
                 {
-                    var drawY = (y * MapHelper.SizeOfMapTiles) + 1;
+                    var drawY = ((bm.Height - 1) - (y * MapHelper.SizeOfMapTiles) + 1) - MapHelper.SizeOfMapTiles;
 
-                    for (var x = 0; x < this.HeightLevels.GetLength(0); x++)
+                    for (var x = 0; x < this.XSize; x++)
                     {
                         var drawX = (x * MapHelper.SizeOfMapTiles) + 1;
                         g.DrawImage(itemDic[this.MapItems[x, y]], drawX, drawY);

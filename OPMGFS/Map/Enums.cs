@@ -68,36 +68,6 @@ namespace OPMGFS.Map
             None = 0,
 
             /// <summary>
-            /// A ramp.
-            /// </summary>
-            Ramp = 'r',
-
-            /// <summary>
-            /// A ramp That goes from north to south.
-            /// </summary>
-            RampNorthSouth = '|',
-
-            /// <summary>
-            /// A ramp That goes from north-east to south-west.
-            /// </summary>
-            RampNortheastSouthwest = '/',
-
-            /// <summary>
-            /// A ramp That goes from east to west.
-            /// </summary>
-            RampEastWest = '-',
-
-            /// <summary>
-            /// A ramp That goes from north-west to south-east.
-            /// </summary>
-            RampNorthwestSoutheast = '\\',
-
-            /// <summary>
-            /// The cliff.
-            /// </summary>
-            Cliff = 'c',
-
-            /// <summary>
             /// A base.
             /// </summary>
             Base = 'B',
@@ -133,7 +103,7 @@ namespace OPMGFS.Map
             StartBase = 's',
 
             /// <summary>
-            /// 
+            /// An "occupied space" preventing other elements from being placed there.
             /// </summary>
             Occupied = 'o'
         }
@@ -221,6 +191,9 @@ namespace OPMGFS.Map
             DestructibleRocks
         }
 
+        /// <summary>
+        /// Whether a map point was placed or not.
+        /// </summary>
         public enum WasPlaced
         {
             /// <summary>

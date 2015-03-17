@@ -425,27 +425,19 @@
                         {
                             OccupyArea(x - 1, y - 1, 4, 4, mp);
 
-                            mp.MapItems[x - 1, y] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x - 1, y + 1] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x - 1, y] = ramp;
                             mp.HeightLevels[x - 1, y + 1] = ramp;
 
-                            mp.MapItems[x, y] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x, y + 1] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x, y] = ramp;
                             mp.HeightLevels[x, y + 1] = ramp;
                             mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Cliff;
                             mp.HeightLevels[x, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.MapItems[x + 1, y] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x + 1, y + 1] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x + 1, y] = ramp;
                             mp.HeightLevels[x + 1, y + 1] = ramp;
                             mp.HeightLevels[x + 1, y - 1] = Enums.HeightLevel.Cliff;
                             mp.HeightLevels[x + 1, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.MapItems[x + 2, y] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x + 2, y + 1] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x + 2, y] = ramp;
                             mp.HeightLevels[x + 2, y + 1] = ramp;
 
@@ -463,27 +455,19 @@
                         {
                             OccupyArea(x - 2, y - 1, 4, 4, mp);
 
-                            mp.MapItems[x - 2, y] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x - 2, y + 1] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x - 2, y] = ramp;
                             mp.HeightLevels[x - 2, y + 1] = ramp;
 
-                            mp.MapItems[x - 1, y] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x - 1, y] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x - 1, y] = ramp;
                             mp.HeightLevels[x - 1, y + 1] = ramp;
                             mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
                             mp.HeightLevels[x - 1, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.MapItems[x, y] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x, y + 1] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x, y] = ramp;
                             mp.HeightLevels[x, y + 1] = ramp;
                             mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Cliff;
                             mp.HeightLevels[x, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.MapItems[x + 1, y] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x + 1, y + 1] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x + 1, y] = ramp;
                             mp.HeightLevels[x + 1, y + 1] = ramp;
 
@@ -510,27 +494,19 @@
                         {
                             OccupyArea(x - 1, y - 2, 4, 4, mp);
 
-                            mp.MapItems[x, y + 1] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x + 1, y + 1] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x, y + 1] = ramp;
                             mp.HeightLevels[x + 1, y + 1] = ramp;
 
-                            mp.MapItems[x, y] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x + 1, y] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x, y] = ramp;
                             mp.HeightLevels[x + 1, y] = ramp;
                             mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
                             mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
 
-                            mp.MapItems[x, y - 1] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x + 1, y - 1] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x, y - 1] = ramp;
                             mp.HeightLevels[x + 1, y - 1] = ramp;
                             mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
                             mp.HeightLevels[x + 2, y - 1] = Enums.HeightLevel.Cliff;
 
-                            mp.MapItems[x, y - 2] = Enums.Item.RampNorthSouth;
-                            mp.MapItems[x + 1, y - 2] = Enums.Item.RampNorthSouth;
                             mp.HeightLevels[x, y - 2] = ramp;
                             mp.HeightLevels[x + 1, y - 2] = ramp;
 
@@ -548,27 +524,19 @@
                         {
                             OccupyArea(x - 1, y - 1, 4, 4, mp);
 
-                            mp.MapItems[x, y + 2] = Enums.Item.RampEastWest;
-                            mp.MapItems[x + 1, y + 2] = Enums.Item.RampEastWest;
                             mp.HeightLevels[x, y + 2] = ramp;
                             mp.HeightLevels[x + 1, y + 2] = ramp;
 
-                            mp.MapItems[x, y + 1] = Enums.Item.RampEastWest;
-                            mp.MapItems[x + 1, y + 1] = Enums.Item.RampEastWest;
                             mp.HeightLevels[x, y + 1] = ramp;
                             mp.HeightLevels[x + 1, y + 1] = ramp;
                             mp.HeightLevels[x - 1, y + 1] = Enums.HeightLevel.Cliff;
                             mp.HeightLevels[x + 2, y + 1] = Enums.HeightLevel.Cliff;
 
-                            mp.MapItems[x, y] = Enums.Item.RampEastWest;
-                            mp.MapItems[x + 1, y] = Enums.Item.RampEastWest;
                             mp.HeightLevels[x, y] = ramp;
                             mp.HeightLevels[x + 1, y] = ramp;
                             mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
                             mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
 
-                            mp.MapItems[x, y - 1] = Enums.Item.RampEastWest;
-                            mp.MapItems[x + 1, y - 1] = Enums.Item.RampEastWest;
                             mp.HeightLevels[x, y - 1] = ramp;
                             mp.HeightLevels[x + 1, y - 1] = ramp;
 
