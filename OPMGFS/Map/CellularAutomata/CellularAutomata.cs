@@ -51,23 +51,23 @@ namespace OPMGFS.Map.CellularAutomata
         /// <summary>
         /// Initializes a new instance of the <see cref="CellularAutomata"/> class. 
         /// </summary>
-        /// <param name="sizeX"> The x size of the map. </param>
-        /// <param name="sizeY"> The y size of the map. </param>
+        /// <param name="xSize"> The x size of the map. </param>
+        /// <param name="ySize"> The y size of the map. </param>
         /// <param name="half"> The half of the map to work on. </param>
         /// <param name="oddsOfHeight1"> The odds of a tile being changed to height 1. </param>
         /// <param name="oddsOfHeight2"> The odds of a tile being changed to height 2. </param>
-        public CellularAutomata(int sizeX, int sizeY, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25)
+        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25)
         {
-            this.Map = new Enums.HeightLevel[sizeX, sizeY];
+            this.Map = new Enums.HeightLevel[xSize, ySize];
 
-            this.SizeX = sizeX;
-            this.SizeY = sizeY;
+            this.XSize = xSize;
+            this.YSize = ySize;
 
             // Figures out which part of the map that should be looked at.
-            this.caXStart = (half == Enums.Half.Right) ? this.SizeX / 2 : 0;
-            this.caXEnd = (half == Enums.Half.Left) ? this.SizeX / 2 : this.SizeX;
-            this.caYStart = (half == Enums.Half.Top) ? this.SizeY / 2 : 0;
-            this.caYEnd = (half == Enums.Half.Bottom) ? this.SizeY / 2 : this.SizeY;
+            this.caXStart = (half == Enums.Half.Right) ? this.XSize / 2 : 0;
+            this.caXEnd = (half == Enums.Half.Left) ? this.XSize / 2 : this.XSize;
+            this.caYStart = (half == Enums.Half.Top) ? this.YSize / 2 : 0;
+            this.caYEnd = (half == Enums.Half.Bottom) ? this.YSize / 2 : this.YSize;
 
             for (var y = this.caYStart; y < this.caYEnd; y++)
             {
@@ -93,12 +93,12 @@ namespace OPMGFS.Map.CellularAutomata
         /// <summary>
         /// Gets or sets the x size.
         /// </summary>
-        private int SizeX { get; set; }
+        private int XSize { get; set; }
 
         /// <summary>
         /// Gets or sets the y size.
         /// </summary>
-        private int SizeY { get; set; }
+        private int YSize { get; set; }
         #endregion
 
         #region Public Methods
@@ -118,32 +118,6 @@ namespace OPMGFS.Map.CellularAutomata
         public void SetRuleset(List<Rule> newRuleSet)
         {
             this.ruleSet = new Ruleset(newRuleSet);
-        }
-
-        /// <summary>
-        /// Places cliffs in the map.
-        /// </summary>
-        public void PlaceCliffs()
-        {
-            // TODO: Check if logic is correct.
-            var tempMap = (Enums.HeightLevel[,])this.Map.Clone();
-
-            for (var y = this.caYStart; y < this.caYEnd; y++)
-            {
-                for (var x = this.caXStart; x < this.caXEnd; x++)
-                {
-                    foreach (var neighbourPosition in MapHelper.GetNeighbourPositions(x, y, this.Map))
-                    {
-                        if (this.Map[x, y] == Enums.HeightLevel.Cliff
-                            || this.Map[neighbourPosition.Item1, neighbourPosition.Item2] == Enums.HeightLevel.Cliff) continue;
-
-                        if ((int)this.Map[neighbourPosition.Item1, neighbourPosition.Item2] < (int)this.Map[x, y])
-                            tempMap[neighbourPosition.Item1, neighbourPosition.Item2] = Enums.HeightLevel.Cliff;
-                    }
-                }
-            }
-
-            this.Map = tempMap;
         }
 
         /// <summary>
@@ -184,7 +158,7 @@ namespace OPMGFS.Map.CellularAutomata
                         if (moveX + moveY > 5) continue;
 
                         var posToCheck = new Position(startX + moveX, startY + moveY);
-                        if (!MapHelper.WithinMapBounds(posToCheck, this.SizeX, this.SizeY)) continue;
+                        if (!MapHelper.WithinMapBounds(posToCheck, this.XSize, this.YSize)) continue;
 
                         if (MapHelper.Random.NextDouble() <= 0.66)
                             tempMap[posToCheck.Item1, posToCheck.Item2] = Enums.HeightLevel.Impassable;
