@@ -14,6 +14,8 @@ namespace OPMGFS.Map
     using System.IO;
     using System.Text;
 
+    using OPMGFS.Map.CellularAutomata;
+
     using Half = Enums.Half;
     using HeightLevel = Enums.HeightLevel;
     using Item = Enums.Item;
@@ -136,9 +138,102 @@ namespace OPMGFS.Map
         }
 
         /// <summary>
+        /// Smooth the terrain of the map.
+        /// </summary>
+        /// <param name="smoothingNormalNeighbourhood"> If the number of neighbours in the normal Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
+        /// <param name="smoothingExtNeighbourhood"> If the number of neighbours in the extended Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
+        /// <param name="smoothingGenerations"> The number of "generations" to run. </param>
+        public void SmoothTerrain(int smoothingNormalNeighbourhood = 2, int smoothingExtNeighbourhood = 6, int smoothingGenerations = 10)
+        {
+            var currentMap = (HeightLevel[,])this.HeightLevels.Clone();
+            var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
+
+            for (var generations = 0; generations < smoothingGenerations; generations++)
+            {
+                for (var y = 0; y < this.YSize; y++)
+                {
+                    for (var x = 0; x < this.XSize; x++)
+                    {
+                        var neighbours = MapHelper.GetNeighbours(x, y, currentMap);
+                        var neighboursExt = MapHelper.GetNeighbours(x, y, currentMap, RuleEnums.Neighbourhood.MooreExtended);
+
+                        // Smooth Height2
+                        if (currentMap[x, y] == HeightLevel.Height2)
+                        {
+                            // If there are very few other Height2 nearby, smooth down to Height1
+                            if (neighbours[HeightLevel.Height2] <= smoothingNormalNeighbourhood)
+                                    tempMap[x, y] = HeightLevel.Height0;
+                            else if (neighboursExt[HeightLevel.Height2] <= smoothingExtNeighbourhood) // If there are very few Height2 in the extended Moore neighbourhood, smooth down to Height1
+                                tempMap[x, y] = HeightLevel.Height1;
+                            else if (neighboursExt[HeightLevel.Height1] <= 0 && (neighboursExt[HeightLevel.Height2] <= 12)) // If Height2 does not have any Height1 nearby, smooth down to Height0
+                                tempMap[x, y] = HeightLevel.Height0;
+                        }
+
+                        // Smooth Height1
+                        if (currentMap[x, y] == HeightLevel.Height1)
+                        {
+                            // If there are very few other Height1 nearby, smooth down to Height0
+                            if (neighbours[HeightLevel.Height1] <= smoothingNormalNeighbourhood)
+                                    tempMap[x, y] = HeightLevel.Height0;
+                            else if (neighboursExt[HeightLevel.Height1] <= smoothingExtNeighbourhood) // If there are very few Height2 in the extended Moore neighbourhood, smooth down to Height1
+                                tempMap[x, y] = HeightLevel.Height0;
+                        }
+
+                        // Smooth Height0
+                        if (currentMap[x, y] == HeightLevel.Height0)
+                        {
+                            // If there are very few other Height0 nearby, smooth up to either Height2 or Height1 depending on what there are most of.
+                            if (neighbours[HeightLevel.Height0] <= smoothingNormalNeighbourhood)
+                            {
+                                if (neighbours[HeightLevel.Height2] > neighbours[HeightLevel.Height1])
+                                    tempMap[x, y] = HeightLevel.Height2;
+                                else
+                                    tempMap[x, y] = HeightLevel.Height1;
+                            }
+                            else if (neighboursExt[HeightLevel.Height0] <= smoothingExtNeighbourhood) // If there are very few Height0 in the extended Moore neighbourhood, smooth up to Height1
+                                tempMap[x, y] = HeightLevel.Height1;
+                            ////else if (neighboursExt[HeightLevel.Height0] <= neighboursExt[HeightLevel.Height1]) // If there are less Height0 than Height1 in the extended More neighbourhood, smooth up to Height1
+                            ////    tempMap[x, y] = HeightLevel.Height1;
+                        }
+                    }
+                }
+
+                currentMap = (HeightLevel[,])tempMap.Clone();
+            }
+
+            this.HeightLevels = tempMap;
+        }
+
+        /// <summary>
+        /// Places cliffs in the map.
+        /// </summary>
+        public void PlaceCliffs()
+        {
+            var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
+
+            for (var y = 0; y < this.YSize; y++)
+            {
+                for (var x = 0; x < this.XSize; x++)
+                {
+                    foreach (var neighbourPosition in MapHelper.GetNeighbourPositions(x, y, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumann))
+                    {
+                        if (this.HeightLevels[x, y] == HeightLevel.Cliff
+                            || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Cliff) continue;
+
+                        if ((int)this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] < (int)this.HeightLevels[x, y])
+                            tempMap[neighbourPosition.Item1, neighbourPosition.Item2] = HeightLevel.Cliff;
+                    }
+                }
+            }
+
+            this.HeightLevels = tempMap;
+        }
+
+        /// <summary>
         /// Saves the map to a PNG file.
         /// </summary>
-        public void SaveMapToPngFile()
+        /// <param name="fileNameAddition"> An extra part to add to the file name, when generating maps during testing. </param>
+        public void SaveMapToPngFile(string fileNameAddition = "")
         {
             // The dictionaries and bitmap.
             var heightDic = MapHelper.GetHeightmapImageDictionary();
@@ -155,8 +250,8 @@ namespace OPMGFS.Map
 
             Directory.CreateDirectory(mapDir);
 
-            var mapHeightFile = @"Map_" + currentTime + ".png";
-            var mapItemFile = @"Map_" + currentTime + "_With_Items.png";
+            var mapHeightFile = @"Map_" + currentTime + "_" + fileNameAddition + ".png";
+            var mapItemFile = @"Map_" + currentTime + "_With_Items_" + fileNameAddition + ".png";
 
             // Creating heightmap
             using (var g = Graphics.FromImage(bm))

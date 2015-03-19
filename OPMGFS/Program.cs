@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
 
     using OPMGFS.Map;
     using OPMGFS.Map.CellularAutomata;
@@ -19,8 +20,8 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             ////TestEvolution();
             ////TestPhenotype();
-            TestNovelty();
-            ////TestCA();
+            ////TestNovelty();
+            TestCA();
 
             Console.ReadKey();
         }
@@ -28,11 +29,13 @@
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestCA()
         {
-            var height = 128;
-            var width = 128;
-            var ca = new CellularAutomata(width, height, Enums.Half.Top);
-            ca.SetRuleset(GetCaRules());
-            var map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
+            const int Height = 128;
+            const int Width = 128;
+
+            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, 0.50d, 0.30d);
+            ca.SetRuleset(GetCARules());
+
+            var map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
             string heights, items;
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(heights);
@@ -41,20 +44,37 @@
             ////map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
             ////map.GetMapStrings(out heights, out items);
             ////Console.WriteLine(heights);
+            
+            map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
+            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
+            map.SaveMapToPngFile("1");
+            Thread.Sleep(1000);
 
             for (int generations = 0; generations < 25; generations++)
             {
                 ca.NextGeneration();
             }
 
-            ////ca.PlaceCliffs();
-            map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
-            map.MapItems[5, height - 5] = Enums.Item.StartBase;
-            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
+            map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
+            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
             map.GetMapStrings(out heights, out items);
             Console.WriteLine(heights);
 
-            map.SaveMapToPngFile();
+            map.SaveMapToPngFile("2");
+
+            Thread.Sleep(1000);
+
+            map.SmoothTerrain();
+            map.GetMapStrings(out heights, out items);
+            Console.WriteLine(heights);
+
+            map.SaveMapToPngFile("3");
+
+            map.PlaceCliffs();
+
+            Thread.Sleep(1000);
+
+            map.SaveMapToPngFile("4");
 
             ////map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
             ////map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
@@ -79,7 +99,7 @@
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
-        private static List<Rule> GetCaRules()
+        private static List<Rule> GetCARules()
         {
             var ruleExtBasicHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2)
                                           {
@@ -88,6 +108,22 @@
                                                   .MooreExtended
                                           };
             ruleExtBasicHeight2.AddCondition(18, Enums.HeightLevel.Height1);
+
+            var ruleExtBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1, Enums.HeightLevel.Height0)
+            {
+                Neighbourhood =
+                    RuleEnums.Neighbourhood
+                    .MooreExtended
+            };
+            ruleExtBasicHeight1.AddCondition(18, Enums.HeightLevel.Height1);
+
+            var ruleExtAdvHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2)
+            {
+                Neighbourhood =
+                    RuleEnums.Neighbourhood
+                    .MooreExtended
+            };
+            ruleExtAdvHeight2.AddCondition(18, Enums.HeightLevel.Height2);
 
             var ruleBasicHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2);
             ruleBasicHeight2.AddCondition(5, Enums.HeightLevel.Height2);
@@ -108,12 +144,7 @@
 
             var ruleList = new List<Rule>
                                {
-                                   ruleExtBasicHeight2, 
-                                   ruleBasicHeight2, 
-                                   ruleBasicHeight1, 
-                                   ruleAdvHeight1, 
-                                   ////ruleAdvHeight2, 
-                                   ruleRemoveHeight0
+                                   ruleExtBasicHeight2, ruleExtBasicHeight1, ruleExtAdvHeight2, ruleBasicHeight2, ruleBasicHeight1, ruleAdvHeight1, ruleRemoveHeight0
                                };
             return ruleList;
         }
@@ -309,7 +340,6 @@
 
         private static void TestNovelty()
         {
-            
             var map = new MapPhenotype(64, 64);
 
             map.HeightLevels[1, 35] = Enums.HeightLevel.Impassable;

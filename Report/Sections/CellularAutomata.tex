@@ -1,0 +1,25 @@
+\section{Cellular Automata}
+\label{CellularAutomata}
+
+A cellular automata is a form for model can simulate artificial life and is often used in complexity studies. Cellular automatas are often used in computational tasks (e.g. procedual contant generation), mathematics and biology.
+
+A cellular automata consists of a grid of cells of any size and a set of rules. The grid evolves over a number of iterations(generations?) by applying the rules to tiles that fulfill the requirement for a given rule. This result in a semi-controlled evolution that is able to create very varied results.
+
+Our cellular automata is used to generate the initial heightmap of the phenotype. This map is smoothed out, but forms the basis of the search as it ultimately is what is used to check if a map is feasible or not.
+
+The cellular automata is initialized by randomly seeding the map with the different height levels through the use of random number generation. The default odds are the following, but can be changed by by the user:
+\begin{itemize}
+
+	\item \textbf{Height2}: 0.0 - 0.3
+
+	\item \textbf{Height1}: 0.3 - 0.6
+
+	\item \textbf{Height0}: 0.6 - 1.0
+
+\end{itemize}
+
+The CA starts at the top of the list and works its way down until it reaches a heightlevel where the random number fits into the range. Then it moves on to the next tile and repeats the process.
+
+When we create maps, we only generate half the map and then turn/mirror it onto the empty map in order to save time. We do something similar in the CA, where we seed half the map plus 10\% of the map's height/width (whichever is relevant for the half). Each iteration works on the same area.
+
+Had we only worked on exactly half the map, we would have had issues where the tiles in the middle row of the map would have "empty" neighbours. This would mean that the middle row of tiles would behave in unintended ways, which in turn would mean that the middle of the map would look weird.

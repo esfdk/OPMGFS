@@ -63,7 +63,7 @@ namespace OPMGFS.Map
         /// <param name="map"> The map to get positions for. </param>
         /// <param name="neighbourhood"> The type of neighbourhood to look at. </param>
         /// <returns> A list of the coordinates for the neighbour positions. </returns>
-        public static List<Position> GetNeighbourPositions(int x, int y, Enums.HeightLevel[,] map, RuleEnums.Neighbourhood neighbourhood = RuleEnums.Neighbourhood.VonNeumann)
+        public static List<Position> GetNeighbourPositions(int x, int y, Enums.HeightLevel[,] map, RuleEnums.Neighbourhood neighbourhood = RuleEnums.Neighbourhood.Moore)
         {
             var list = new List<Position>();
             var moves = new[] { -1, 0, 1 };

@@ -1,0 +1,26 @@
+\section{Map Representation}
+\label{MapRepresentation}
+
+A map in Starcraft 2 is represented as a map of tiles, where a tile can have have a a height (impassable for ground troops, and 3 heights that ground troops can traverse), cliffs between heightlevels, ramps that connect heightlevels, buildings, resources and Xel'Naga towers (provides vision while a unit is nearby). The map can, of course, also contain units but they are irrelevant for our purposes. The only units a basic map contains are the initial 5 (\textbf{6?}) workers that always start next to one's starting base, so we can ignore units in our generation.
+
+We did not have direct access to the map representation used in Starcraft, so we had to create our own map representation. As we wanted to use evolutionary algorithms (a subtype of genetic algorithms), we decided to split our representation into two parts: A genotype and a phenotype.
+
+\subsection{Genotype}
+\label{MapRepresentation_Genotype}
+
+The genotype contains a list of the items the map should contain and their position on the map. The position uses a a radial system, where the midpoint is the middle of the map. Each item has an angle and a distance. The angle determines the angle from the middle of the map (with 0$^o$ being right and going counterclockwise (\textbf{Check if correct})). The distance is represented as a percentage of the distance from the middle of the map in a straight line to where the angle will hit the edge of the map.
+
+\subsection{Phenotype}
+\label{MapRepresentation_Phenotype}
+
+Where the genotype represents the genetics that make up an object, the phenotype represents the actual object. As mentioned about, a map is made up of heightlevels and various other things.
+
+For our genotype, we decided to use two 2D arrays to represent the map. One array contains the heightlevels, ramps and cliffs, and the other contains "items" in the map, such as bases, resources, and Xel'Naga towers. We split it into two because that allowed us to place both a height and an item on the same tile in an easy way.
+
+The phenotype has a few functionalities that are used for creating the map: Smoothing the heightmap that has been generated through the cellular automata and placing cliffs in the heightmap. 
+
+The smoothing works by iterating over every single tile and checking the neighbouring tiles (using the Moore/extended Moore neighbourhood). If the tile does not fit in, it is changed to something that fits better. The changes are made in a clone of the heightmap, so changes do not affect subsequent tiles until next iteration. This smoothing is repeated over a number of generations, at which point the clone is saved as the actual heightmap in the phenotype.
+
+Cliff placement is a simple procedure. We again iterate over all tiles on the map and check its neighbouring tiles (using the Von Neumann neighbourhood). If any of the neighbouring tiles are of a lower heightlevel than the current tile, the neighbour tile is transformed into a cliff.
+
+The phenotype is also used when we create a visual representation of the map. The visual representation is created in two steps: First we draw the heightmap as a bitmap, where each heightlevel has a different tile icon. After that, every item is drawn on top of the already-existing bitmap, in order to avoid items being overwritten by heightlevels. When the item have been drawn, the map is saved as a .png file.
