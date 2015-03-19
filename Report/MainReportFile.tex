@@ -1,0 +1,144 @@
+\documentclass{article}
+
+%----------------------------------------------
+% Packages
+%----------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{fancyhdr}
+\usepackage[final]{pdfpages}
+\usepackage[font=sl]{caption}
+\usepackage{longtable}
+\usepackage{appendix}
+\usepackage{fancyvrb}
+\usepackage{hyperref}
+\usepackage{tocvsec2}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{enumitem}
+%\usepackage{zi4}
+\usepackage[bottom]{footmisc}
+\usepackage{titletoc}
+\usepackage{lastpage}
+\usepackage{appendix}
+\usepackage{savefnmark}
+\usepackage{verbatim}
+\usepackage{tocloft}
+
+
+%----------------------------------------------
+% Chapter and section spacings
+%----------------------------------------------
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{0.5em}{}
+\titlespacing*{\section}{0pt}{-0.5ex}{0.0ex}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\subsection} {0pt}{-0.5ex}{0.0ex}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\subsubsection}{0pt}{-0.5ex}{0.0ex}
+\titleformat{\paragraph}[runin]{\normalfont\normalsize\bfseries}{\theparagraph}{0.1em}{\normalsize}
+\titlespacing*{\paragraph} {0pt}{0ex}{0.25em}
+\titleformat{\subparagraph}[runin]{\normalfont\normalsize\bfseries}{\thesubparagraph}{1em}{\normalsize}
+\titlespacing*{\subparagraph} {0pt}{\parindent}{0.5em}
+
+%----------------------------------------------
+% Text formatting
+%----------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.8ex plus 0.5ex minus 0.2ex}
+
+%----------------------------------------------
+% Hyper setup
+%----------------------------------------------
+\hypersetup{
+    colorlinks,%
+    citecolor=black,%
+    filecolor=black,%
+    linkcolor=black,%
+    urlcolor=black
+}
+
+\lstset{
+numbers = left,
+linewidth=\linewidth,
+breaklines=true}
+
+%----------------------------------------------
+% Page style
+%----------------------------------------------
+\setlength{\headheight}{15.2pt}
+\setlength{\topskip}{20pt}
+\pagestyle{fancy}
+\lhead{Jakob Melnyk, Jacob Claidius Grooss}
+%\chead{???}
+\rhead{Online Procedural Content Generation of Starcraft Maps}
+\cfoot{{\thepage} of \pageref{LastPage}}
+
+% Table of contents depth
+\settocdepth{section}
+
+%----------------------------------------------
+% New commands and environments
+%----------------------------------------------
+\newenvironment{my_itemize}{\begin{itemize}[itemsep=0pt, topsep=0pt, partopsep=0pt]}{\end{itemize}}
+\newenvironment{my_enumerate}{\begin{enumerate}[itemsep=0pt, topsep=0pt, partopsep=0pt]}{\end{enumerate}}
+\newenvironment{my_description}{\begin{description}[itemsep=0pt, topsep=0pt, partopsep=0pt]}{\end{description}}
+\newcommand{\skippage}
+{
+        \thispagestyle{empty}
+        \addtocounter{page}{-1}
+        \pagebreak
+}
+
+\newcommand{\refFig}[1]{\textbf{Figure \ref{fig:#1}}}
+
+% Inserts picture based on text width
+\newcommand{\insertPicture}[4]{
+\begin{figure}[ht]
+        \centering
+        \includegraphics[width=#1\textwidth]{Images/#2}
+        \caption{#3}
+        \label{fig:#4}
+\end{figure}
+}
+
+% Inserts picture based on pure scale
+\newcommand{\insertPictureS}[4]{
+\begin{figure}[ht]
+        \centering
+        \includegraphics[scale=#1]{Images/#2}
+        \caption{#3}
+        \label{fig:#4}
+\end{figure}
+}
+
+%----------------------------------------------
+% Title
+%----------------------------------------------
+\title{
+\Huge{Online Procedural Content Generation of Starcraft Maps}\\
+\Large{Master's Thesis}
+}
+
+%----------------------------------------------
+% Author
+%----------------------------------------------
+\author{Jakob Melnyk, jmel@itu.dk \\ Jacob Claudius Grooss, jcgr@itu.dk}
+
+\date{June 1, 2015}
+
+\begin{document}
+
+\thispagestyle{empty}
+\maketitle
+\skippage
+\tableofcontents
+\skippage
+\input{Sections/Intro.tex}
+\input{Sections/MapRepresentation.tex}
+\input{Sections/CellularAutomata.tex}
+
+\end{document}

@@ -63,11 +63,13 @@ namespace OPMGFS.Map.CellularAutomata
             this.XSize = xSize;
             this.YSize = ySize;
 
-            // Figures out which part of the map that should be looked at.
-            this.caXStart = (half == Enums.Half.Right) ? this.XSize / 2 : 0;
-            this.caXEnd = (half == Enums.Half.Left) ? this.XSize / 2 : this.XSize;
-            this.caYStart = (half == Enums.Half.Top) ? this.YSize / 2 : 0;
-            this.caYEnd = (half == Enums.Half.Bottom) ? this.YSize / 2 : this.YSize;
+            // Figure out which part of the map that should be looked at.
+            // Make sure we work on a bit more than half the map, in order to avoid that the edge along the middle does not have
+            // "empty" neighbours from the beginning.
+            this.caXStart = (half == Enums.Half.Right) ? (this.XSize / 2) - (int)(this.XSize * 0.1) : 0;
+            this.caXEnd = (half == Enums.Half.Left) ? (this.XSize / 2) + (int)(this.XSize * 0.1) : this.XSize;
+            this.caYStart = (half == Enums.Half.Top) ? (this.YSize / 2) - (int)(this.YSize * 0.1) : 0;
+            this.caYEnd = (half == Enums.Half.Bottom) ? (this.YSize / 2) + (int)(this.YSize * 0.1) : this.YSize;
 
             for (var y = this.caYStart; y < this.caYEnd; y++)
             {

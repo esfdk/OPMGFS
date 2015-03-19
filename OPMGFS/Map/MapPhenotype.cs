@@ -143,7 +143,7 @@ namespace OPMGFS.Map
         /// <param name="smoothingNormalNeighbourhood"> If the number of neighbours in the normal Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
         /// <param name="smoothingExtNeighbourhood"> If the number of neighbours in the extended Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
         /// <param name="smoothingGenerations"> The number of "generations" to run. </param>
-        public void SmoothTerrain(int smoothingNormalNeighbourhood = 2, int smoothingExtNeighbourhood = 4, int smoothingGenerations = 10)
+        public void SmoothTerrain(int smoothingNormalNeighbourhood = 2, int smoothingExtNeighbourhood = 6, int smoothingGenerations = 10)
         {
             var currentMap = (HeightLevel[,])this.HeightLevels.Clone();
             var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
@@ -160,14 +160,9 @@ namespace OPMGFS.Map
                         // Smooth Height2
                         if (currentMap[x, y] == HeightLevel.Height2)
                         {
-                            // If there are very few other Height2 nearby, smooth down to either Height1 or Height0 depending on what there are most of.
+                            // If there are very few other Height2 nearby, smooth down to Height1
                             if (neighbours[HeightLevel.Height2] <= smoothingNormalNeighbourhood)
-                            {
-                                ////if (neighbours[HeightLevel.Height1] > 2 && (neighbours[HeightLevel.Height1] > neighbours[HeightLevel.Height0]))
-                                ////    tempMap[x, y] = HeightLevel.Height1;
-                                ////else
                                     tempMap[x, y] = HeightLevel.Height0;
-                            }
                             else if (neighboursExt[HeightLevel.Height2] <= smoothingExtNeighbourhood) // If there are very few Height2 in the extended Moore neighbourhood, smooth down to Height1
                                 tempMap[x, y] = HeightLevel.Height1;
                             else if (neighboursExt[HeightLevel.Height1] <= 0 && (neighboursExt[HeightLevel.Height2] <= 12)) // If Height2 does not have any Height1 nearby, smooth down to Height0
@@ -177,14 +172,9 @@ namespace OPMGFS.Map
                         // Smooth Height1
                         if (currentMap[x, y] == HeightLevel.Height1)
                         {
-                            // If there are very few other Height1 nearby, smooth up or down to either Height2 or Height0 depending on what there are most of.
+                            // If there are very few other Height1 nearby, smooth down to Height0
                             if (neighbours[HeightLevel.Height1] <= smoothingNormalNeighbourhood)
-                            {
-                                ////if (neighbours[HeightLevel.Height2] > 2 && (neighbours[HeightLevel.Height2] > neighbours[HeightLevel.Height0]))
-                                ////    tempMap[x, y] = HeightLevel.Height2;
-                                ////else
                                     tempMap[x, y] = HeightLevel.Height0;
-                            }
                             else if (neighboursExt[HeightLevel.Height1] <= smoothingExtNeighbourhood) // If there are very few Height2 in the extended Moore neighbourhood, smooth down to Height1
                                 tempMap[x, y] = HeightLevel.Height0;
                         }
@@ -219,14 +209,13 @@ namespace OPMGFS.Map
         /// </summary>
         public void PlaceCliffs()
         {
-            // TODO: Check if logic is correct.
             var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
 
             for (var y = 0; y < this.YSize; y++)
             {
                 for (var x = 0; x < this.XSize; x++)
                 {
-                    foreach (var neighbourPosition in MapHelper.GetNeighbourPositions(x, y, this.HeightLevels))
+                    foreach (var neighbourPosition in MapHelper.GetNeighbourPositions(x, y, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumann))
                     {
                         if (this.HeightLevels[x, y] == HeightLevel.Cliff
                             || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Cliff) continue;
