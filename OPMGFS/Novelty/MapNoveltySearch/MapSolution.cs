@@ -9,25 +9,45 @@
     using Map.MapObjects;
 
     /// <summary>
-    /// A solution/individual in searching the Starcraft map space.
+    /// A solution/individual in searching the StarCraft map space.
     /// </summary>
     public class MapSolution : Solution
     {
         /// <summary>
+        /// The phenotype matching this solution.
+        /// </summary>
+        private MapPhenotype convertedPhenotype;
+
+        /// <summary>
+        /// Whether this solution has been converted to its phenotype.
+        /// </summary>
+        private bool hasBeenConverted;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MapSolution"/> class.
         /// </summary>
-        public MapSolution()
+        /// <param name="mnso">
+        /// The novelty search options.
+        /// </param>
+        public MapSolution(MapNoveltySearchOptions mnso)
         {
             this.MapPoints = new List<MapPoint>();
+            this.SearchOptions = mnso;
+            this.convertedPhenotype = null;
+            this.hasBeenConverted = false;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MapSolution"/> class.
         /// </summary>
+        /// <param name="mnso">
+        /// The novelty search options.
+        /// </param>
         /// <param name="mapPoints">
         /// The map points to start with.
         /// </param>
-        public MapSolution(List<MapPoint> mapPoints)
+        public MapSolution(MapNoveltySearchOptions mnso, List<MapPoint> mapPoints)
+            : this(mnso)
         {
             this.MapPoints = mapPoints;
         }
@@ -37,21 +57,42 @@
         /// </summary>
         public List<MapPoint> MapPoints { get; private set; }
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
+        /// <summary>
+        /// Gets the search options for this solution.
+        /// </summary>
+        public MapNoveltySearchOptions SearchOptions { get; private set; }
+
+        /// <summary>
+        /// Gets the phenotype corresponding to this genotype.
+        /// </summary>
+        public MapPhenotype ConvertedPhenotype
+        {
+            get
+            {
+                return this.hasBeenConverted ? this.convertedPhenotype : this.ConvertToPhenotype();
+            }
+
+            private set
+            {
+                this.convertedPhenotype = value;
+            }
+        }
+
+        /// <summary>
+        /// Mutates this solution into a new solution.
+        /// </summary>
+        /// <param name="r">
+        /// The random generator to use in mutation.
+        /// </param>
+        /// <returns>
+        /// The newly mutated solution.
+        /// </returns>
         public override Solution Mutate(Random r)
         {
-            const double Chance = 0.3;
-
-            // var maxDistMod = 0;
-            // var maxDegreeMod = 10.0;
-            // var maxDist = 128;
-            // var maxDegree = 180;
-
-            // TODO: Figure out settings locations
-            var newPoints = this.MapPoints.Select(mp => r.NextDouble() < Chance ? mp.Mutate(r) : mp).ToList();
+            var newPoints = this.MapPoints.Select(mp => r.NextDouble() < this.SearchOptions.MutationChance ? mp.Mutate(r) : mp).ToList();
 
             // TODO: Should we ever remove a point? When? When do we stop adding?
-            return new MapSolution(newPoints);
+            return new MapSolution(this.SearchOptions, newPoints);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
@@ -63,13 +104,20 @@
         /// <summary>
         /// Calculates the novelty of a map. The novelty of the map is the average distance from this to other close solutions.
         /// </summary>
-        /// <param name="feasible">The feasible population.</param>
-        /// <param name="archive">The novel archive.</param>
-        /// <param name="numberOfNeighbours">The number of neighbours used in novelty calculation.</param>
-        /// <returns>The novelty of this solution.</returns>
+        /// <param name="feasible">
+        /// The feasible population.
+        /// </param>
+        /// <param name="archive">
+        /// The novel archive.
+        /// </param>
+        /// <param name="numberOfNeighbours">
+        /// The number of neighbours used in novelty calculation.
+        /// </param>
+        /// <returns>
+        /// The novelty of this solution.
+        /// </returns>
         public override double CalculateNovelty(Population feasible, NovelArchive archive, int numberOfNeighbours)
         {
-            // TODO: Control number of elements in novel archive? Per generation?
             var distanceValues = new List<Tuple<double, int, int>>();
 
             // Feasible population distance
@@ -154,29 +202,51 @@
         {
             var map = new MapPhenotype(ySize, xSize);
 
-            map = ConvertToPhenotype(map);
+            map = this.ConvertToPhenotype(map);
 
+            return map;
+        }
+
+        /// <summary>
+        /// Converts this individual to a map.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="MapPhenotype"/>.
+        /// </returns>
+        public MapPhenotype ConvertToPhenotype()
+        {
+            var map = this.ConvertToPhenotype(this.SearchOptions.Map);
+            this.ConvertedPhenotype = map;
             return map;
         }
 
         /// <summary>
         /// Fills in a map using the map points of this individual. Returns a filled in copy of the original map.
         /// </summary>
-        /// <param name="map">The map to fill in.</param>
-        /// <returns>The newly filled in map.</returns>
+        /// <param name="map">
+        /// The map to fill in.
+        /// </param>
+        /// <returns>
+        /// The newly filled in map.
+        /// </returns>
         public MapPhenotype ConvertToPhenotype(MapPhenotype map)
         {
             var newMap = new MapPhenotype(map.HeightLevels, map.MapItems);
 
             foreach (var mp in this.MapPoints)
             {
+                if (mp.Degree < this.SearchOptions.MinimumDegree || mp.Degree > this.SearchOptions.MaximumDegree
+                    || mp.Distance < this.SearchOptions.MinimumDistance || mp.Distance > this.SearchOptions.MaximumDistance)
+                {
+                    mp.WasPlaced = Enums.WasPlaced.No;
+                    continue;
+                }
+
                 var maxDistance = MaxDistanceAtDegree(map.XSize / 2.0, map.YSize / 2.0, mp.Degree);
                 var point = FindPoint(mp.Degree, maxDistance * mp.Distance);
 
                 var xPos = (int)(point.Item1 + (map.XSize / 2.0));
                 var yPos = (int)(point.Item2 + (map.YSize / 2.0));
-
-                Console.WriteLine(xPos + " " + yPos);
 
                 if (!newMap.InsideBounds(xPos, yPos))
                 {
@@ -225,17 +295,21 @@
         /// <summary>
         /// The distance between two solutions is the distance of each element in one solution to every other element in the other solution.
         /// </summary>
-        /// <param name="other">The solution to measure the distance to.</param>
-        /// <returns>The distance between this and the target solution.</returns>
+        /// <param name="other">
+        /// The solution to measure the distance to.
+        /// </param>
+        /// <returns>
+        /// The distance between this and the target solution.
+        /// </returns>
         protected override double CalculateDistance(Solution other)
         {
-            if (this.GetType() != other.GetType())
-            {
-                return double.NegativeInfinity;
-            }
-
             var dist = 0.0;
-            var target = (MapSolution)other;
+            var target = other as MapSolution;
+
+            if (target == null)
+            {
+                throw new ArgumentException("Input solution must be of type MapSolution!");
+            }
 
             foreach (var mapPoint in this.MapPoints)
             {
@@ -255,41 +329,43 @@
         /// <returns>The distance to feasibility from this solution.</returns>
         protected override double CalculateDistanceToFeasibility()
         {
-            // TODO: Make feasibility calculation better
-            // TODO: Fix min/max distance & degree
-            const double MaxDistance = 1.0;
-            const int MaxDegree = 180;
-            const int MinDegree = 0;
-            const int MinDistance = 0;
+            ConvertToPhenotype();
 
+            // TODO: Make feasibility calculation better
             var distance = 0.0;
 
-            foreach (var mp in this.MapPoints)
+            foreach (var mp in this.MapPoints.Where(mp => mp.WasPlaced != Enums.WasPlaced.Yes))
             {
+                var dist = 0.0;
+
                 // Degree distance
-                if (mp.Degree > MaxDegree)
+                if (mp.Degree > this.SearchOptions.MaximumDegree)
                 {
-                    distance += mp.Degree - MaxDegree;
+                    dist += mp.Degree - this.SearchOptions.MaximumDegree;
                 }
-                else if (mp.Degree < MinDegree)
+                else if (mp.Degree < this.SearchOptions.MinimumDegree)
                 {
-                    distance += MaxDegree - mp.Degree;
+                    dist += this.SearchOptions.MinimumDegree - mp.Degree;
                 }
 
                 // Distance distance!
-                if (mp.Distance > MaxDistance)
+                if (mp.Distance > this.SearchOptions.MaximumDistance)
                 {
-                    distance += mp.Distance - MaxDistance;
+                    dist += mp.Distance - this.SearchOptions.MaximumDistance;
                 }
-                else if (mp.Degree < MinDistance)
+                else if (mp.Degree < this.SearchOptions.MinimumDistance)
                 {
-                    distance += MaxDistance - mp.Distance;
+                    dist += this.SearchOptions.MinimumDistance - mp.Distance;
                 }
+
+                dist *= this.SearchOptions.DistanceNotPlaced;
+
+                distance += dist;
             }
 
             this.DistanceToFeasibility = distance;
 
-            return DistanceToFeasibility;
+            return this.DistanceToFeasibility;
         }
 
         /// <summary>
@@ -311,7 +387,6 @@
 
             do
             {
-                // TODO: Optimize distance function calculation
                 var point = FindPoint(maxDistance, cos, sin);
 
                 if (

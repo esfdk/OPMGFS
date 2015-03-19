@@ -17,8 +17,10 @@
         /// <param name="r"> The random to use in searching. </param>
         /// <param name="feasibleSize"> The feasible size. </param>
         /// <param name="infeasibleSize"> The infeasible size. </param>
-        public MapSearcher(Random r, int feasibleSize, int infeasibleSize) : base(r)
+        /// <param name="searchOptions"> The options for this search.</param>
+        public MapSearcher(Random r, int feasibleSize, int infeasibleSize, MapNoveltySearchOptions searchOptions) : base(r)
         {
+            this.SearchOptions = searchOptions;
             this.FeasiblePopulation = new MapPopulation(true, feasibleSize);
             this.InfeasiblePopulation = new MapPopulation(false, infeasibleSize);
             this.Archive = new MapNovelArchive();
@@ -57,7 +59,7 @@
                     list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
                 }
 
-                var ms = new MapSolution(list);
+                var ms = new MapSolution(this.SearchOptions, list);
                 FeasiblePopulation.CurrentGeneration.Add(ms);
             }
 
@@ -125,10 +127,15 @@
                     list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
                 }
 
-                var ms = new MapSolution(list);
+                var ms = new MapSolution(this.SearchOptions, list);
                 InfeasiblePopulation.CurrentGeneration.Add(ms);
             }
         }
+
+        /// <summary>
+        /// Gets the options for this search.
+        /// </summary>
+        public MapNoveltySearchOptions SearchOptions { get; private set; }
 
         /// <summary>
         /// Runs a number of generations to search for maps.

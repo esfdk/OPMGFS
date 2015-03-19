@@ -271,7 +271,7 @@ namespace OPMGFS.Map
             /// <returns> True if their positions are equal; false otherwise. </returns>
             protected bool Equals(AStarNode other)
             {
-                return Equals(this.Position, other.Position);
+                return object.Equals(this.Position, other.Position);
             }
         }
     }

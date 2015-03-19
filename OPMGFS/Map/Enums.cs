@@ -197,7 +197,7 @@ namespace OPMGFS.Map
         public enum WasPlaced
         {
             /// <summary>
-            /// Placement has not yet been attemped.
+            /// Placement has not yet been attempted.
             /// </summary>
             NotAttempted,
             

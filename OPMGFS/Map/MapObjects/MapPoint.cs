@@ -20,6 +20,9 @@
         /// <param name="type">
         /// The type of the point.
         /// </param>
+        /// <param name="wasPlaced">
+        /// Whether the map point was placed in the phenotype during conversion.
+        /// </param>
         public MapPoint(double distance, double degree, Enums.MapPointType type, Enums.WasPlaced wasPlaced)
         {
             this.Distance = distance;
@@ -43,6 +46,9 @@
         /// </summary>
         public Enums.MapPointType Type { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the enum indicating whether placement was successful.
+        /// </summary>
         public Enums.WasPlaced WasPlaced { get; set; }
 
         /// <summary>

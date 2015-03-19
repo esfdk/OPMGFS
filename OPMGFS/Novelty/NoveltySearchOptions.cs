@@ -26,8 +26,10 @@
         /// <param name="addToArchive">
         /// The amount of individuals to add to the novel archive.
         /// </param>
-        public NoveltySearchOptions(bool mutate = true, bool recombine = false, double mutationChance = 0.3, bool twoPointCrossover = false, int numberOfNeighbours = 1, int addToArchive = 1)
+        /// <param name="minimumNovelty">The minimum novelty required for an individual to be added to the novel archive.</param>
+        public NoveltySearchOptions(bool mutate = true, bool recombine = false, double mutationChance = 0.3, bool twoPointCrossover = false, int numberOfNeighbours = 1, int addToArchive = 1, double minimumNovelty = 0)
         {
+            this.MinimumNovelty = minimumNovelty;
             this.TwoPointCrossover = twoPointCrossover;
             this.MutationChance = mutationChance;
             this.Recombine = recombine;
@@ -65,5 +67,10 @@
         /// Gets the number of neighbours that the novelty should be calculated for.
         /// </summary>
         public int NumberOfNeighbours { get; private set; }
+
+        /// <summary>
+        /// Gets the minimum novelty required for an individual to be added to the novel archive.
+        /// </summary>
+        public double MinimumNovelty { get; private set; }
     }
 }

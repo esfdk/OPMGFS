@@ -4,8 +4,19 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    /// <summary>
+    /// Helper class for converting map solutions to phenotypes.
+    /// </summary>
     public static class MapSolutionConverter
     {
+        /// <summary>
+        /// Finds the nearest tile of a specific heightlevel in the height levels of the map phenotype.
+        /// </summary>
+        /// <param name="x"> The starting x-coordinate. </param>
+        /// <param name="y"> The starting y-coordinate. </param>
+        /// <param name="mp"> The map phenotype. </param>
+        /// <param name="goal"> The goal heightlevel. </param>
+        /// <returns> The <see cref="Tuple"/> of coordinates (item 1 is x-coordinate, item 2 is y-coordinate, item 3 is distance from starting point).</returns>
         public static Tuple<int, int, int> FindNearestHeightTileOfType(int x, int y, MapPhenotype mp, Enums.HeightLevel goal)
         {
             var queue = new List<Tuple<int, int, int>>();
@@ -50,6 +61,13 @@
             return null;
         }
 
+        /// <summary>
+        /// Attempts to place a ramp on a map phenotype.
+        /// </summary>
+        /// <param name="x"> The x-coordinate to attempt to use as a starting point. </param>
+        /// <param name="y"> The y-coordinate to attempt to use as a starting point. </param>
+        /// <param name="mp"> The map phenotype. </param>
+        /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         public static bool PlaceRamp(int x, int y, MapPhenotype mp)
         {
             if (!mp.InsideBounds(x, y)) return false;
@@ -115,6 +133,13 @@
             return PlaceTwoByTwo(x, y, mp, Enums.Item.DestructibleRocks);
         }
 
+        /// <summary>
+        /// The find closest cliff.
+        /// </summary>
+        /// <param name="startX"> The starting x-coordinate. </param>
+        /// <param name="startY"> The starting y-coordinate. </param>
+        /// <param name="mp"> The map phenotype. </param>
+        /// <returns>The <see cref="Tuple"/> of coordinates (item 1 is x-coordinate, item 2 is y-coordinate, item 3 is distance from starting point).</returns>
         public static Tuple<int, int, int> FindClosestCliff(int startX, int startY, MapPhenotype mp)
         {
             return FindNearestHeightTileOfType(startX, startY, mp, Enums.HeightLevel.Cliff);
@@ -145,7 +170,7 @@
                 return false;
             }
 
-            FlattenArea(mp.HeightLevels[x, y], x - 11, y - 11, 24, 24, mp); // TODO: Test
+            FlattenArea(mp.HeightLevels[x, y], x - 11, y - 11, 24, 24, mp);
             OccupyArea(x - 11, y - 11, 24, 24, mp);
 
             for (var sbx = x - 2; sbx < (x - 2 + 5); sbx++)
@@ -335,7 +360,7 @@
         /// <param name="x"> The x-coordinate. </param>
         /// <param name="y"> The y-coordinate. </param>
         /// <param name="mp"> The map phenotype to place minerals in. </param>
-        /// <param name="isGold"> Whether this ia a gold mineral or not. </param>
+        /// <param name="isGold"> Whether this is a gold mineral or not. </param>
         private static void PlaceMinerals(int x, int y, MapPhenotype mp, bool isGold = false)
         {
             if (!mp.InsideBounds(x, y) || !mp.InsideBounds(x + 1, y))
@@ -384,7 +409,19 @@
         /// <param name="mp">The map phenotype to flatten the area on.</param>
         private static void FlattenArea(Enums.HeightLevel height, int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
-            // TODO: Implement flattening
+            // TODO: Should flattening be run between each map point placement or after all of them have been placed
+            if (!mp.InsideBounds(startX, startY) || !mp.InsideBounds(startX + lengthX, startY + lengthY))
+            {
+                return;
+            }
+
+            for (var i = startX; i < startX + lengthX; i++)
+            {
+                for (var j = startY; j < startY + lengthY; j++)
+                {
+                    mp.HeightLevels[i, j] = height;
+                }
+            }
         }
 
         /// <summary>
@@ -411,6 +448,16 @@
             }
         }
 
+        /// <summary>
+        /// Attempts to place a ramp over a vertical patch of cliff.
+        /// </summary>
+        /// <param name="x"> The x-coordinate to place the ramp at. </param>
+        /// <param name="y"> The y-coordinate to place the ramp at. </param>
+        /// <param name="west"> The western ramp type. </param>
+        /// <param name="east"> The eastern ramp type. </param>
+        /// <param name="ramp"> The type of the ramp. </param>
+        /// <param name="mp"> The map phenotype. </param>
+        /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceVerticalRamp(int x, int y, Enums.HeightLevel west, Enums.HeightLevel east, Enums.HeightLevel ramp, MapPhenotype mp)
         {
             if (mp.HeightLevels[x - 1, y] == west && mp.HeightLevels[x - 1, y + 1] == west
@@ -480,6 +527,16 @@
             return false;
         }
 
+        /// <summary>
+        /// Attempts to place a ramp over a vertical patch of cliff.
+        /// </summary>
+        /// <param name="x"> The x-coordinate to place the ramp at. </param>
+        /// <param name="y"> The y-coordinate to place the ramp at. </param>
+        /// <param name="north"> The northern ramp type. </param>
+        /// <param name="south"> The southern ramp type. </param>
+        /// <param name="ramp"> The type of the ramp. </param>
+        /// <param name="mp"> The map phenotype. </param>
+        /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceHorizontalRamp(int x, int y, Enums.HeightLevel north, Enums.HeightLevel south, Enums.HeightLevel ramp, MapPhenotype mp)
         {
             if (mp.HeightLevels[x, y + 1] == north && mp.HeightLevels[x + 1, y + 1] == north
@@ -549,6 +606,13 @@
             return false;
         }
 
+        /// <summary>
+        /// Attempts to place a ramp on a vertical cliff.
+        /// </summary>
+        /// <param name="x"> The x-coordinate. </param>
+        /// <param name="y"> The y-coordinate. </param>
+        /// <param name="mp"> The map phenotype. </param>
+        /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceVerticalRamp(int x, int y, MapPhenotype mp)
         {
             if ((!mp.InsideBounds(x + 1, y) || !mp.InsideBounds(x + 1, y + 1))
@@ -604,6 +668,13 @@
             return false;
         }
 
+        /// <summary>
+        /// The place horizontal ramp.
+        /// </summary>
+        /// <param name="x"> The x-coordinate. </param>
+        /// <param name="y"> The y-coordinate. </param>
+        /// <param name="mp"> The map phenotype. </param>
+        /// <returns> The <see cref="bool"/> indicating whether placement was successful.  </returns>
         private static bool PlaceHorizontalRamp(int x, int y, MapPhenotype mp)
         {
             if ((!mp.InsideBounds(x, y + 1) || !mp.InsideBounds(x + 1, y + 1))

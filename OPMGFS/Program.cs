@@ -2,17 +2,18 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
-    using System.IO;
+    using System.Diagnostics.CodeAnalysis;
 
     using OPMGFS.Map;
     using OPMGFS.Map.CellularAutomata;
     using OPMGFS.Map.MapObjects;
     using OPMGFS.Novelty.MapNoveltySearch;
 
-    class Program
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
+    public class Program
     {
-        static void Main(string[] args)
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
+        public static void Main(string[] args)
         {
             ////Console.SetWindowPosition();
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
@@ -24,12 +25,13 @@
             Console.ReadKey();
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestCA()
         {
             var height = 128;
             var width = 128;
             var ca = new CellularAutomata(width, height, Enums.Half.Top);
-            ca.SetRuleset(getCARules());
+            ca.SetRuleset(GetCaRules());
             var map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
             string heights, items;
             map.GetMapStrings(out heights, out items);
@@ -45,7 +47,7 @@
                 ca.NextGeneration();
             }
 
-            //ca.PlaceCliffs();
+            ////ca.PlaceCliffs();
             map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
             map.MapItems[5, height - 5] = Enums.Item.StartBase;
             map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
@@ -54,30 +56,30 @@
 
             map.SaveMapToPngFile();
 
+            ////map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
+            ////map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
+            ////map.GetMapStrings(out heights, out items);
+            ////Console.WriteLine(heights);
 
-            //map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
-            //map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
-            //map.GetMapStrings(out heights, out items);
-            //Console.WriteLine(heights);
-
-            //foreach (var nb in MapHelper.GetNeighbours(3, height - 3, map.HeightLevels, RuleEnums.Neighbourhood.MooreExtended))
-            //{
-            //    Console.WriteLine(nb.Key + " " + nb.Value);
-            //}
+            ////foreach (var nb in MapHelper.GetNeighbours(3, height - 3, map.HeightLevels, RuleEnums.Neighbourhood.MooreExtended))
+            ////{
+            ////    Console.WriteLine(nb.Key + " " + nb.Value);
+            ////}
 
             ////ca.PlaceCliffs();
             ////map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
             ////map.GetMapStrings(out heights, out items);
             ////Console.WriteLine(heights);
 
-            //ca.AddImpassableTerrain(3, 5);
+            ////ca.AddImpassableTerrain(3, 5);
 
-            //map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
-            //map.GetMapStrings(out heights, out items);
-            //Console.WriteLine(heights);
+            ////map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
+            ////map.GetMapStrings(out heights, out items);
+            ////Console.WriteLine(heights);
         }
 
-        private static List<Rule> getCARules()
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
+        private static List<Rule> GetCaRules()
         {
             var ruleExtBasicHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2)
                                           {
@@ -106,16 +108,17 @@
 
             var ruleList = new List<Rule>
                                {
-                                   ruleExtBasicHeight2
-                                   , ruleBasicHeight2
-                                   , ruleBasicHeight1
-                                   , ruleAdvHeight1
-                                   //, ruleAdvHeight2
-                                   , ruleRemoveHeight0
+                                   ruleExtBasicHeight2, 
+                                   ruleBasicHeight2, 
+                                   ruleBasicHeight1, 
+                                   ruleAdvHeight1, 
+                                   ////ruleAdvHeight2, 
+                                   ruleRemoveHeight0
                                };
             return ruleList;
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestPhenotype()
         {
             Console.WriteLine(Enums.Item.BlueMinerals);
@@ -252,6 +255,7 @@
              * */
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestEvolution()
         {
             ////var evolverTest = new Evolver<EvolvableDoubleArray>(10, 10, 2, 10, 0.3);
@@ -305,20 +309,7 @@
 
         private static void TestNovelty()
         {
-            var ms = new MapSearcher(new Random(), 5, 5);
-
-            ////var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
-            var solution = new MapSolution(new List<MapPoint>()
-                                               {
-                                                   new MapPoint(0.9, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(0.2, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(1, 180, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(0.8, 0, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes),
-                                                   new MapPoint(0.9, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(0.2, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(1, 225, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(0.8, 315, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)
-                                               });
+            
             var map = new MapPhenotype(64, 64);
 
             map.HeightLevels[1, 35] = Enums.HeightLevel.Impassable;
@@ -343,72 +334,51 @@
             map.HeightLevels[2, 29] = Enums.HeightLevel.Impassable;
             map.HeightLevels[3, 29] = Enums.HeightLevel.Impassable;
 
-
             map.HeightLevels[58, 35] = Enums.HeightLevel.Impassable;
             map.HeightLevels[59, 35] = Enums.HeightLevel.Impassable;
-
             map.HeightLevels[58, 34] = Enums.HeightLevel.Height0;
             map.HeightLevels[59, 34] = Enums.HeightLevel.Height0;
-
             map.HeightLevels[58, 33] = Enums.HeightLevel.Height0;
             map.HeightLevels[59, 33] = Enums.HeightLevel.Height0;
-
             map.HeightLevels[58, 32] = Enums.HeightLevel.Cliff;
             map.HeightLevels[59, 32] = Enums.HeightLevel.Cliff;
-
             map.HeightLevels[58, 31] = Enums.HeightLevel.Height1;
             map.HeightLevels[59, 31] = Enums.HeightLevel.Height1;
-
             map.HeightLevels[58, 30] = Enums.HeightLevel.Impassable;
             map.HeightLevels[59, 30] = Enums.HeightLevel.Impassable;
-
             map.HeightLevels[58, 29] = Enums.HeightLevel.Impassable;
             map.HeightLevels[59, 29] = Enums.HeightLevel.Impassable;
 
-
             map.HeightLevels[32, 55] = Enums.HeightLevel.Impassable;
             map.HeightLevels[33, 55] = Enums.HeightLevel.Impassable;
-
             map.HeightLevels[32, 54] = Enums.HeightLevel.Height1;
             map.HeightLevels[33, 54] = Enums.HeightLevel.Height1;
-
             map.HeightLevels[32, 53] = Enums.HeightLevel.Height1;
             map.HeightLevels[33, 53] = Enums.HeightLevel.Height1;
-
             map.HeightLevels[32, 52] = Enums.HeightLevel.Cliff;
             map.HeightLevels[33, 52] = Enums.HeightLevel.Cliff;
-
             map.HeightLevels[32, 51] = Enums.HeightLevel.Height2;
             map.HeightLevels[33, 51] = Enums.HeightLevel.Height2;
-
             map.HeightLevels[32, 50] = Enums.HeightLevel.Impassable;
             map.HeightLevels[33, 50] = Enums.HeightLevel.Impassable;
-
             map.HeightLevels[32, 49] = Enums.HeightLevel.Impassable;
             map.HeightLevels[33, 49] = Enums.HeightLevel.Impassable;
-
-
+            
             map.HeightLevels[32, 35] = Enums.HeightLevel.Impassable;
             map.HeightLevels[33, 35] = Enums.HeightLevel.Impassable;
-
             map.HeightLevels[32, 34] = Enums.HeightLevel.Impassable;
             map.HeightLevels[33, 34] = Enums.HeightLevel.Impassable;
-
             map.HeightLevels[32, 33] = Enums.HeightLevel.Height1;
             map.HeightLevels[33, 33] = Enums.HeightLevel.Height1;
-
             map.HeightLevels[32, 32] = Enums.HeightLevel.Cliff;
             map.HeightLevels[33, 32] = Enums.HeightLevel.Cliff;
-
             map.HeightLevels[32, 31] = Enums.HeightLevel.Height2;
             map.HeightLevels[33, 31] = Enums.HeightLevel.Height2;
-
             map.HeightLevels[32, 30] = Enums.HeightLevel.Height2;
             map.HeightLevels[33, 30] = Enums.HeightLevel.Height2;
-
             map.HeightLevels[32, 29] = Enums.HeightLevel.Impassable;
             map.HeightLevels[33, 29] = Enums.HeightLevel.Impassable;
-
+            
             map.HeightLevels[1, 2] = Enums.HeightLevel.Impassable;
             map.HeightLevels[1, 3] = Enums.HeightLevel.Impassable;
             map.HeightLevels[1, 4] = Enums.HeightLevel.Impassable;
@@ -496,6 +466,25 @@
             map.HeightLevels[57, 2] = Enums.HeightLevel.Impassable;
             map.HeightLevels[57, 3] = Enums.HeightLevel.Impassable;
             map.HeightLevels[57, 4] = Enums.HeightLevel.Impassable;
+
+            var mnso = new MapNoveltySearchOptions(map);
+
+            ////var ms = new MapSearcher(new Random(), 5, 5, mnso);
+
+            ////var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
+            var solution = new MapSolution(
+                mnso,
+                new List<MapPoint>
+                    {
+                        new MapPoint(0.9, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(0.2, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(1, 180, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(0.8, 0, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes),
+                                                   new MapPoint(0.9, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(0.2, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(1, 225, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                                                   new MapPoint(0.8, 315, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)
+                                               });
 
             solution.ConvertToPhenotype(map);
             string heights, items;
