@@ -13,8 +13,17 @@
         /// <param name="mp">
         /// The map phenotype to search on.
         /// </param>
+        /// <param name="mapCompletion">
+        /// The completion method to use when converting to phenotype.
+        /// </param>
+        /// <param name="noPathBetweenStartBases">
+        /// The penalty to apply to map phenotypes that do not have a path between starting bases.
+        /// </param>
         /// <param name="distanceNotPlaced">
         /// The amount to add to the distance when a map point was not placed during conversion. 
+        /// </param>
+        /// <param name="distanceNotPlacedModifier">
+        /// The amount to modify the distance of angle/distance when a map point was not placed during conversion.
         /// </param>
         /// <param name="maximumDegree">
         /// The maximum Degree.
@@ -87,7 +96,10 @@
         /// </param>
         public MapNoveltySearchOptions(
             MapPhenotype mp,
+            Enums.MapFunction mapCompletion = Enums.MapFunction.Turn, 
+            double noPathBetweenStartBases = 100,
             double distanceNotPlaced = 10,
+            double distanceNotPlacedModifier = 1.5,
             double maximumDegree = 180,
             double minimumDegree = 0,
             double maximumDistance = 1.0,
@@ -113,6 +125,9 @@
             double minimumNovelty = 0)
             : base(mutate, recombine, mutationChance, twoPointCrossover, numberOfNeighbours, addToArchive, minimumNovelty)
         {
+            this.NoPathBetweenStartBases = noPathBetweenStartBases;
+            this.MapCompletion = mapCompletion;
+            this.DistanceNotPlaced = distanceNotPlaced;
             this.MaximumNumberOfXelNagaTowers = maximumNumberOfXelNagaTowers;
             this.MinimumNumberOfXelNagaTowers = minimumNumberOfXelNagaTowers;
             this.MaximumNumberOfDestructibleRocks = maximumNumberOfDestructibleRocks;
@@ -129,7 +144,7 @@
             this.MaximumDistance = maximumDistance;
             this.MinimumDegree = minimumDegree;
             this.MaximumDegree = maximumDegree;
-            this.DistanceNotPlaced = distanceNotPlaced;
+            this.DistanceNotPlacedModifier = distanceNotPlacedModifier;
             this.Map = mp;
         }
 
@@ -139,9 +154,19 @@
         public MapPhenotype Map { get; private set; }
 
         /// <summary>
+        /// Gets the penalty that should be applied to feasibility if there is no path between starting bases.
+        /// </summary>
+        public double NoPathBetweenStartBases { get; private set; }
+
+        /// <summary>
         /// Gets the distance to add whenever a map point was not placed when calculating distance.
         /// </summary>
         public double DistanceNotPlaced { get; private set; }
+
+        /// <summary>
+        /// Gets the distance to add whenever a map point was not placed when calculating distance.
+        /// </summary>
+        public double DistanceNotPlacedModifier { get; private set; }
 
         /// <summary>
         /// Gets the maximum degree.
@@ -222,5 +247,10 @@
         /// Gets the maximum number of xel naga towers.
         /// </summary>
         public int MaximumNumberOfXelNagaTowers { get; private set; }
+
+        /// <summary>
+        /// Gets the map completion function.
+        /// </summary>
+        public Enums.MapFunction MapCompletion { get; private set; }
     }
 }

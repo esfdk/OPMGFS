@@ -10,6 +10,58 @@
     public static class MapSolutionConverter
     {
         /// <summary>
+        /// Finds the nearest tile of a specific type in the items of the map phenotype.
+        /// </summary>
+        /// <param name="x"> The starting x-coordinate. </param>
+        /// <param name="y"> The starting y-coordinate. </param>
+        /// <param name="mp"> The map phenotype. </param>
+        /// <param name="goal"> The goal item. </param>
+        /// <returns> The <see cref="Tuple"/> of coordinates (item 1 is x-coordinate, item 2 is y-coordinate, item 3 is distance from starting point).</returns>
+        public static Tuple<int, int, int> FindNearestItemTileOfType(int x, int y, MapPhenotype mp, Enums.Item goal)
+        {
+            var queue = new List<Tuple<int, int, int>>();
+            var discovered = new List<Tuple<int, int, int>>();
+
+            var v = new Tuple<int, int, int>(x, y, 0);
+
+            queue.Add(v);
+
+            while (queue.Count != 0)
+            {
+                v = queue[0];
+                queue.RemoveAt(0);
+
+                for (var i = -1; i <= 1; i++)
+                {
+                    for (var j = -1; j <= 1; j++)
+                    {
+                        var w = new Tuple<int, int, int>(v.Item1 + i, v.Item2 + j, v.Item3 + 1);
+
+                        if (!mp.InsideBounds(w.Item1, w.Item2))
+                        {
+                            continue;
+                        }
+
+                        if (mp.MapItems[w.Item1, w.Item2] == goal)
+                        {
+                            return w;
+                        }
+
+                        if (discovered.Any(t => (t.Item1 == w.Item1) && (t.Item2 == w.Item2)))
+                        {
+                            continue;
+                        }
+
+                        queue.Add(w);
+                        discovered.Add(w);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Finds the nearest tile of a specific heightlevel in the height levels of the map phenotype.
         /// </summary>
         /// <param name="x"> The starting x-coordinate. </param>

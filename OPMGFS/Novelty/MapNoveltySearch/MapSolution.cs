@@ -216,7 +216,9 @@
         public MapPhenotype ConvertToPhenotype()
         {
             var map = this.ConvertToPhenotype(this.SearchOptions.Map);
+            map.CreateCompleteMap(Enums.Half.Top, this.SearchOptions.MapCompletion);
             this.ConvertedPhenotype = map;
+            this.hasBeenConverted = true;
             return map;
         }
 
@@ -331,7 +333,6 @@
         {
             ConvertToPhenotype();
 
-            // TODO: Make feasibility calculation better
             var distance = 0.0;
 
             foreach (var mp in this.MapPoints.Where(mp => mp.WasPlaced != Enums.WasPlaced.Yes))
@@ -358,10 +359,36 @@
                     dist += this.SearchOptions.MinimumDistance - mp.Distance;
                 }
 
-                dist *= this.SearchOptions.DistanceNotPlaced;
-
+                dist *= this.SearchOptions.DistanceNotPlacedModifier;
+                dist += this.SearchOptions.DistanceNotPlaced;
                 distance += dist;
             }
+
+            var sb = MapSolutionConverter.FindNearestItemTileOfType(
+                this.ConvertedPhenotype.XSize / 2,
+                this.ConvertedPhenotype.YSize,
+                this.ConvertedPhenotype,
+                Enums.Item.StartBase);
+
+            var topBasePoint = new Tuple<int, int>(sb.Item1, sb.Item2);
+            Tuple<int, int> bottomBasePoint;
+            switch (this.SearchOptions.MapCompletion)
+            {
+                case Enums.MapFunction.Mirror:
+                    bottomBasePoint = new Tuple<int, int>(sb.Item1, this.ConvertedPhenotype.YSize - sb.Item2 - 1);
+                    break;
+                case Enums.MapFunction.Turn:
+                    bottomBasePoint = new Tuple<int, int>(this.ConvertedPhenotype.XSize - sb.Item1 - 1, this.ConvertedPhenotype.YSize - sb.Item2 - 1);
+                    break;
+                default:
+                    bottomBasePoint = new Tuple<int, int>(this.ConvertedPhenotype.XSize - sb.Item1 - 1, this.ConvertedPhenotype.YSize - sb.Item2 - 1);
+                    break;
+            }
+
+            distance = 
+                MapPathfinding.FindPathFromTo(this.ConvertedPhenotype.HeightLevels, topBasePoint, bottomBasePoint).Count == 0
+                ? distance + this.SearchOptions.NoPathBetweenStartBases 
+                : distance;
 
             this.DistanceToFeasibility = distance;
 

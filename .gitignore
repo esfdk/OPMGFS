@@ -91,4 +91,4 @@ Ankh.NoLoad
 # =========================
 
 OPMGFS/Images/Finished Maps/*.png
-OPMGFS/Packages/
+Packages/*.*
