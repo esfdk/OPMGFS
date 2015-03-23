@@ -10,6 +10,18 @@ We did not have direct access to the map representation used in Starcraft, so we
 
 The genotype contains a list of the items the map should contain and their position on the map. The position uses a a radial system, where the midpoint is the middle of the map. Each item has an angle and a distance. The angle determines the angle from the middle of the map (with 0$^o$ being right and going counterclockwise (\textbf{Check if correct})). The distance is represented as a percentage of the distance from the middle of the map in a straight line to where the angle will hit the edge of the map.
 
+There were other genotype representations we considered, but decided against for various reasons:
+
+\begin{itemize}
+
+	\item \textbf{Direct representation} - A direct grid representation would be very easy to convert to a phenotype, but it is very close to being a phenotype already which defeats the purpose of having a genotype. It is also more time-consuming to mutate compared to the radial one, as we would have to create a copy of the entire grid every time we mutate.
+
+	\item \textbf{Coordinate representation} - Why did we not choose this one? (I honestly cannot remember)
+
+	\item \textbf{Seed representation} - A seed representation would have been the most simplistic type of representation we could have used, but would also have been the most difficult to code for. What part of the seed controls what, how do we interpret it, how do we mutate it and how do we ensure it does not end up producing completely impossible feature placements?
+
+\end{itemize}
+
 \subsection{Phenotype}
 \label{MapRepresentation_Phenotype}
 
