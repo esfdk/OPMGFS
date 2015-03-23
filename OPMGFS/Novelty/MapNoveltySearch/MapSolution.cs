@@ -331,15 +331,17 @@
         /// <returns>The distance to feasibility from this solution.</returns>
         protected override double CalculateDistanceToFeasibility()
         {
-            ConvertToPhenotype();
+            this.ConvertToPhenotype();
 
             var distance = 0.0;
 
+            // Calculate distances between map points
             foreach (var mp in this.MapPoints.Where(mp => mp.WasPlaced != Enums.WasPlaced.Yes))
             {
+                // TODO: Should we do average?
                 var dist = 0.0;
 
-                // Degree distance
+                // Degree difference
                 if (mp.Degree > this.SearchOptions.MaximumDegree)
                 {
                     dist += mp.Degree - this.SearchOptions.MaximumDegree;
@@ -349,7 +351,7 @@
                     dist += this.SearchOptions.MinimumDegree - mp.Degree;
                 }
 
-                // Distance distance!
+                // Distance difference
                 if (mp.Distance > this.SearchOptions.MaximumDistance)
                 {
                     dist += mp.Distance - this.SearchOptions.MaximumDistance;
@@ -364,12 +366,12 @@
                 distance += dist;
             }
 
+            // Check if there is a path between start bases
             var sb = MapSolutionConverter.FindNearestItemTileOfType(
                 this.ConvertedPhenotype.XSize / 2,
                 this.ConvertedPhenotype.YSize,
                 this.ConvertedPhenotype,
                 Enums.Item.StartBase);
-
             var topBasePoint = new Tuple<int, int>(sb.Item1, sb.Item2);
             Tuple<int, int> bottomBasePoint;
             switch (this.SearchOptions.MapCompletion)
