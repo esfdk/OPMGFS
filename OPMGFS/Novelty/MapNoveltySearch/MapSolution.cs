@@ -253,7 +253,7 @@
                 var xPos = (int)(point.Item1 + (newMap.XSize / 2.0));
                 var yPos = (int)(point.Item2 + (newMap.YSize / 2.0));
 
-                if (!newMap.InsideBounds(xPos, yPos))
+                if (!newMap.InsideTopHalf(xPos, yPos))
                 {
                     throw new ArgumentOutOfRangeException();
                 }

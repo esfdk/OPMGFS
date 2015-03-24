@@ -37,7 +37,7 @@
                     {
                         var w = new Tuple<int, int, int>(v.Item1 + i, v.Item2 + j, v.Item3 + 1);
 
-                        if (!mp.InsideBounds(w.Item1, w.Item2))
+                        if (!mp.InsideTopHalf(w.Item1, w.Item2))
                         {
                             continue;
                         }
@@ -89,7 +89,7 @@
                     {
                         var w = new Tuple<int, int, int>(v.Item1 + i, v.Item2 + j, v.Item3 + 1);
 
-                        if (!mp.InsideBounds(w.Item1, w.Item2))
+                        if (!mp.InsideTopHalf(w.Item1, w.Item2))
                         {
                             continue;
                         }
@@ -122,17 +122,17 @@
         /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         public static bool PlaceRamp(int x, int y, MapPhenotype mp)
         {
-            if (!mp.InsideBounds(x, y)) return false;
+            if (!mp.InsideTopHalf(x, y)) return false;
 
             // Horizontal
-            if (mp.InsideBounds(x + 1, y + 1) && mp.HeightLevels[x + 1, y] == Enums.HeightLevel.Cliff)
+            if (mp.InsideTopHalf(x + 1, y + 1) && mp.HeightLevels[x + 1, y] == Enums.HeightLevel.Cliff)
             {
                 if (PlaceHorizontalRamp(x, y, mp))
                 {
                     return true;
                 }
             }
-            else if (mp.InsideBounds(x - 1, y + 1) && mp.HeightLevels[x - 1, y] == Enums.HeightLevel.Cliff)
+            else if (mp.InsideTopHalf(x - 1, y + 1) && mp.HeightLevels[x - 1, y] == Enums.HeightLevel.Cliff)
             {
                 if (PlaceHorizontalRamp(x - 1, y, mp))
                 {
@@ -140,14 +140,14 @@
                 }
             }
 
-            if (mp.InsideBounds(x + 1, y + 1) && mp.HeightLevels[x, y + 1] == Enums.HeightLevel.Cliff)
+            if (mp.InsideTopHalf(x + 1, y + 1) && mp.HeightLevels[x, y + 1] == Enums.HeightLevel.Cliff)
             {
                 if (PlaceVerticalRamp(x, y, mp))
                 {
                     return true;
                 }
             }
-            else if (mp.InsideBounds(x + 1, y - 1) && mp.HeightLevels[x, y - 1] == Enums.HeightLevel.Cliff)
+            else if (mp.InsideTopHalf(x + 1, y - 1) && mp.HeightLevels[x, y - 1] == Enums.HeightLevel.Cliff)
             {
                 if (PlaceVerticalRamp(x, y - 1, mp))
                 {
@@ -195,13 +195,13 @@
         /// <returns>True if placement was successful, false if not.</returns>
         public static bool PlaceStartBase(int x, int y, MapPhenotype mp)
         {
-            if (!mp.InsideBounds(x, y))
+            if (!mp.InsideTopHalf(x, y))
             {
                 return false;
             }
 
-            if (!mp.InsideBounds(x - 11, y - 11) || !mp.InsideBounds(x - 11, y + 12) || !mp.InsideBounds(x + 12, y - 11) ||
-                !mp.InsideBounds(x + 12, y + 12))
+            if (!mp.InsideTopHalf(x - 11, y - 11) || !mp.InsideTopHalf(x - 11, y + 12) || !mp.InsideTopHalf(x + 12, y - 11) ||
+                !mp.InsideTopHalf(x + 12, y + 12))
             {
                 return false;
             }
@@ -275,13 +275,13 @@
         /// <returns>True if placement was successful, false if not.</returns>
         public static bool PlaceBase(int x, int y, MapPhenotype mp, bool isGoldBase = false)
         {
-            if (!mp.InsideBounds(x, y))
+            if (!mp.InsideTopHalf(x, y))
             {
                 return false;
             }
 
-            if (!mp.InsideBounds(x - 7, y - 7) || !mp.InsideBounds(x - 7, y + 8) || !mp.InsideBounds(x + 8, y - 7) ||
-                !mp.InsideBounds(x + 8, y + 8))
+            if (!mp.InsideTopHalf(x - 7, y - 7) || !mp.InsideTopHalf(x - 7, y + 8) || !mp.InsideTopHalf(x + 8, y - 7) ||
+                !mp.InsideTopHalf(x + 8, y + 8))
             {
                 return false;
             }
@@ -346,7 +346,7 @@
         /// <returns>True if placement was successful, false if not.</returns>
         private static bool PlaceTwoByTwo(int x, int y, MapPhenotype mp, Enums.Item itemToPlace)
         {
-            if (!mp.InsideBounds(x, y))
+            if (!mp.InsideTopHalf(x, y))
             {
                 return false;
             }
@@ -356,7 +356,7 @@
                 return false;
             }
 
-            if (mp.InsideBounds(x + 1, y) && mp.InsideBounds(x, y + 1) && mp.InsideBounds(x + 1, y + 1))
+            if (mp.InsideTopHalf(x + 1, y) && mp.InsideTopHalf(x, y + 1) && mp.InsideTopHalf(x + 1, y + 1))
             {
                 // Bottom-left
                 if (mp.HeightLevels[x, y] != Enums.HeightLevel.Cliff)
@@ -368,7 +368,7 @@
                     mp.MapItems[x + 1, y + 1] = itemToPlace;
                 }
             }
-            else if (mp.InsideBounds(x - 1, y) && mp.InsideBounds(x, y + 1) && mp.InsideBounds(x - 1, y + 1))
+            else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y + 1) && mp.InsideTopHalf(x - 1, y + 1))
             {
                 // Bottom-right
                 if (mp.HeightLevels[x - 1, y] != Enums.HeightLevel.Cliff)
@@ -380,7 +380,7 @@
                     mp.MapItems[x - 1, y + 1] = itemToPlace;
                 }
             }
-            else if (mp.InsideBounds(x + 1, y) && mp.InsideBounds(x, y - 1) && mp.InsideBounds(x + 1, y - 1))
+            else if (mp.InsideTopHalf(x + 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x + 1, y - 1))
             {
                 // Top-left
                 if (mp.HeightLevels[x, y - 1] != Enums.HeightLevel.Cliff)
@@ -392,7 +392,7 @@
                     mp.MapItems[x + 1, y - 1] = itemToPlace;
                 }
             }
-            else if (mp.InsideBounds(x - 1, y) && mp.InsideBounds(x, y - 1) && mp.InsideBounds(x - 1, y - 1))
+            else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x - 1, y - 1))
             {
                 // Top-right
                 if (mp.HeightLevels[x - 1, y - 1] != Enums.HeightLevel.Cliff)
@@ -419,7 +419,7 @@
         /// <returns>True if area is occupied or is outside bounds, false if not.</returns>
         private static bool IsAreaOccupied(int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
-            if (!mp.InsideBounds(startX, startY) || !mp.InsideBounds(startX + lengthX, startY + lengthY))
+            if (!mp.InsideTopHalf(startX, startY) || !mp.InsideTopHalf(startX + lengthX, startY + lengthY))
             {
                 return true;
             }
@@ -444,7 +444,7 @@
         /// <param name="isGold"> Whether this is a gold mineral or not. </param>
         private static void PlaceMinerals(int x, int y, MapPhenotype mp, bool isGold = false)
         {
-            if (!mp.InsideBounds(x, y) || !mp.InsideBounds(x + 1, y))
+            if (!mp.InsideTopHalf(x, y) || !mp.InsideTopHalf(x + 1, y))
             {
                 return;
             }
@@ -463,7 +463,7 @@
         /// <param name="mp"> The map phenotype to place gas in. </param>
         private static void PlaceGas(int x, int y, MapPhenotype mp)
         {
-            if (!mp.InsideBounds(x, y) || !mp.InsideBounds(x + 2, y) || !mp.InsideBounds(x, y + 2) || !mp.InsideBounds(x + 2, y + 2))
+            if (!mp.InsideTopHalf(x, y) || !mp.InsideTopHalf(x + 2, y) || !mp.InsideTopHalf(x, y + 2) || !mp.InsideTopHalf(x + 2, y + 2))
             {
                 return;
             }
@@ -491,7 +491,7 @@
         private static void FlattenArea(Enums.HeightLevel height, int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
             // TODO: Should flattening be run between each map point placement or after all of them have been placed
-            if (!mp.InsideBounds(startX, startY) || !mp.InsideBounds(startX + lengthX, startY + lengthY))
+            if (!mp.InsideTopHalf(startX, startY) || !mp.InsideTopHalf(startX + lengthX, startY + lengthY))
             {
                 return;
             }
@@ -515,7 +515,7 @@
         /// <param name="mp">The map to occupy tiles on.</param>
         private static void OccupyArea(int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
-            if (!mp.InsideBounds(startX, startY) || !mp.InsideBounds(startX + lengthX, startY + lengthY))
+            if (!mp.InsideTopHalf(startX, startY) || !mp.InsideTopHalf(startX + lengthX, startY + lengthY))
             {
                 return;
             }
@@ -541,8 +541,8 @@
         /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceVerticalRamp(int x, int y, Enums.HeightLevel west, Enums.HeightLevel east, Enums.HeightLevel ramp, MapPhenotype mp)
         {
-            if (!mp.InsideBounds(x - 1, y) || !mp.InsideBounds(x - 1, y + 1) || !mp.InsideBounds(x + 1, y)
-                || !mp.InsideBounds(x + 1, y + 1))
+            if (!mp.InsideTopHalf(x - 1, y) || !mp.InsideTopHalf(x - 1, y + 1) || !mp.InsideTopHalf(x + 1, y)
+                || !mp.InsideTopHalf(x + 1, y + 1))
             {
                 return false;
             }
@@ -550,7 +550,7 @@
             if (mp.HeightLevels[x - 1, y] == west && mp.HeightLevels[x - 1, y + 1] == west
                 && mp.HeightLevels[x + 1, y] == east && mp.HeightLevels[x + 1, y + 1] == east)
             {
-                if (mp.InsideBounds(x + 2, y) || mp.InsideBounds(x + 2, y + 1))
+                if (mp.InsideTopHalf(x + 2, y) || mp.InsideTopHalf(x + 2, y + 1))
                 {
                     if (!IsAreaOccupied(x - 1, y - 1, 4, 4, mp))
                     {
@@ -580,7 +580,7 @@
                     }
                 }
 
-                if (mp.InsideBounds(x - 2, y) || mp.InsideBounds(x - 2, y + 1))
+                if (mp.InsideTopHalf(x - 2, y) || mp.InsideTopHalf(x - 2, y + 1))
                 {
                     if (!IsAreaOccupied(x - 2, y - 1, 4, 4, mp))
                     {
@@ -626,7 +626,7 @@
         /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceHorizontalRamp(int x, int y, Enums.HeightLevel north, Enums.HeightLevel south, Enums.HeightLevel ramp, MapPhenotype mp)
         {
-            if (!mp.InsideBounds(x, y + 1) || !mp.InsideBounds(x + 1, y + 1) || !mp.InsideBounds(x, y - 1) || !mp.InsideBounds(x + 1, y - 1))
+            if (!mp.InsideTopHalf(x, y + 1) || !mp.InsideTopHalf(x + 1, y + 1) || !mp.InsideTopHalf(x, y - 1) || !mp.InsideTopHalf(x + 1, y - 1))
             {
                 return false;
             }
@@ -634,7 +634,7 @@
             if (mp.HeightLevels[x, y + 1] == north && mp.HeightLevels[x + 1, y + 1] == north
                 && mp.HeightLevels[x, y - 1] == south && mp.HeightLevels[x + 1, y - 1] == south)
             {
-                if (mp.InsideBounds(x, y - 2) || mp.InsideBounds(x + 1, y - 2))
+                if (mp.InsideTopHalf(x, y - 2) || mp.InsideTopHalf(x + 1, y - 2))
                 {
                     if (!IsAreaOccupied(x - 1, y - 2, 4, 4, mp))
                     {
@@ -664,7 +664,7 @@
                     }
                 }
 
-                if (mp.InsideBounds(x, y + 2) || mp.InsideBounds(x + 1, y + 2))
+                if (mp.InsideTopHalf(x, y + 2) || mp.InsideTopHalf(x + 1, y + 2))
                 {
                     if (!IsAreaOccupied(x - 1, y - 1, 4, 4, mp))
                     {
@@ -707,8 +707,8 @@
         /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceVerticalRamp(int x, int y, MapPhenotype mp)
         {
-            if ((!mp.InsideBounds(x + 1, y) || !mp.InsideBounds(x + 1, y + 1))
-                    && (!mp.InsideBounds(x - 1, y) || !mp.InsideBounds(x - 1, y + 1)))
+            if ((!mp.InsideTopHalf(x + 1, y) || !mp.InsideTopHalf(x + 1, y + 1))
+                    && (!mp.InsideTopHalf(x - 1, y) || !mp.InsideTopHalf(x - 1, y + 1)))
             {
                 return false;
             }
@@ -769,8 +769,8 @@
         /// <returns> The <see cref="bool"/> indicating whether placement was successful.  </returns>
         private static bool PlaceHorizontalRamp(int x, int y, MapPhenotype mp)
         {
-            if ((!mp.InsideBounds(x, y + 1) || !mp.InsideBounds(x + 1, y + 1))
-                    && (!mp.InsideBounds(x, y - 1) || !mp.InsideBounds(x + 1, y - 1)))
+            if ((!mp.InsideTopHalf(x, y + 1) || !mp.InsideTopHalf(x + 1, y + 1))
+                    && (!mp.InsideTopHalf(x, y - 1) || !mp.InsideTopHalf(x + 1, y - 1)))
             {
                 return false;
             }

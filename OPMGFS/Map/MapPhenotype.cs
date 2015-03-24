@@ -132,9 +132,9 @@ namespace OPMGFS.Map
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <returns>True if the point is inside, otherwise false.</returns>
-        public bool InsideBounds(int x, int y)
+        public bool InsideTopHalf(int x, int y)
         {
-            return !(x < 0 || y < 0 || x >= this.XSize || y >= this.YSize);
+            return !(x < 0 || y < (YSize / 2.0) || x >= this.XSize || y >= this.YSize);
         }
 
         /// <summary>

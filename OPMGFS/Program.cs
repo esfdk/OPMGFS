@@ -354,15 +354,15 @@
 
             map.PlaceCliffs();
 
-            map.SaveMapToPngFile();
+            map.SaveMapToPngFile(folder: "Test 2");
 
             var ms = new MapSearcher(new Random(), 10, 10, new MapNoveltySearchOptions(map));
 
-            ms.RunGenerations(10);
+            ms.RunGenerations(5);
 
             foreach (var solution in ms.Archive.Archive)
             {
-                ((MapSolution)solution).ConvertedPhenotype.SaveMapToPngFile();
+                ((MapSolution)solution).ConvertedPhenotype.SaveMapToPngFile(folder: "Test 2");
             }
 
         }
