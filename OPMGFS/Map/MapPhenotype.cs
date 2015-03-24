@@ -218,11 +218,21 @@ namespace OPMGFS.Map
                 {
                     foreach (var neighbourPosition in MapHelper.GetNeighbourPositions(x, y, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumann))
                     {
+                        // Don't do anything if we are at, or are looking at, a cliff or a ramp.
                         if (this.HeightLevels[x, y] == HeightLevel.Cliff
-                            || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Cliff) continue;
+                            || this.HeightLevels[x, y] == HeightLevel.Ramp01
+                            || this.HeightLevels[x, y] == HeightLevel.Ramp12
+                            || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Cliff
+                            || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Ramp01
+                            || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Ramp12) continue;
 
-                        if ((int)this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] < (int)this.HeightLevels[x, y])
+                        // If there are no items on the position being checked, place a cliff.
+                        if (this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] == Item.None 
+                            && (int)this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] < (int)this.HeightLevels[x, y])
                             tempMap[neighbourPosition.Item1, neighbourPosition.Item2] = HeightLevel.Cliff;
+                        else if (this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] != Item.None
+                            && (int)this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] < (int)this.HeightLevels[x, y]) // If there is an item, place a cliff on x, y
+                            tempMap[x, y] = HeightLevel.Cliff;
                     }
                 }
             }
@@ -234,7 +244,8 @@ namespace OPMGFS.Map
         /// Saves the map to a PNG file.
         /// </summary>
         /// <param name="fileNameAddition"> An extra part to add to the file name, when generating maps during testing. </param>
-        public void SaveMapToPngFile(string fileNameAddition = "")
+        /// <param name="folder"> Save the map to a special folder in Images/Finished Maps. NOTE: Just give the name of the folder to create/save in, no extra characters such as \. </param>
+        public void SaveMapToPngFile(string fileNameAddition = "", string folder = "")
         {
             // The dictionaries and bitmap.
             var heightDic = MapHelper.GetHeightmapImageDictionary();
@@ -249,10 +260,17 @@ namespace OPMGFS.Map
 
             var mapDir = Path.Combine(MapHelper.GetImageDirectory(), @"Finished Maps");
 
+            // If the folder parameter is not empty, create a folder.
+            if (!folder.Equals(string.Empty)) 
+                mapDir = Path.Combine(mapDir, folder);
+
+            // IF there is no file name addition, don't add an underscore.
+            fileNameAddition = !fileNameAddition.Equals(string.Empty) ? "_" + fileNameAddition : fileNameAddition;
+
             Directory.CreateDirectory(mapDir);
 
-            var mapHeightFile = @"Map_" + currentTime + "_" + fileNameAddition + ".png";
-            var mapItemFile = @"Map_" + currentTime + "_With_Items_" + fileNameAddition + ".png";
+            var mapHeightFile = @"Map_" + currentTime + fileNameAddition + ".png";
+            var mapItemFile = @"Map_" + currentTime + "_With_Items" + fileNameAddition + ".png";
 
             // Creating heightmap
             using (var g = Graphics.FromImage(bm))

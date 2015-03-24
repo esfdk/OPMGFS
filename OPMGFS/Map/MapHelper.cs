@@ -13,6 +13,7 @@ namespace OPMGFS.Map
     using System.Collections.Generic;
     using System.Drawing;
     using System.IO;
+    using System.Linq;
 
     using OPMGFS.Map.CellularAutomata;
 
@@ -115,13 +116,8 @@ namespace OPMGFS.Map
                 moves = new[] { -2, -1, 0, 1, 2 };
 
             // Ensure that all keys are in the dictionary
-            neighbours[Enums.HeightLevel.Height0] = 0;
-            neighbours[Enums.HeightLevel.Height1] = 0;
-            neighbours[Enums.HeightLevel.Height2] = 0;
-            neighbours[Enums.HeightLevel.Impassable] = 0;
-            neighbours[Enums.HeightLevel.Cliff] = 0;
-            neighbours[Enums.HeightLevel.Ramp01] = 0;
-            neighbours[Enums.HeightLevel.Ramp12] = 0;
+            foreach (var heightlevel in Enum.GetValues(typeof(Enums.HeightLevel)))
+                neighbours[(Enums.HeightLevel)heightlevel] = 0;
 
             foreach (var moveX in moves)
             {
