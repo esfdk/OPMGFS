@@ -490,7 +490,6 @@
         /// <param name="mp">The map phenotype to flatten the area on.</param>
         private static void FlattenArea(Enums.HeightLevel height, int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
-            // TODO: Should flattening be run between each map point placement or after all of them have been placed
             if (!mp.InsideTopHalf(startX, startY) || !mp.InsideTopHalf(startX + lengthX, startY + lengthY))
             {
                 return;

@@ -181,7 +181,6 @@ namespace OPMGFS.Evolution
 
         /// <summary>
         /// Spawns children from the candidates chosen and adds them directly to the population.
-        /// TODO: Should maybe not add them directly to population?
         /// </summary>
         /// <param name="candidates">A list of the candidates to create children from.</param>
         private void SpawnChildren(List<T> candidates)
