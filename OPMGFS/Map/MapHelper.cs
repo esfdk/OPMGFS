@@ -119,6 +119,9 @@ namespace OPMGFS.Map
             neighbours[Enums.HeightLevel.Height1] = 0;
             neighbours[Enums.HeightLevel.Height2] = 0;
             neighbours[Enums.HeightLevel.Impassable] = 0;
+            neighbours[Enums.HeightLevel.Cliff] = 0;
+            neighbours[Enums.HeightLevel.Ramp01] = 0;
+            neighbours[Enums.HeightLevel.Ramp12] = 0;
 
             foreach (var moveX in moves)
             {

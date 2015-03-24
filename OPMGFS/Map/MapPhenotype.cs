@@ -209,6 +209,7 @@ namespace OPMGFS.Map
         /// </summary>
         public void PlaceCliffs()
         {
+            // TODO: Allow for defining how much of the map should be "cliffed"
             var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
 
             for (var y = 0; y < this.YSize; y++)

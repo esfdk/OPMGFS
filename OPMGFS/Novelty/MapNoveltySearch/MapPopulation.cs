@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Policy;
 
     /// <summary>
     /// A population of maps used in map novelty search.
@@ -59,12 +60,17 @@
 
             allIndividuals.RemoveAll(returnedPopulation.Contains);
 
-            if (this.IsFeasiblePopulation)
+            if (this.IsFeasiblePopulation && allIndividuals.Count > 0)
             {
                 var newToArchive = nso.AddToArchive;
 
                 for (var i = 0; i < this.PopulationSize; i++)
                 {
+                    if (allIndividuals.Count <= 0)
+                    {
+                        break;
+                    }
+
                     var index = 0;
                     var highestNovelty = -5000.0;
 
@@ -79,7 +85,7 @@
                         index = j;
                     }
 
-                    if (newToArchive > 0)
+                    if (newToArchive > 0 && allIndividuals[index].Novelty > nso.MinimumNovelty)
                     {
                         na.Archive.Add(allIndividuals[index]);
                         newToArchive--;
@@ -93,10 +99,15 @@
                 }   
             }
 
-            if (!this.IsFeasiblePopulation)
+            if (!this.IsFeasiblePopulation && allIndividuals.Count > 0)
             {
                 for (var i = 0; i < this.PopulationSize; i++)
                 {
+                    if (allIndividuals.Count <= 0)
+                    {
+                        break;
+                    }
+
                     var index = 0;
                     var highestDistance = double.MaxValue;
 

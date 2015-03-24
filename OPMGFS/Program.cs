@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Threading;
 
     using OPMGFS.Map;
@@ -20,8 +21,9 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             ////TestEvolution();
             ////TestPhenotype();
-            ////TestNovelty();
-            TestCA();
+            ////TestPhenotypeConversion();
+            ////TestCA();
+            TestMapNoveltySearch();
 
             Console.ReadKey();
         }
@@ -338,7 +340,34 @@
             ////integersearcher.RunGenerations(10);
         }
 
-        private static void TestNovelty()
+        private static void TestMapNoveltySearch()
+        {
+            var ca = new CellularAutomata(128, 128, Enums.Half.Top);
+            ca.SetRuleset(GetCARules());
+            for (var i = 0; i < 10; i++)
+            {
+                ca.NextGeneration();
+            }
+
+            var map = new MapPhenotype(ca.Map, new Enums.Item[128, 128]);
+            map.SmoothTerrain();
+
+            map.PlaceCliffs();
+
+            map.SaveMapToPngFile();
+
+            var ms = new MapSearcher(new Random(), 10, 10, new MapNoveltySearchOptions(map));
+
+            ms.RunGenerations(10);
+
+            foreach (var solution in ms.Archive.Archive)
+            {
+                ((MapSolution)solution).ConvertedPhenotype.SaveMapToPngFile();
+            }
+
+        }
+
+        private static void TestPhenotypeConversion()
         {
             var map = new MapPhenotype(64, 64);
 

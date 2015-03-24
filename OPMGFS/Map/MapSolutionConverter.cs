@@ -125,19 +125,14 @@
             if (!mp.InsideBounds(x, y)) return false;
 
             // Horizontal
-            if (!mp.InsideBounds(x + 1, y + 1))
-            {
-                return false;
-            }
-
-            if (mp.HeightLevels[x + 1, y] == Enums.HeightLevel.Cliff)
+            if (mp.InsideBounds(x + 1, y + 1) && mp.HeightLevels[x + 1, y] == Enums.HeightLevel.Cliff)
             {
                 if (PlaceHorizontalRamp(x, y, mp))
                 {
                     return true;
                 }
             }
-            else if (mp.HeightLevels[x - 1, y] == Enums.HeightLevel.Cliff)
+            else if (mp.InsideBounds(x - 1, y + 1) && mp.HeightLevels[x - 1, y] == Enums.HeightLevel.Cliff)
             {
                 if (PlaceHorizontalRamp(x - 1, y, mp))
                 {
@@ -145,20 +140,14 @@
                 }
             }
 
-            // Vertical
-            if (!mp.InsideBounds(x + 1, y + 1))
-            {
-                return false;
-            }
-
-            if (mp.HeightLevels[x, y + 1] == Enums.HeightLevel.Cliff)
+            if (mp.InsideBounds(x + 1, y + 1) && mp.HeightLevels[x, y + 1] == Enums.HeightLevel.Cliff)
             {
                 if (PlaceVerticalRamp(x, y, mp))
                 {
                     return true;
                 }
             }
-            else if (mp.HeightLevels[x, y - 1] == Enums.HeightLevel.Cliff)
+            else if (mp.InsideBounds(x + 1, y - 1) && mp.HeightLevels[x, y - 1] == Enums.HeightLevel.Cliff)
             {
                 if (PlaceVerticalRamp(x, y - 1, mp))
                 {
@@ -288,7 +277,21 @@
                 return false;
             }
 
-            FlattenArea(mp.HeightLevels[x, y], x - 7, y - 7, 16, 16, mp);
+            var height = mp.HeightLevels[x, y];
+
+            if (height == Enums.HeightLevel.Cliff || height == Enums.HeightLevel.Impassable)
+            {
+                var neighbours = MapHelper.GetNeighbours(x, y, mp.HeightLevels);
+
+                height = (neighbours[Enums.HeightLevel.Height2] >= neighbours[Enums.HeightLevel.Height1]
+                             && neighbours[Enums.HeightLevel.Height2] >= neighbours[Enums.HeightLevel.Height0])
+                                ? Enums.HeightLevel.Height2
+                                : neighbours[Enums.HeightLevel.Height1] >= neighbours[Enums.HeightLevel.Height0]
+                                      ? Enums.HeightLevel.Height1
+                                      : Enums.HeightLevel.Height0;
+            }
+
+            FlattenArea(height, x - 7, y - 7, 16, 16, mp);
             OccupyArea(x - 7, y - 7, 16, 16, mp);
 
             var rx = x - 1;
@@ -512,6 +515,12 @@
         /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceVerticalRamp(int x, int y, Enums.HeightLevel west, Enums.HeightLevel east, Enums.HeightLevel ramp, MapPhenotype mp)
         {
+            if (!mp.InsideBounds(x - 1, y) || !mp.InsideBounds(x - 1, y + 1) || !mp.InsideBounds(x + 1, y)
+                || !mp.InsideBounds(x + 1, y + 1))
+            {
+                return false;
+            }
+
             if (mp.HeightLevels[x - 1, y] == west && mp.HeightLevels[x - 1, y + 1] == west
                 && mp.HeightLevels[x + 1, y] == east && mp.HeightLevels[x + 1, y + 1] == east)
             {
@@ -591,6 +600,11 @@
         /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceHorizontalRamp(int x, int y, Enums.HeightLevel north, Enums.HeightLevel south, Enums.HeightLevel ramp, MapPhenotype mp)
         {
+            if (!mp.InsideBounds(x, y + 1) || !mp.InsideBounds(x + 1, y + 1) || !mp.InsideBounds(x, y - 1) || !mp.InsideBounds(x + 1, y - 1))
+            {
+                return false;
+            }
+
             if (mp.HeightLevels[x, y + 1] == north && mp.HeightLevels[x + 1, y + 1] == north
                 && mp.HeightLevels[x, y - 1] == south && mp.HeightLevels[x + 1, y - 1] == south)
             {

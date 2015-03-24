@@ -89,9 +89,9 @@
         /// </returns>
         public override Solution Mutate(Random r)
         {
-            var newPoints = this.MapPoints.Select(mp => r.NextDouble() < this.SearchOptions.MutationChance ? mp.Mutate(r) : mp).ToList();
+            var newPoints = this.MapPoints.Select(mp => r.NextDouble() < this.SearchOptions.MutationChance ? mp.Mutate(r, this.SearchOptions) : mp).ToList();
 
-            // TODO: Should we ever remove a point? When? When do we stop adding?
+            // TODO: Make changes to amount of different types of map points
             return new MapSolution(this.SearchOptions, newPoints);
         }
 
@@ -216,9 +216,9 @@
         public MapPhenotype ConvertToPhenotype()
         {
             var map = this.ConvertToPhenotype(this.SearchOptions.Map);
-            map.CreateCompleteMap(Enums.Half.Top, this.SearchOptions.MapCompletion);
-            this.ConvertedPhenotype = map;
+            this.ConvertedPhenotype = map.CreateCompleteMap(Enums.Half.Top, this.SearchOptions.MapCompletion);
             this.hasBeenConverted = true;
+            this.ConvertedPhenotype.PlaceCliffs();
             return map;
         }
 
@@ -233,7 +233,10 @@
         /// </returns>
         public MapPhenotype ConvertToPhenotype(MapPhenotype map)
         {
-            var newMap = new MapPhenotype(map.HeightLevels, map.MapItems);
+            var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
+            var items = map.MapItems.Clone() as Enums.Item[,];
+
+            var newMap = new MapPhenotype(heightLevels, items);
 
             foreach (var mp in this.MapPoints)
             {
@@ -244,11 +247,11 @@
                     continue;
                 }
 
-                var maxDistance = MaxDistanceAtDegree(map.XSize / 2.0, map.YSize / 2.0, mp.Degree);
+                var maxDistance = MaxDistanceAtDegree(newMap.XSize / 2.0, newMap.YSize / 2.0, mp.Degree);
                 var point = FindPoint(mp.Degree, maxDistance * mp.Distance);
 
-                var xPos = (int)(point.Item1 + (map.XSize / 2.0));
-                var yPos = (int)(point.Item2 + (map.YSize / 2.0));
+                var xPos = (int)(point.Item1 + (newMap.XSize / 2.0));
+                var yPos = (int)(point.Item2 + (newMap.YSize / 2.0));
 
                 if (!newMap.InsideBounds(xPos, yPos))
                 {
@@ -258,31 +261,31 @@
                 switch (mp.Type)
                 {
                     case Enums.MapPointType.Base:
-                        mp.WasPlaced = MapSolutionConverter.PlaceBase(xPos, yPos, map) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        mp.WasPlaced = MapSolutionConverter.PlaceBase(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.GoldBase:
-                        mp.WasPlaced = MapSolutionConverter.PlaceBase(xPos, yPos, map, true) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        mp.WasPlaced = MapSolutionConverter.PlaceBase(xPos, yPos, newMap, true) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.StartBase:
-                        mp.WasPlaced = MapSolutionConverter.PlaceStartBase(xPos, yPos, map) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        mp.WasPlaced = MapSolutionConverter.PlaceStartBase(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.XelNagaTower:
-                        mp.WasPlaced = MapSolutionConverter.PlaceXelNagaTower(xPos, yPos, map) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        mp.WasPlaced = MapSolutionConverter.PlaceXelNagaTower(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.Ramp:
-                        var location = MapSolutionConverter.FindClosestCliff(xPos, yPos, map);
-                        mp.WasPlaced = MapSolutionConverter.PlaceRamp(location.Item1, location.Item2, map) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        var location = MapSolutionConverter.FindClosestCliff(xPos, yPos, newMap);
+                        mp.WasPlaced = MapSolutionConverter.PlaceRamp(location.Item1, location.Item2, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.DestructibleRocks:
-                        mp.WasPlaced = MapSolutionConverter.PlaceDestructibleRocks(xPos, yPos, map) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        mp.WasPlaced = MapSolutionConverter.PlaceDestructibleRocks(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     default:
-                        map.MapItems[yPos, xPos] = Enums.Item.None;
+                        newMap.MapItems[yPos, xPos] = Enums.Item.None;
                         break;
                 }
             }
 
-            return map;
+            return newMap;
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
@@ -338,7 +341,7 @@
             // Calculate distances between map points
             foreach (var mp in this.MapPoints.Where(mp => mp.WasPlaced != Enums.WasPlaced.Yes))
             {
-                // TODO: Should we do average?
+                // TODO: Make average
                 var dist = 0.0;
 
                 // Degree difference
@@ -362,35 +365,54 @@
                 }
 
                 dist *= this.SearchOptions.DistanceNotPlacedModifier;
-                dist += this.SearchOptions.DistanceNotPlaced;
+                
                 distance += dist;
             }
 
+            // TODO: Check if there are enough/too many of the different map points
+            // dist += this.SearchOptions.DistanceNotPlaced;
+
             // Check if there is a path between start bases
-            var sb = MapSolutionConverter.FindNearestItemTileOfType(
-                this.ConvertedPhenotype.XSize / 2,
-                this.ConvertedPhenotype.YSize,
-                this.ConvertedPhenotype,
-                Enums.Item.StartBase);
-            var topBasePoint = new Tuple<int, int>(sb.Item1, sb.Item2);
-            Tuple<int, int> bottomBasePoint;
-            switch (this.SearchOptions.MapCompletion)
+            var sb = this.MapPoints.FirstOrDefault(mp => mp.Type == Enums.MapPointType.StartBase);
+            if (sb != null && sb.WasPlaced == Enums.WasPlaced.Yes)
             {
-                case Enums.MapFunction.Mirror:
-                    bottomBasePoint = new Tuple<int, int>(sb.Item1, this.ConvertedPhenotype.YSize - sb.Item2 - 1);
-                    break;
-                case Enums.MapFunction.Turn:
-                    bottomBasePoint = new Tuple<int, int>(this.ConvertedPhenotype.XSize - sb.Item1 - 1, this.ConvertedPhenotype.YSize - sb.Item2 - 1);
-                    break;
-                default:
-                    bottomBasePoint = new Tuple<int, int>(this.ConvertedPhenotype.XSize - sb.Item1 - 1, this.ConvertedPhenotype.YSize - sb.Item2 - 1);
-                    break;
+                var startBaseTile = MapSolutionConverter.FindNearestItemTileOfType(
+                    this.ConvertedPhenotype.XSize / 2,
+                    this.ConvertedPhenotype.YSize,
+                    this.ConvertedPhenotype,
+                    Enums.Item.StartBase);
+                var topBasePoint = new Tuple<int, int>(startBaseTile.Item1, startBaseTile.Item2);
+                Tuple<int, int> bottomBasePoint;
+                switch (this.SearchOptions.MapCompletion)
+                {
+                    case Enums.MapFunction.Mirror:
+                        bottomBasePoint = new Tuple<int, int>(
+                            startBaseTile.Item1,
+                            this.ConvertedPhenotype.YSize - startBaseTile.Item2 - 1);
+                        break;
+                    case Enums.MapFunction.Turn:
+                        bottomBasePoint = new Tuple<int, int>(
+                            this.ConvertedPhenotype.XSize - startBaseTile.Item1 - 1,
+                            this.ConvertedPhenotype.YSize - startBaseTile.Item2 - 1);
+                        break;
+                    default:
+                        bottomBasePoint = new Tuple<int, int>(
+                            this.ConvertedPhenotype.XSize - startBaseTile.Item1 - 1,
+                            this.ConvertedPhenotype.YSize - startBaseTile.Item2 - 1);
+                        break;
+                }
+
+                distance =
+                    MapPathfinding.FindPathFromTo(this.ConvertedPhenotype.HeightLevels, topBasePoint, bottomBasePoint)
+                        .Count == 0
+                        ? distance + this.SearchOptions.NoPathBetweenStartBases
+                        : distance;
+            }
+            else
+            {
+                distance += this.SearchOptions.NoPathBetweenStartBases;
             }
 
-            distance = 
-                MapPathfinding.FindPathFromTo(this.ConvertedPhenotype.HeightLevels, topBasePoint, bottomBasePoint).Count == 0
-                ? distance + this.SearchOptions.NoPathBetweenStartBases 
-                : distance;
 
             this.DistanceToFeasibility = distance;
 

@@ -3,6 +3,8 @@
     using System;
     using System.Diagnostics.CodeAnalysis;
 
+    using OPMGFS.Novelty.MapNoveltySearch;
+
     /// <summary>
     /// A point on the map described as percentage of distance to edge at a specific angle.
     /// </summary>
@@ -57,21 +59,23 @@
         /// <param name="r">
         /// The random generator to use for mutation.
         /// </param>
+        /// <param name="mnso">The search options.</param>
         /// <returns>
         /// The <see cref="MapPoint"/> created by the mutation.
         /// </returns>
-        public MapPoint Mutate(Random r)
+        public MapPoint Mutate(Random r, MapNoveltySearchOptions mnso)
         {
-            var maxDistMod = 0.05;
-            var maxDegreeMod = 10.0;
-
             var positiveChange = r.Next(2);
-            var newDistance = positiveChange == 1 ? this.Distance + (r.NextDouble() * maxDistMod) : this.Distance - (r.NextDouble() * maxDistMod);
+            var newDistance = positiveChange == 1 
+                                ? this.Distance + (r.NextDouble() * mnso.MaximumDistanceModifier) 
+                                : this.Distance - (r.NextDouble() * mnso.MaximumDistanceModifier);
+
             positiveChange = r.Next(2);
             var newDegree = positiveChange == 1
-                                ? this.Degree + (r.NextDouble() * maxDegreeMod)
-                                : this.Degree - (r.NextDouble() * maxDegreeMod);
+                                ? this.Degree + (r.NextDouble() * mnso.MaximumDegreeModifier)
+                                : this.Degree - (r.NextDouble() * mnso.MaximumDegreeModifier);
             newDegree = (newDegree + 360) % 360;
+
             return new MapPoint(newDistance, newDegree, this.Type, Enums.WasPlaced.NotAttempted);
         }
 

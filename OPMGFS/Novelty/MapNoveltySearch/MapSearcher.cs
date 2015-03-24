@@ -27,7 +27,14 @@
 
             for (var i = 0; i < feasibleSize; i++)
             {
-                var list = new List<MapPoint>();
+                var list = new List<MapPoint>
+                               {
+                                   new MapPoint(
+                                       this.Random.NextDouble(),
+                                       this.Random.Next(181),
+                                       Enums.MapPointType.StartBase,
+                                       Enums.WasPlaced.NotAttempted)
+                               };
 
                 for (var j = 0; j < 5; j++)
                 {
@@ -37,7 +44,7 @@
                     switch (j)
                     {
                         case 0:
-                            mpt = Enums.MapPointType.StartBase;
+                            mpt = Enums.MapPointType.Base;
                             break;
                         case 1:
                             mpt = Enums.MapPointType.Base;
@@ -65,7 +72,14 @@
 
             for (var i = 0; i < feasibleSize; i++)
             {
-                var list = new List<MapPoint>();
+                var list = new List<MapPoint>
+                               {
+                                   new MapPoint(
+                                       -this.Random.NextDouble(),
+                                       this.Random.Next(181, 360),
+                                       Enums.MapPointType.StartBase,
+                                       Enums.WasPlaced.NotAttempted)
+                               };
 
                 for (var j = 0; j < 3; j++)
                 {
@@ -75,7 +89,7 @@
                     switch (j)
                     {
                         case 0:
-                            mpt = Enums.MapPointType.StartBase;
+                            mpt = Enums.MapPointType.Base;
                             break;
                         case 1:
                             mpt = Enums.MapPointType.Base;
@@ -97,7 +111,7 @@
                     list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
                 }
 
-                for (var j = 0; j < 2; j++)
+                for (var j = 1; j < 3; j++)
                 {
                     var dist = Random.NextDouble() + 1.0;
                     var degree = Random.Next(181, 360);
@@ -105,7 +119,7 @@
                     switch (j)
                     {
                         case 0:
-                            mpt = Enums.MapPointType.StartBase;
+                            mpt = Enums.MapPointType.Base;
                             break;
                         case 1:
                             mpt = Enums.MapPointType.Base;
@@ -143,22 +157,22 @@
         /// <param name="generations">Number of generations to run.</param>
         public void RunGenerations(int generations)
         {
-            /*
             Console.WriteLine("Generation 0");
 
             Console.WriteLine("-----------------");
             Console.WriteLine("Feasible Population");
             foreach (var ms in FeasiblePopulation.CurrentGeneration)
             {
-                Console.WriteLine(((MapSolution)ms));
+                Console.WriteLine(ms);
             }
 
             Console.WriteLine("------------------");
             Console.WriteLine("Infeasible Population");
             foreach (var ms in InfeasiblePopulation.CurrentGeneration)
             {
-                Console.WriteLine(((MapSolution)ms));
+                Console.WriteLine(ms);
             }
+
             Console.WriteLine("------------------");
 
             Console.WriteLine("-------------------");
@@ -167,7 +181,7 @@
                 Console.WriteLine("Generation " + i);
 
                 this.NextGeneration();
-            }*/
+            }
         }
 
         /// <summary>
