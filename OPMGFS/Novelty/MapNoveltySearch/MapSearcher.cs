@@ -36,7 +36,7 @@
                                        Enums.WasPlaced.NotAttempted)
                                };
 
-                for (var j = 0; j < 5; j++)
+                for (var j = 0; j < 15; j++)
                 {
                     var dist = Random.NextDouble();
                     var degree = Random.Next(181);
@@ -59,7 +59,7 @@
                             mpt = Enums.MapPointType.Ramp;
                             break;
                         default:
-                            mpt = Enums.MapPointType.Base;
+                            mpt = Enums.MapPointType.Ramp;
                             break;
                     }
 
@@ -81,7 +81,7 @@
                                        Enums.WasPlaced.NotAttempted)
                                };
 
-                for (var j = 0; j < 3; j++)
+                for (var j = 0; j < 8; j++)
                 {
                     var dist = -Random.NextDouble();
                     var degree = Random.Next(181, 360);
@@ -104,14 +104,14 @@
                             mpt = Enums.MapPointType.Ramp;
                             break;
                         default:
-                            mpt = Enums.MapPointType.Base;
+                            mpt = Enums.MapPointType.Ramp;
                             break;
                     }
 
                     list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
                 }
 
-                for (var j = 1; j < 3; j++)
+                for (var j = 1; j < 7; j++)
                 {
                     var dist = Random.NextDouble() + 1.0;
                     var degree = Random.Next(181, 360);
@@ -134,7 +134,7 @@
                             mpt = Enums.MapPointType.Ramp;
                             break;
                         default:
-                            mpt = Enums.MapPointType.Base;
+                            mpt = Enums.MapPointType.Ramp;
                             break;
                     }
 
