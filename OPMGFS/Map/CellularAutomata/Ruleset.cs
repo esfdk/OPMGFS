@@ -49,13 +49,15 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="caXEnd"> The x end position of the cellular automata. </param>
         /// <param name="caYStart"> The y start position of the cellular automata. </param>
         /// <param name="caYEnd"> The y end position of the cellular automata. </param>
+        /// <param name="generateHeight2"> Determines if height2 should be created through rules or not. </param>
         /// <returns> A map representing the next generation. </returns>
         public Enums.HeightLevel[,] NextGeneration(
             Enums.HeightLevel[,] map,
             int caXStart,
             int caXEnd,
             int caYStart,
-            int caYEnd)
+            int caYEnd,
+            bool generateHeight2)
         {
             var tempMap = (Enums.HeightLevel[,])map.Clone();
 
@@ -64,20 +66,28 @@ namespace OPMGFS.Map.CellularAutomata
             {
                 for (var x = caXStart; x < caXEnd; x++)
                 {
+                    // Ensures we only apply one rule.
                     var ruleApplied = false;
+                    
+                    // Most rules uses Moore neighbourhood, so not having to get them constantly is smart.
+                    var mooreNeighbours = MapHelper.GetNeighbours(x, y, map);
 
                     // Iterate over every rule
                     foreach (var rule in this.Rules)
                     {
                         if (ruleApplied) break;
-                        var neighbours = MapHelper.GetNeighbours(x, y, map, rule.Neighbourhood);
+                        var neighbours = rule.Neighbourhood == RuleEnums.Neighbourhood.Moore 
+                            ? mooreNeighbours
+                            : MapHelper.GetNeighbours(x, y, map, rule.Neighbourhood);
 
                         if (rule.Deterministic)
                         {
                             // Deterministic rule
                             var applyRule = true;
                             var tempRule = (RuleDeterministic)rule;
+
                             if (rule.Self != null && map[x, y] != rule.Self) continue;
+                            if (!generateHeight2 && rule.TransformTo == Enums.HeightLevel.Height2) continue;
 
                             // Check all conditions in the rule. If any of them is not fulfilled, do not apply the rule.
                             foreach (var condition in tempRule.Conditions)
@@ -137,17 +147,6 @@ namespace OPMGFS.Map.CellularAutomata
                             // ... else get the new probability.
                             else 
                                 probability = condition.Item2[neighbours[condition.Item1]];
-
-                            /*foreach (var condition in tempRule.Conditions)
-                            {
-                                if (neighbours[condition.Item1] >= condition.Item2.GetLength(0)) probability = 1d;
-                                if (!(neighbours[condition.Item1] > 0))
-                                {
-                                    applyRule = false;
-                                    break;
-                                }
-                                if (condition.Item2[neighbours[condition.Item1]] > probability) probability = condition.Item2[neighbours[condition.Item1]];
-                            }*/
 
                             if (MapHelper.Random.NextDouble() <= probability) 
                                 tempMap[x, y] = rule.TransformTo;

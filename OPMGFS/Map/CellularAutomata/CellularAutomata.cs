@@ -56,7 +56,8 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="half"> The half of the map to work on. </param>
         /// <param name="oddsOfHeight1"> The odds of a tile being changed to height 1. </param>
         /// <param name="oddsOfHeight2"> The odds of a tile being changed to height 2. </param>
-        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25)
+        /// <param name="generateHeight2"> Determines if the cellular automata should generate height2 or not. </param>
+        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25, bool generateHeight2 = true)
         {
             this.Map = new Enums.HeightLevel[xSize, ySize];
 
@@ -76,7 +77,7 @@ namespace OPMGFS.Map.CellularAutomata
                 for (var x = this.caXStart; x < this.caXEnd; x++)
                 {
                     var odds = MapHelper.Random.NextDouble();
-                    if (odds < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
+                    if (generateHeight2 && odds < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
                     else if (odds < oddsOfHeight1) this.Map[x, y] = Enums.HeightLevel.Height1;
                 }
             }
@@ -104,12 +105,25 @@ namespace OPMGFS.Map.CellularAutomata
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Runs a given amount of generations on the cellular automata
+        /// </summary>
+        /// <param name="generations"> The number of generations to run. </param>
+        /// <param name="generateHeight2ThroughRules"> Determines if height2 should be generated through rules or not. </param>
+        public void RunGenerations(int generations = 10, bool generateHeight2ThroughRules = true)
+        {
+            for (var generation = 0; generation < generations; generation++)
+                this.NextGeneration(generateHeight2ThroughRules);
+        }
+
         /// <summary>
         /// Runs the next generation on the cellular automata
         /// </summary>
-        public void NextGeneration()
+        /// <param name="generateHeight2ThroughRules"> Determines if height2 should be generated through rules or not. </param>
+        public void NextGeneration(bool generateHeight2ThroughRules = true)
         {
-            this.Map = this.ruleSet.NextGeneration(this.Map, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd);
+            this.Map = this.ruleSet.NextGeneration(this.Map, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd, generateHeight2ThroughRules);
         }
 
         /// <summary>
@@ -177,7 +191,7 @@ namespace OPMGFS.Map.CellularAutomata
 
             for (int g = 0; g < 10; g++)
             {
-                tempMap = tempRuleSet.NextGeneration(tempMap, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd);
+                tempMap = tempRuleSet.NextGeneration(tempMap, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd, false);
             }
 
             this.Map = tempMap;
