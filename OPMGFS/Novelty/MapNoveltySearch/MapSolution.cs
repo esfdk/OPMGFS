@@ -219,7 +219,7 @@
             this.ConvertedPhenotype = map.CreateCompleteMap(Enums.Half.Top, this.SearchOptions.MapCompletion);
             this.hasBeenConverted = true;
             this.ConvertedPhenotype.PlaceCliffs();
-            return map;
+            return ConvertedPhenotype;
         }
 
         /// <summary>
