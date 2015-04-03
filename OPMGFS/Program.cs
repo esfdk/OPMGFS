@@ -22,10 +22,43 @@
             ////TestEvolution();
             ////TestPhenotype();
             ////TestPhenotypeConversion();
-            TestCA();
+            ////TestCA();
             ////TestMapNoveltySearch();
+            TestFitness();
 
+            Console.WriteLine("Everything is done running");
             Console.ReadKey();
+        }
+
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
+        private static void TestFitness()
+        {
+            const int Height = 64;
+            const int Width = 64;
+
+            var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
+            ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
+
+            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: false);
+            ca.SetRuleset(new List<Rule> { ruleBasicHeight1 });
+            ca.RunGenerations(generateHeight2ThroughRules: false);
+
+            var map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
+            map.SmoothTerrain();
+            map.PlaceCliffs();
+
+            var mapSolution = new MapSolution(new MapNoveltySearchOptions(map));
+            mapSolution.MapPoints.Add(new MapPoint(0.5, 45, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
+            mapSolution.MapPoints.Add(new MapPoint(0.5, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.No));
+            map = mapSolution.ConvertedPhenotype;
+            map = mapSolution.ConvertedPhenotype;
+
+            map.SaveMapToPngFile();
+
+            var mapFitness = new MapFitness(map);
+
+            var fitness = mapFitness.CalculateFitness();
+            Console.WriteLine(fitness);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]

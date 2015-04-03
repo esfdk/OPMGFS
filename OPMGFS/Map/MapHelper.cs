@@ -24,15 +24,21 @@ namespace OPMGFS.Map
     /// </summary>
     public static class MapHelper
     {
+        #region Fields
+
+        /// <summary>
+        /// The size of map tiles.
+        /// </summary>
+        public const int SizeOfMapTiles = 17;
+
         /// <summary>
         /// The random generator.
         /// </summary>
         private static Random random = new Random();
 
-        /// <summary>
-        /// The size of map tiles.
-        /// </summary>
-        private static int sizeOfMapTiles = 17;
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets the random generator.
@@ -45,16 +51,9 @@ namespace OPMGFS.Map
             }
         }
 
-        /// <summary>
-        /// Gets the size of map tiles.
-        /// </summary>
-        public static int SizeOfMapTiles
-        {
-            get
-            {
-                return sizeOfMapTiles;
-            }
-        }
+        #endregion
+
+        #region Upblic Methods
 
         /// <summary>
         /// Gets the neighbour positions for the given position.
@@ -81,7 +80,6 @@ namespace OPMGFS.Map
             {
                 foreach (var moveY in moves)
                 {
-                    // Uses Von Neumann right now. Remove second check to use Moore.
                     if (moveX == 0 && moveY == 0) continue;
                     if (neumann && (moveX != 0 && moveY != 0)) continue;
 
@@ -92,6 +90,139 @@ namespace OPMGFS.Map
             }
 
             return list;
+        }
+
+        /// <summary>
+        /// Finds the reachable tiles within range from the given position.
+        /// </summary>
+        /// <param name="x"> The x-coordinate of the start position. </param>
+        /// <param name="y"> The y-coordinate of the start position. </param>
+        /// <param name="map"> The map to work on. </param>
+        /// <param name="radius"> The radius to find tiles within.</param>
+        /// <returns> A list of the positions. </returns>
+        public static List<Position> GetReachableTilesFrom(
+            int x,
+            int y,
+            Enums.HeightLevel[,] map,
+            int radius = 5)
+        {
+            var tileList = new List<Enums.HeightLevel>();
+            var visitedPositions = new List<Position>();
+            var openPositions = new List<Position>();
+
+            if (radius <= 0) radius = 1;
+
+            openPositions.Add(new Position(x, y));
+
+            while (!(openPositions.Count <= 0))
+            {
+                var currentPos = openPositions[0];
+                openPositions.Remove(currentPos);
+
+                if (Math.Abs(currentPos.Item1 - x) > radius || Math.Abs(currentPos.Item2 - y) > radius)
+                    continue;
+
+                visitedPositions.Add(currentPos);
+                tileList.Add(map[currentPos.Item1, currentPos.Item2]);
+
+                var neighbours = MapPathfinding.Neighbours(map, currentPos);
+                foreach (var neighbour in neighbours)
+                {
+                    if (visitedPositions.Contains(neighbour) || openPositions.Contains(neighbour)) continue;
+                    if (Math.Abs(neighbour.Item1 - x) > radius || Math.Abs(neighbour.Item2 - y) > radius) continue;
+                    if (map[neighbour.Item1, neighbour.Item2] == Enums.HeightLevel.Cliff) continue;
+                    if (map[neighbour.Item1, neighbour.Item2] == Enums.HeightLevel.Impassable) continue;
+
+                    openPositions.Add(neighbour);
+                }
+            }
+
+            return visitedPositions;
+        }
+
+        /// <summary>
+        /// Finds the position of the nearest tile of the given type.
+        /// </summary>
+        /// <param name="x"> The x-coordinate of the start position. </param>
+        /// <param name="y"> The y-coordinate of the start position. </param>
+        /// <param name="map"> The map to work on. </param>
+        /// <param name="toFind"> The type of tile to find. </param>
+        /// <param name="adhereToPathfinding"> Determines if we are adhering to pathfinding or not. </param>
+        /// <returns> The position of the nearest found  tile of the given type or null. </returns>
+        public static Position FindNearestTileOfType(int x, int y, Enums.HeightLevel[,] map, Enums.HeightLevel toFind, bool adhereToPathfinding = false)
+        {
+            var tileList = new List<Enums.HeightLevel>();
+            var visitedPositions = new List<Position>();
+            var openPositions = new List<Position>();
+            Position result = null;
+
+            openPositions.Add(new Position(x, y));
+
+            while (!(openPositions.Count <= 0))
+            {
+                if (result != null) break;
+
+                var currentPos = openPositions[0];
+                openPositions.Remove(currentPos);
+
+                visitedPositions.Add(currentPos);
+                tileList.Add(map[currentPos.Item1, currentPos.Item2]);
+
+                var neighbours = MapPathfinding.Neighbours(map, currentPos);
+                foreach (var neighbour in neighbours)
+                {
+                    if (map[neighbour.Item1, neighbour.Item2] == toFind) result = neighbour;
+                    if (visitedPositions.Contains(neighbour) || openPositions.Contains(neighbour)) continue;
+                    if (adhereToPathfinding
+                        && map[neighbour.Item1, neighbour.Item2] == Enums.HeightLevel.Cliff) continue;
+                    if (adhereToPathfinding
+                        && map[neighbour.Item1, neighbour.Item2] == Enums.HeightLevel.Impassable) continue;
+
+                    openPositions.Add(neighbour);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Finds the position of the nearest tile of the given type.
+        /// </summary>
+        /// <param name="x"> The x-coordinate of the start position. </param>
+        /// <param name="y"> The y-coordinate of the start position. </param>
+        /// <param name="map"> The map to work on. </param>
+        /// <param name="toFind"> The type of tile to find. </param>
+        /// <returns> The position of the nearest found  tile of the given type or null. </returns>
+        public static Position FindNearestTileOfType(int x, int y, Enums.Item[,] map, Enums.Item toFind)
+        {
+            var tileList = new List<Enums.Item>();
+            var visitedPositions = new List<Position>();
+            var openPositions = new List<Position>();
+            Position result = null;
+
+            openPositions.Add(new Position(x, y));
+
+            while (!(openPositions.Count <= 0))
+            {
+                if (result != null) break;
+
+                var currentPos = openPositions[0];
+                openPositions.Remove(currentPos);
+
+                visitedPositions.Add(currentPos);
+                tileList.Add(map[currentPos.Item1, currentPos.Item2]);
+
+                var neighbours = MapPathfinding.Neighbours(map, currentPos);
+                foreach (var neighbour in neighbours)
+                {
+                    if (map[neighbour.Item1, neighbour.Item2] == toFind) result = neighbour;
+                    if (visitedPositions.Contains(neighbour) || openPositions.Contains(neighbour)) continue;
+
+                    openPositions.Add(neighbour);
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -148,6 +279,8 @@ namespace OPMGFS.Map
             if (position.Item2 < 0 || position.Item2 >= sizeY) return false;
             return true;
         }
+
+        #endregion
 
         #region Map Drawing methods
 
