@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Runtime.Remoting.Messaging;
 
     using Map;
     using Map.MapObjects;
@@ -219,7 +220,7 @@
             this.ConvertedPhenotype = map.CreateCompleteMap(Enums.Half.Top, this.SearchOptions.MapCompletion);
             this.hasBeenConverted = true;
             this.ConvertedPhenotype.PlaceCliffs();
-            return ConvertedPhenotype;
+            return this.ConvertedPhenotype;
         }
 
         /// <summary>
@@ -260,6 +261,7 @@
 
                 switch (mp.Type)
                 {
+                        // TODO: Displacement
                     case Enums.MapPointType.Base:
                         mp.WasPlaced = MapSolutionConverter.PlaceBase(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
@@ -341,7 +343,9 @@
             // Calculate distances between map points
             foreach (var mp in this.MapPoints.Where(mp => mp.WasPlaced != Enums.WasPlaced.Yes))
             {
-                // TODO: Make average
+                var maximumDistance = mp.Type == Enums.MapPointType.StartBase ? this.SearchOptions.MaximumStartBaseDistance : this.SearchOptions.MaximumDistance;
+                var minimumDistance = mp.Type == Enums.MapPointType.StartBase ? this.SearchOptions.MinimumStartBaseDistance : this.SearchOptions.MinimumDistance;
+
                 var dist = 0.0;
 
                 // Degree difference
@@ -355,22 +359,27 @@
                 }
 
                 // Distance difference
-                if (mp.Distance > this.SearchOptions.MaximumDistance)
+                if (mp.Distance > maximumDistance)
                 {
-                    dist += mp.Distance - this.SearchOptions.MaximumDistance;
+                    dist += mp.Distance - maximumDistance;
                 }
-                else if (mp.Degree < this.SearchOptions.MinimumDistance)
+                else if (mp.Degree < minimumDistance)
                 {
-                    dist += this.SearchOptions.MinimumDistance - mp.Distance;
+                    dist += minimumDistance - mp.Distance;
                 }
 
-                dist *= this.SearchOptions.DistanceNotPlacedModifier;
+                dist *= this.SearchOptions.NotPlacedPenaltyModifier;
                 
                 distance += dist;
             }
 
-            // TODO: Check if there are enough/too many of the different map points
-            // dist += this.SearchOptions.DistanceNotPlaced;
+            // TODO: Average over not placed elements or all elements?
+            distance = distance / this.MapPoints.Count(mp => mp.WasPlaced != Enums.WasPlaced.Yes);
+
+            // Too many / too few elements placed
+            var elements = this.CalculateNumberOfMapPointsOutsideTypeBounds();
+            distance += elements.Item1 * this.SearchOptions.TooFewElementsPenalty;
+            distance += elements.Item2 * this.SearchOptions.TooManyElementsPenalty;
 
             // Check if there is a path between start bases
             var sb = this.MapPoints.FirstOrDefault(mp => mp.Type == Enums.MapPointType.StartBase);
@@ -412,7 +421,6 @@
             {
                 distance += this.SearchOptions.NoPathBetweenStartBases;
             }
-
 
             this.DistanceToFeasibility = distance;
 
@@ -494,6 +502,59 @@
             var yDist = sin * distance;
 
             return new Tuple<double, double>(xDist, yDist);
+        }
+
+        /// <summary>
+        /// Calculates which of the map point types, if any, are out of bounds according to the search options.
+        /// </summary>
+        /// <returns>A tuple containing the number of nap points that are missing (item1) and the number of map points that are in excess (item2).</returns>
+        private Tuple<int, int> CalculateNumberOfMapPointsOutsideTypeBounds()
+        {
+            var numberOfMapPointsMissing = 0;
+            var numberOfTooManyMapPoints = 0;
+
+            var numberOfBases = this.MapPoints.Count(mp => mp.Type == Enums.MapPointType.Base && mp.WasPlaced == Enums.WasPlaced.Yes);
+            var numberOfDestructibleRocks = this.MapPoints.Count(mp => mp.Type == Enums.MapPointType.DestructibleRocks && mp.WasPlaced == Enums.WasPlaced.Yes);
+            var numberOfRamps = this.MapPoints.Count(mp => mp.Type == Enums.MapPointType.Ramp && mp.WasPlaced == Enums.WasPlaced.Yes);
+            var numberOfXelNagaTowers = this.MapPoints.Count(mp => mp.Type == Enums.MapPointType.XelNagaTower && mp.WasPlaced == Enums.WasPlaced.Yes);
+
+            if (numberOfBases < this.SearchOptions.MinimumNumberOfBases)
+            {
+                numberOfMapPointsMissing += this.SearchOptions.MinimumNumberOfBases - numberOfBases;
+            }
+            else if (numberOfBases > this.SearchOptions.MaximumNumberOfBases)
+            {
+                numberOfTooManyMapPoints += numberOfBases - this.SearchOptions.MaximumNumberOfBases;
+            }
+
+            if (numberOfDestructibleRocks < this.SearchOptions.MinimumNumberOfDestructibleRocks)
+            {
+                numberOfMapPointsMissing += this.SearchOptions.MinimumNumberOfDestructibleRocks - numberOfDestructibleRocks;
+            }
+            else if (numberOfDestructibleRocks > this.SearchOptions.MaximumNumberOfDestructibleRocks)
+            {
+                numberOfTooManyMapPoints += numberOfDestructibleRocks - this.SearchOptions.MaximumNumberOfDestructibleRocks;
+            }
+
+            if (numberOfRamps < this.SearchOptions.MinimumNumberOfRamps)
+            {
+                numberOfMapPointsMissing += this.SearchOptions.MinimumNumberOfRamps - numberOfRamps;
+            }
+            else if (numberOfRamps > this.SearchOptions.MaximumNumberOfRamps)
+            {
+                numberOfTooManyMapPoints += numberOfRamps - this.SearchOptions.MaximumNumberOfRamps;
+            }
+
+            if (numberOfXelNagaTowers < this.SearchOptions.MinimumNumberOfXelNagaTowers)
+            {
+                numberOfMapPointsMissing += this.SearchOptions.MinimumNumberOfXelNagaTowers - numberOfXelNagaTowers;
+            }
+            else if (numberOfBases > this.SearchOptions.MaximumNumberOfXelNagaTowers)
+            {
+                numberOfTooManyMapPoints += numberOfXelNagaTowers - this.SearchOptions.MaximumNumberOfXelNagaTowers;
+            }
+
+            return new Tuple<int, int>(numberOfMapPointsMissing, numberOfTooManyMapPoints);
         }
     }
 }

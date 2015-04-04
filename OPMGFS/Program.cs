@@ -399,7 +399,6 @@
             {
                 ((MapSolution)solution).ConvertedPhenotype.SaveMapToPngFile(folder: "Test 2");
             }
-
         }
 
         private static void TestPhenotypeConversion()

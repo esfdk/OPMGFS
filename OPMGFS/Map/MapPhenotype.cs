@@ -134,7 +134,7 @@ namespace OPMGFS.Map
         /// <returns>True if the point is inside, otherwise false.</returns>
         public bool InsideTopHalf(int x, int y)
         {
-            return !(x < 0 || y < (YSize / 2.0) || x >= this.XSize || y >= this.YSize);
+            return !(x < 0 || y < (this.YSize / 2.0) || x >= this.XSize || y >= this.YSize);
         }
 
         /// <summary>
