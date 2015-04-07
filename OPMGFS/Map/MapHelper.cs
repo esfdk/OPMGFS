@@ -53,7 +53,7 @@ namespace OPMGFS.Map
 
         #endregion
 
-        #region Upblic Methods
+        #region Public Methods
 
         /// <summary>
         /// Gets the neighbour positions for the given position.
