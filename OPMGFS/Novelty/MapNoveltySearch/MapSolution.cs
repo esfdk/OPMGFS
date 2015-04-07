@@ -373,8 +373,7 @@
                 distance += dist;
             }
 
-            // TODO: Average over not placed elements or all elements?
-            distance = distance / this.MapPoints.Count(mp => mp.WasPlaced != Enums.WasPlaced.Yes);
+            distance = distance / this.MapPoints.Count();
 
             // Too many / too few elements placed
             var elements = this.CalculateNumberOfMapPointsOutsideTypeBounds();
