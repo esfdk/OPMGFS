@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
@@ -33,8 +34,8 @@
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestFitness()
         {
-            const int Height = 64;
-            const int Width = 64;
+            const int Height = 128;
+            const int Width = 128;
 
             var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
@@ -56,9 +57,11 @@
             map.SaveMapToPngFile();
 
             var mapFitness = new MapFitness(map);
-
+            var sw = new Stopwatch();
+            sw.Start();
             var fitness = mapFitness.CalculateFitness();
-            Console.WriteLine(fitness);
+            sw.Stop();
+            Console.WriteLine(fitness + " - " + sw.ElapsedMilliseconds);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]

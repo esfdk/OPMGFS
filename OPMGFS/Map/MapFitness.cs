@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
 
     using Position = System.Tuple<int, int>;
 
@@ -154,19 +153,12 @@
                 this.startBasePosition2);
 
             fitness += this.BaseSpace();
-            Console.WriteLine("1: " + fitness);
             fitness += this.BaseHeightLevel();
-            Console.WriteLine("2: " + fitness);
             fitness += this.PathBetweenStartBases();
-            Console.WriteLine("3: " + fitness);
             fitness += this.NewHeightReached();
-            Console.WriteLine("4: " + fitness);
             fitness += this.DistanceToNearestExpansion();
-            Console.WriteLine("5: " + fitness);
             fitness += this.ExpansionsAvailable();
-            Console.WriteLine("6: " + fitness);
             fitness += this.ChokePoints();
-            Console.WriteLine("7: " + fitness);
 
             //// Fitness:
             ////  X Base space (amount of tiles around the base that are passable)
@@ -300,7 +292,11 @@
             var maxPathToExpansion = this.ySize * 0.4;
             var minPathToExpansion = this.ySize * 0.1;
 
-            var normalized = (pathToNearest.Count - minPathToExpansion) / (maxPathToExpansion - minPathToExpansion);
+            var actualDistance = (pathToNearest.Count > maxPathToExpansion)
+                                     ? maxPathToExpansion - (this.pathBetweenBases.Count - maxPathToExpansion)
+                                     : this.pathBetweenBases.Count;
+
+            var normalized = (actualDistance - minPathToExpansion) / (maxPathToExpansion - minPathToExpansion);
             return normalized * DistanceToExpansionSignificance;
         }
 
@@ -312,7 +308,7 @@
         {
             //// ReSharper disable RedundantCast
             var maxExpasions = (double)(int)(this.ySize / 40);
-            var minExpansions = (double)(int)(this.ySize / 20);
+            var minExpansions = (double)(int)(this.ySize / 60);
             //// ReSharper restore RedundantCast
 
             var normalized = ((this.bases.Count / 2d) - minExpansions) / (maxExpasions - minExpansions);
@@ -325,6 +321,8 @@
         /// <returns> A number between 0.0 and 1.0 based on how many choke points that are found. </returns>
         private double ChokePoints()
         {
+            const int Max = 4;
+            const int Min = 0;
             var chokePoints = 0;
 
             var previousHeightLevel =
@@ -343,7 +341,9 @@
                 chokePoints++;
             }
 
-            var normalized = (chokePoints - 2) / (4 - 2);
+            chokePoints = (chokePoints > Max) ? Max - (chokePoints - Max) : chokePoints;
+
+            var normalized = (chokePoints - Max) / (Max - Min);
             return normalized * ChokePointsSignificance;
         }
 
