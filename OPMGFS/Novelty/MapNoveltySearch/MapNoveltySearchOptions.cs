@@ -127,7 +127,7 @@
             double maximumDegree = 180,
             double minimumDegree = 0,
             double maximumDistance = 1.0,
-            double minimumDistance = 0.0,
+            double minimumDistance = 0.15,
             double maximumDistanceModifier = 0.05,
             double minimumDistanceModifier = 0.01,
             double maximumDegreeModifier = 15,

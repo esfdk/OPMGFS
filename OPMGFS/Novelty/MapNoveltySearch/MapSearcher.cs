@@ -157,25 +157,25 @@
         /// <param name="generations">Number of generations to run.</param>
         public void RunGenerations(int generations)
         {
-            Console.WriteLine("Generation 0");
+            //Console.WriteLine("Generation 0");
 
-            Console.WriteLine("-----------------");
-            Console.WriteLine("Feasible Population");
+            //Console.WriteLine("-----------------");
+            //Console.WriteLine("Feasible Population");
             foreach (var ms in FeasiblePopulation.CurrentGeneration)
             {
                 Console.WriteLine(ms);
             }
 
-            Console.WriteLine("------------------");
-            Console.WriteLine("Infeasible Population");
+            //Console.WriteLine("------------------");
+            //Console.WriteLine("Infeasible Population");
             foreach (var ms in InfeasiblePopulation.CurrentGeneration)
             {
                 Console.WriteLine(ms);
             }
 
-            Console.WriteLine("------------------");
+            //Console.WriteLine("------------------");
 
-            Console.WriteLine("-------------------");
+            //Console.WriteLine("-------------------");
             for (var i = 0; i < generations; i++)
             {
                 Console.WriteLine("Generation " + i);

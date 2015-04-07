@@ -377,6 +377,8 @@
 
         private static void TestMapNoveltySearch()
         {
+            var folderString = "test 3";
+
             var ca = new CellularAutomata(128, 128, Enums.Half.Top);
             ca.SetRuleset(GetCARules());
             for (var i = 0; i < 10; i++)
@@ -389,7 +391,7 @@
 
             map.PlaceCliffs();
 
-            map.SaveMapToPngFile(folder: "Test 2");
+            map.SaveMapToPngFile(folder: folderString);
 
             var ms = new MapSearcher(new Random(), 10, 10, new MapNoveltySearchOptions(map));
 
@@ -397,7 +399,7 @@
 
             foreach (var solution in ms.Archive.Archive)
             {
-                ((MapSolution)solution).ConvertedPhenotype.SaveMapToPngFile(folder: "Test 2");
+                ((MapSolution)solution).ConvertedPhenotype.SaveMapToPngFile(folder: folderString);
             }
         }
 
