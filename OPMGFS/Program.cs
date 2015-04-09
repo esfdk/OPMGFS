@@ -52,7 +52,6 @@
             mapSolution.MapPoints.Add(new MapPoint(0.5, 45, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.5, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.No));
             map = mapSolution.ConvertedPhenotype;
-            map = mapSolution.ConvertedPhenotype;
 
             map.SaveMapToPngFile();
 

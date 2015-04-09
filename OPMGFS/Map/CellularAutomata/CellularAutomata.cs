@@ -44,6 +44,11 @@ namespace OPMGFS.Map.CellularAutomata
         /// The ruleset used by the cellular automata.
         /// </summary>
         private Ruleset ruleSet;
+
+        /// <summary>
+        /// The random generator.
+        /// </summary>
+        private readonly Random random;
         #endregion
 
         #region Constructors
@@ -57,9 +62,12 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="oddsOfHeight1"> The odds of a tile being changed to height 1. </param>
         /// <param name="oddsOfHeight2"> The odds of a tile being changed to height 2. </param>
         /// <param name="generateHeight2"> Determines if the cellular automata should generate height2 or not. </param>
-        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25, bool generateHeight2 = true)
+        /// <param name="randomSeed"> The seed for the random generator. If null, will use the MapHelper Random. </param>
+        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25, bool generateHeight2 = true, int? randomSeed = null)
         {
             this.Map = new Enums.HeightLevel[xSize, ySize];
+
+            this.random = (randomSeed == null) ? MapHelper.Random : new Random((int)randomSeed);
 
             this.XSize = xSize;
             this.YSize = ySize;
@@ -76,7 +84,7 @@ namespace OPMGFS.Map.CellularAutomata
             {
                 for (var x = this.caXStart; x < this.caXEnd; x++)
                 {
-                    var odds = MapHelper.Random.NextDouble();
+                    var odds = this.random.NextDouble();
                     if (generateHeight2 && odds < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
                     else if (odds < oddsOfHeight1) this.Map[x, y] = Enums.HeightLevel.Height1;
                 }
@@ -161,8 +169,8 @@ namespace OPMGFS.Map.CellularAutomata
             // Randomly choses an area and drops impassable terrain in it.
             for (int drop = 0; drop < drops; drop++)
             {
-                var startX = MapHelper.Random.Next(this.caXStart, this.caXEnd);
-                var startY = MapHelper.Random.Next(this.caYStart, this.caYEnd);
+                var startX = this.random.Next(this.caXStart, this.caXEnd);
+                var startY = this.random.Next(this.caYStart, this.caYEnd);
 
                 Console.WriteLine("Placing shit around " + startX + " - " + startY);
 
@@ -176,7 +184,7 @@ namespace OPMGFS.Map.CellularAutomata
                         var posToCheck = new Position(startX + moveX, startY + moveY);
                         if (!MapHelper.WithinMapBounds(posToCheck, this.XSize, this.YSize)) continue;
 
-                        if (MapHelper.Random.NextDouble() <= 0.66)
+                        if (this.random.NextDouble() <= 0.66)
                             tempMap[posToCheck.Item1, posToCheck.Item2] = Enums.HeightLevel.Impassable;
                     }
                 }
