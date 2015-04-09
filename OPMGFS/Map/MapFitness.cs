@@ -47,6 +47,11 @@
         private const int ChokePointsSignificance = 5;
 
         /// <summary>
+        /// Every x (the value) will be checked for a choke point.
+        /// </summary>
+        private const int ChokePointSearchStep = 3;
+
+        /// <summary>
         /// The Y-size of the map.
         /// </summary>
         private readonly int ySize;
@@ -318,8 +323,9 @@
         /// <summary>
         /// Figures out how many choke points that are available on the road between the two start bases.
         /// </summary>
+        /// <param name="chokePointWidth"> The choke Point Width. </param>
         /// <returns> A number between 0.0 and 1.0 based on how many choke points that are found. </returns>
-        private double ChokePoints()
+        private double ChokePoints(int chokePointWidth = 2)
         {
             const int Max = 4;
             const int Min = 0;
@@ -331,14 +337,25 @@
             for (var nodeIndex = 0; nodeIndex < this.pathBetweenBases.Count; nodeIndex++)
             {
                 var node = this.pathBetweenBases[nodeIndex];
-                
-                if (this.map.HeightLevels[node.Item1, node.Item2] != Enums.HeightLevel.Ramp01
-                     || this.map.HeightLevels[node.Item1, node.Item2] != Enums.HeightLevel.Ramp12)
-                    continue;
-                if (this.map.HeightLevels[node.Item1, node.Item2] == previousHeightLevel) continue;
-                if (!this.IsRampChokePoint(this.pathBetweenBases[nodeIndex + 1])) continue;
-                
-                chokePoints++;
+
+                if (this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp01
+                     || this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp12)
+                {
+                    //// If we encounter a ramp, perform a choke point check on ramps
+
+                    if (this.map.HeightLevels[node.Item1, node.Item2] == previousHeightLevel) continue;
+                    if (!this.IsRampChokePoint(this.pathBetweenBases[nodeIndex + 1], chokePointWidth)) continue;
+
+                    chokePoints++;
+                }
+                else if (nodeIndex % ChokePointSearchStep == 0)
+                {
+                    //// Otherwise, only perform a choke point check every x steps.
+
+                    if (!this.IsPositionChokePoint(this.pathBetweenBases[nodeIndex + 1], chokePointWidth)) continue;
+
+                    chokePoints++;
+                }
             }
 
             chokePoints = (chokePoints > Max) ? Max - (chokePoints - Max) : chokePoints;
@@ -357,6 +374,88 @@
         private bool CloseToAny(Position pos, IEnumerable<Position> positions, int range = 3)
         {
             return positions.Any(position => Math.Abs(pos.Item1 - position.Item1) <= range || Math.Abs(pos.Item2 - position.Item2) <= range);
+        }
+
+        /// <summary>
+        /// Checks if the given position is a choke point by looking in 8 directions.
+        /// </summary>
+        /// <param name="pos"> The position to check. </param>
+        /// <param name="width"> The width of a choke point. </param>
+        /// <returns> True if the position is a choke point; false otherwise. </returns>
+        private bool IsPositionChokePoint(Position pos, int width = 2)
+        {
+            // The directions represented as a position, along with how far there is to the nearest cliff.
+            var directions = new List<Tuple<Position, int>>
+                            {
+                                new Tuple<Position, int>(new Position(-1, 0),  -1), // West
+                                new Tuple<Position, int>(new Position(1, 0),   -1), // East
+                                new Tuple<Position, int>(new Position(0, -1),  -1), // South
+                                new Tuple<Position, int>(new Position(0, 1),   -1), // North
+                                new Tuple<Position, int>(new Position(1, -1),  -1), // South-east
+                                new Tuple<Position, int>(new Position(-1, 1),  -1), // North-west
+                                new Tuple<Position, int>(new Position(-1, -1), -1), // South-west
+                                new Tuple<Position, int>(new Position(1, 1),   -1)  // North-east
+                            };
+
+            // The opposite directions.
+            var directionCombinations = new Dictionary<int, int>
+                            {
+                                { 1, 2 }, // West + East
+                                { 3, 4 }, // South + north
+                                { 5, 6 }, // South-east + north-west
+                                { 7, 8 }  // South-west + north-east
+                            };
+
+            // Find the nearest cliff in each of the 8 directions.
+            for (var i = 0; i < width + 1; i++)
+            {
+                foreach (var dc in directionCombinations)
+                {
+                    var dir1 = directions[dc.Key].Item1;
+                    var dir2 = directions[dc.Value].Item1;
+
+                    var newPos1 = new Position(pos.Item1 + (dir1.Item1 * i), pos.Item2 + (dir1.Item2 * i));
+                    var newPos2 = new Position(pos.Item1 + (dir2.Item1 * i), pos.Item2 + (dir2.Item2 * i));
+
+                    if (directions[dc.Key].Item2 < 0
+                        && this.map.HeightLevels[newPos1.Item1, newPos1.Item2] == Enums.HeightLevel.Cliff) 
+                        directions[dc.Key] = new Tuple<Position, int>(dir1, i);
+
+                    if (directions[dc.Value].Item2 < 0
+                        && this.map.HeightLevels[newPos2.Item1, newPos2.Item2] == Enums.HeightLevel.Cliff)
+                        directions[dc.Value] = new Tuple<Position, int>(dir2, i);
+                }
+            }
+
+            // The directions to check the ranges between to get a rather clear view
+            var finalCombinations = new Dictionary<int, int> 
+                            { 
+                                { 1, 2 }, // West + east
+                                { 1, 5 }, // West + south-east
+                                { 1, 8 }, // West + north-east
+                                { 2, 7 }, // East + south-west
+                                { 2, 6 }, // East + north-west
+                                { 3, 4 }, // South + north
+                                { 3, 6 }, // South + north-west
+                                { 3, 8 }, // South + north-east
+                                { 4, 7 }, // North + south-west
+                                { 4, 5 }, // North + south-east
+                            };
+
+            // Check the range to cliffs for every interesting direction combination
+            foreach (var fc in finalCombinations)
+            {
+                var dir1Value = directions[fc.Key].Item2;
+                var dir2Value = directions[fc.Value].Item2;
+
+                if (dir1Value < 0) continue;
+                if (dir2Value < 0) continue;
+
+                // -1 because otherwise we count the start position twice.
+                if ((dir1Value + dir2Value) - 1 <= width) return true;
+            }
+
+            return false;
         }
 
         /// <summary>
