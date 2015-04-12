@@ -1,0 +1,31 @@
+TODO:
+	Grooss
+		Better Smoothing
+		Cellular Automata after placing map points
+		Upper limit on pathfinding
+		Expand choke point search
+		
+	Melnyk
+		Displacement
+		Random add/remove of map elements
+		Destructible rocks in seperate array
+	
+	TBA
+		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search
+		Jump Point Search
+		Consider both direct (flight) and ground path between points in fitness function
+		Implement upper path limit
+		Figure out cost and/or how to consider siege tank ranges
+		Figure out cost and/or how to consider "openness" of bases / impassable terrain around a base
+		Number of choke points seen by Xel'Naga towers
+	
+Notes:
+	Quality = Novelty of map + mechanical quality
+	Test parameters by generating the exact same maps (through fixed seed), but with different evaluation parameters
+	Preprocess bad start maps
+	Use an upper limit on path length (if path is too long, stop pathfinding)
+	Calculate both ground and flight distances (consider blink/reaper pathing? Probably too expensive)
+	Good Maps: Foxtrot Labs, Xel'Naga Caverns, Waystation
+	1-1 representation
+	Radial
+		center of radial is center of entire map
