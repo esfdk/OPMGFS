@@ -26,6 +26,17 @@ Notes:
 	Use an upper limit on path length (if path is too long, stop pathfinding)
 	Calculate both ground and flight distances (consider blink/reaper pathing? Probably too expensive)
 	Good Maps: Foxtrot Labs, Xel'Naga Caverns, Waystation
+	
+	
+	
+Old Notes:
 	1-1 representation
 	Radial
 		center of radial is center of entire map
+		place elements in one half
+		mirror/turn map
+		pathfinding between bases before/after
+		turtle graphics for impassable terrain (scrapped for now)
+		initial height map using cellular automata
+	
+	Co-Evolution, Michael Cook

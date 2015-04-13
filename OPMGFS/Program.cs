@@ -22,10 +22,10 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             ////TestEvolution();
             ////TestPhenotype();
-            ////TestPhenotypeConversion();
+            TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            TestFitness();
+            ////TestFitness();
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -407,7 +407,7 @@
 
         private static void TestPhenotypeConversion()
         {
-            var map = new MapPhenotype(64, 64);
+            var map = new MapPhenotype(128, 128);
 
             map.HeightLevels[1, 35] = Enums.HeightLevel.Impassable;
             map.HeightLevels[2, 35] = Enums.HeightLevel.Impassable;
@@ -460,7 +460,7 @@
             map.HeightLevels[33, 50] = Enums.HeightLevel.Impassable;
             map.HeightLevels[32, 49] = Enums.HeightLevel.Impassable;
             map.HeightLevels[33, 49] = Enums.HeightLevel.Impassable;
-            
+
             map.HeightLevels[32, 35] = Enums.HeightLevel.Impassable;
             map.HeightLevels[33, 35] = Enums.HeightLevel.Impassable;
             map.HeightLevels[32, 34] = Enums.HeightLevel.Impassable;
@@ -475,7 +475,7 @@
             map.HeightLevels[33, 30] = Enums.HeightLevel.Height2;
             map.HeightLevels[32, 29] = Enums.HeightLevel.Impassable;
             map.HeightLevels[33, 29] = Enums.HeightLevel.Impassable;
-            
+
             map.HeightLevels[1, 2] = Enums.HeightLevel.Impassable;
             map.HeightLevels[1, 3] = Enums.HeightLevel.Impassable;
             map.HeightLevels[1, 4] = Enums.HeightLevel.Impassable;
@@ -564,7 +564,7 @@
             map.HeightLevels[57, 3] = Enums.HeightLevel.Impassable;
             map.HeightLevels[57, 4] = Enums.HeightLevel.Impassable;
 
-            var mnso = new MapNoveltySearchOptions(map);
+            var mnso = new MapNoveltySearchOptions(map, maximumDisplacement:250);
 
             ////var ms = new MapSearcher(new Random(), 5, 5, mnso);
 
@@ -573,22 +573,12 @@
                 mnso,
                 new List<MapPoint>
                     {
-                        new MapPoint(0.9, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(0.2, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(1, 180, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(0.8, 0, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes),
-                                                   new MapPoint(0.9, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(0.2, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(1, 225, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                                                   new MapPoint(0.8, 315, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)
-                                               });
+                        new MapPoint(0.8, 150, Enums.MapPointType.Base, Enums.WasPlaced.Yes),
+                        new MapPoint(0.8, 150, Enums.MapPointType.Base, Enums.WasPlaced.Yes)
+                    });
 
-            solution.ConvertToPhenotype(map);
-            string heights, items;
-            map.GetMapStrings(out heights, out items);
-            Console.WriteLine(heights);
-            Console.WriteLine(solution);
-            map.SaveMapToPngFile();
+            var newMap = solution.ConvertToPhenotype(map);
+            newMap.SaveMapToPngFile();
             ////ms.RunGenerations(1);
         }
     }
