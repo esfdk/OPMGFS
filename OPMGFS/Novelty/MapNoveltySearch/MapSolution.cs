@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Runtime.Remoting.Messaging;
 
     using Map;
     using Map.MapObjects;
@@ -259,26 +258,297 @@
                     throw new ArgumentOutOfRangeException();
                 }
 
+                bool placed;
+
                 switch (mp.Type)
                 {
-                        // TODO: Displacement
                     case Enums.MapPointType.Base:
-                        mp.WasPlaced = MapSolutionConverter.PlaceBase(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        placed = MapSolutionConverter.PlaceBase(xPos, yPos, newMap);
+                        if (!placed)
+                        {
+                            for (var i = 1;
+                                 i <= SearchOptions.MaximumDisplacement;
+                                 i += SearchOptions.DisplacementAmountPerStep)
+                            {
+                                for (var j = 1;
+                                 j <= SearchOptions.MaximumDisplacement;
+                                 j += SearchOptions.DisplacementAmountPerStep)
+                                {
+                                    if (MapSolutionConverter.PlaceBase(xPos - i, yPos + j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos, yPos + j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos + i, yPos + j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos - i, yPos, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos + i, yPos, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos - i, yPos - j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos, yPos - j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos + i, yPos - j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+                                }
+
+                                if (placed)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.GoldBase:
-                        mp.WasPlaced = MapSolutionConverter.PlaceBase(xPos, yPos, newMap, true) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        placed = MapSolutionConverter.PlaceBase(xPos, yPos, newMap, true);
+                        if (!placed)
+                        {
+                            for (var i = 1;
+                                 i <= SearchOptions.MaximumDisplacement;
+                                 i += SearchOptions.DisplacementAmountPerStep)
+                            {
+                                for (var j = 1;
+                                 j <= SearchOptions.MaximumDisplacement;
+                                 j += SearchOptions.DisplacementAmountPerStep)
+                                {
+                                    if (MapSolutionConverter.PlaceBase(xPos - i, yPos + j, newMap, true))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos, yPos + j, newMap, true))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos + i, yPos + j, newMap, true))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos - i, yPos, newMap, true))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos + i, yPos, newMap, true))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos - i, yPos - j, newMap, true))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos, yPos - j, newMap, true))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceBase(xPos + i, yPos - j, newMap, true))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+                                }
+
+                                if (placed)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.StartBase:
-                        mp.WasPlaced = MapSolutionConverter.PlaceStartBase(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                         placed = MapSolutionConverter.PlaceStartBase(xPos, yPos, newMap);
+                        if (!placed)
+                        {
+                            for (var i = 1;
+                                 i <= SearchOptions.MaximumDisplacement;
+                                 i += SearchOptions.DisplacementAmountPerStep)
+                            {
+                                for (var j = 1;
+                                 j <= SearchOptions.MaximumDisplacement;
+                                 j += SearchOptions.DisplacementAmountPerStep)
+                                {
+                                    if (MapSolutionConverter.PlaceStartBase(xPos - i, yPos + j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceStartBase(xPos, yPos + j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceStartBase(xPos + i, yPos + j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceStartBase(xPos - i, yPos, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceStartBase(xPos + i, yPos, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceStartBase(xPos - i, yPos - j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceStartBase(xPos, yPos - j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceStartBase(xPos + i, yPos - j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+                                }
+
+                                if (placed)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.XelNagaTower:
-                        mp.WasPlaced = MapSolutionConverter.PlaceXelNagaTower(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        placed = MapSolutionConverter.PlaceXelNagaTower(xPos, yPos, newMap);
+                        if (!placed)
+                        {
+                            for (var i = 1;
+                                 i <= SearchOptions.MaximumDisplacement;
+                                 i += SearchOptions.DisplacementAmountPerStep)
+                            {
+                                for (var j = 1;
+                                 j <= SearchOptions.MaximumDisplacement;
+                                 j += SearchOptions.DisplacementAmountPerStep)
+                                {
+                                    if (MapSolutionConverter.PlaceXelNagaTower(xPos - i, yPos + j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceXelNagaTower(xPos, yPos + j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceXelNagaTower(xPos + i, yPos + j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceXelNagaTower(xPos - i, yPos, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceXelNagaTower(xPos + i, yPos, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceXelNagaTower(xPos - i, yPos - j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceXelNagaTower(xPos, yPos - j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+
+                                    if (MapSolutionConverter.PlaceXelNagaTower(xPos + i, yPos - j, newMap))
+                                    {
+                                        placed = true;
+                                        break;
+                                    }
+                                }
+
+                                if (placed)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.Ramp:
+                        // TODO: Should we attempt to displace ramps?
                         var location = MapSolutionConverter.FindClosestCliff(xPos, yPos, newMap);
                         mp.WasPlaced = MapSolutionConverter.PlaceRamp(location.Item1, location.Item2, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.DestructibleRocks:
+                        // TODO: Change way destructible rocks work
                         mp.WasPlaced = MapSolutionConverter.PlaceDestructibleRocks(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     default:
