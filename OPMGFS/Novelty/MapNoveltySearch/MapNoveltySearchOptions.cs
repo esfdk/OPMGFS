@@ -16,6 +16,8 @@
         /// <param name="mapCompletion">
         /// The completion method to use when converting to phenotype.
         /// </param>
+        /// <param name="chanceToAddNewElement">The chance that an element will be added to a solution during mutation.</param>
+        /// <param name="chanceToRemoveElement">The chance that an element will be removed from a solution during mutation.</param>
         /// <param name="maximumDisplacement">
         /// The maximum Displacement.
         /// </param>
@@ -115,6 +117,12 @@
         public MapNoveltySearchOptions(
             MapPhenotype mp,
             Enums.MapFunction mapCompletion = Enums.MapFunction.Turn,
+            double chanceToAddBase = 0.15,
+            double chanceToAddGoldBase = 0.05,
+            double chanceToAddXelNagaTower = 0.1,
+            double chanceToAddDestructibleRocks = 0.3, 
+            double chanceToAddNewElement = 0.3, 
+            double chanceToRemoveElement = 0.3,
             int maximumDisplacement = 10,
             int displacementAmountPerStep = 1,
             double tooFewElementsPenalty = 5, 
@@ -149,6 +157,12 @@
             double minimumNovelty = 0)
             : base(mutate, recombine, mutationChance, twoPointCrossover, numberOfNeighbours, addToArchive, minimumNovelty)
         {
+            this.ChanceToAddBase = chanceToAddBase;
+            this.ChanceToAddXelNagaTower = chanceToAddXelNagaTower;
+            this.ChanceToAddDestructibleRocks = chanceToAddDestructibleRocks;
+            this.ChanceToAddGoldBase = chanceToAddGoldBase;
+            this.ChanceToRemoveElement = chanceToRemoveElement;
+            this.ChanceToAddNewElement = chanceToAddNewElement;
             this.MaximumStartBaseDistance = maximumStartBaseDistance;
             this.MinimumStartBaseDistance = minimumStartBaseDistance;
             this.TooManyElementsPenalty = tooManyElementsPenalty;
@@ -182,6 +196,24 @@
         /// Gets the map that is being searched.
         /// </summary>
         public MapPhenotype Map { get; private set; }
+
+        public double ChanceToAddBase { get; private set; }
+
+        public double ChanceToAddXelNagaTower { get; private set; }
+
+        public double ChanceToAddDestructibleRocks { get; private set; }
+
+        public double ChanceToAddGoldBase { get; private set; }
+
+        /// <summary>
+        /// Gets the chance to add an element to a solution.
+        /// </summary>
+        public double ChanceToAddNewElement { get; private set; }
+
+        /// <summary>
+        /// Gets the chance to remove an element from a solution.
+        /// </summary>
+        public double ChanceToRemoveElement { get; private set; }
 
         /// <summary>
         /// Gets the maximum amount that the search should try to displace a location placement.

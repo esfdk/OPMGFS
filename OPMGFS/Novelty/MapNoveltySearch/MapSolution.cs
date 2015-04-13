@@ -91,7 +91,91 @@
         {
             var newPoints = this.MapPoints.Select(mp => r.NextDouble() < this.SearchOptions.MutationChance ? mp.Mutate(r, this.SearchOptions) : mp).ToList();
 
-            // TODO: Make changes to amount of different types of map points
+            var randomNumber = r.NextDouble();
+
+            if (randomNumber < this.SearchOptions.ChanceToAddNewElement)
+            {
+                if (r.NextDouble() < this.SearchOptions.ChanceToAddBase)
+                {
+                    if (this.SearchOptions.MaximumNumberOfBases > newPoints.Count(mp => mp.Type == Enums.MapPointType.Base || mp.Type == Enums.MapPointType.GoldBase))
+                    {
+                        newPoints.Add(new MapPoint(r.NextDouble(), r.Next(0, 181), Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
+                    }
+                }
+                else if (randomNumber < this.SearchOptions.ChanceToAddBase + this.SearchOptions.ChanceToAddGoldBase)
+                {
+                    if (this.SearchOptions.MaximumNumberOfBases > newPoints.Count(mp => mp.Type == Enums.MapPointType.Base || mp.Type == Enums.MapPointType.GoldBase))
+                    {
+                        newPoints.Add(
+                            new MapPoint(
+                                r.NextDouble(),
+                                r.Next(0, 181),
+                                Enums.MapPointType.GoldBase,
+                                Enums.WasPlaced.NotAttempted));
+                    }
+                }
+                else if (randomNumber < this.SearchOptions.ChanceToAddBase + this.SearchOptions.ChanceToAddGoldBase + this.SearchOptions.ChanceToAddXelNagaTower)
+                {
+                    if (this.SearchOptions.MaximumNumberOfXelNagaTowers
+                        > newPoints.Count(mp => mp.Type == Enums.MapPointType.XelNagaTower))
+                    {
+                        newPoints.Add(
+                            new MapPoint(
+                                r.NextDouble(),
+                                r.Next(0, 181),
+                                Enums.MapPointType.XelNagaTower,
+                                Enums.WasPlaced.NotAttempted));
+                    }
+                }
+                else if (randomNumber
+                         < this.SearchOptions.ChanceToAddBase + this.SearchOptions.ChanceToAddGoldBase
+                         + this.SearchOptions.ChanceToAddXelNagaTower + this.SearchOptions.ChanceToAddDestructibleRocks)
+                {
+                    Console.WriteLine("this happened");
+                    if (this.SearchOptions.MaximumNumberOfDestructibleRocks
+                        > newPoints.Count(mp => mp.Type == Enums.MapPointType.DestructibleRocks))
+                    {
+                        newPoints.Add(
+                            new MapPoint(
+                                r.NextDouble(),
+                                r.Next(0, 181),
+                                Enums.MapPointType.DestructibleRocks,
+                                Enums.WasPlaced.NotAttempted));
+                    }
+                }
+                else
+                {
+                    if (this.SearchOptions.MaximumNumberOfRamps
+                        > newPoints.Count(mp => mp.Type == Enums.MapPointType.Ramp))
+                    {
+                        newPoints.Add(
+                            new MapPoint(
+                                r.NextDouble(),
+                                r.Next(0, 181),
+                                Enums.MapPointType.Ramp,
+                                Enums.WasPlaced.NotAttempted));
+                    }
+                }
+            }
+
+            if (r.NextDouble() < this.SearchOptions.ChanceToRemoveElement)
+            {
+                var potentialMapPoints = new List<MapPoint>();
+                if (newPoints.Count(mp => mp.Type == Enums.MapPointType.Base || mp.Type == Enums.MapPointType.GoldBase) > this.SearchOptions.MinimumNumberOfBases)
+                {
+                    potentialMapPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.Base || mp.Type == Enums.MapPointType.GoldBase));
+                }
+
+                if (newPoints.Count(mp => mp.Type == Enums.MapPointType.XelNagaTower) > this.SearchOptions.MinimumNumberOfXelNagaTowers)
+                {
+                    potentialMapPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.XelNagaTower));
+                }
+
+                if (newPoints.Count(mp => mp.Type == Enums.MapPointType.Ramp) > this.SearchOptions.MinimumNumberOfRamps)
+                {
+                    potentialMapPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.Ramp));
+                }
+            }
             return new MapSolution(this.SearchOptions, newPoints);
         }
 
@@ -403,7 +487,7 @@
                         mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.StartBase:
-                         placed = MapSolutionConverter.PlaceStartBase(xPos, yPos, newMap);
+                        placed = MapSolutionConverter.PlaceStartBase(xPos, yPos, newMap);
                         if (!placed)
                         {
                             for (var i = 1;
@@ -545,6 +629,7 @@
                     case Enums.MapPointType.Ramp:
                         // TODO: Should we attempt to displace ramps?
                         var location = MapSolutionConverter.FindClosestCliff(xPos, yPos, newMap);
+                        if (location == null) break;
                         mp.WasPlaced = MapSolutionConverter.PlaceRamp(location.Item1, location.Item2, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.DestructibleRocks:
@@ -639,7 +724,7 @@
                 }
 
                 dist *= this.SearchOptions.NotPlacedPenaltyModifier;
-                
+
                 distance += dist;
             }
 
