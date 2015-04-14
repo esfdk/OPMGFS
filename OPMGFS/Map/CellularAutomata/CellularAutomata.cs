@@ -20,6 +20,12 @@ namespace OPMGFS.Map.CellularAutomata
     public class CellularAutomata
     {
         #region Fields
+
+        /// <summary>
+        /// The random generator.
+        /// </summary>
+        private readonly Random random;
+
         /// <summary>
         /// The start position for Y when working on the map.
         /// </summary>
@@ -45,10 +51,6 @@ namespace OPMGFS.Map.CellularAutomata
         /// </summary>
         private Ruleset ruleSet;
 
-        /// <summary>
-        /// The random generator.
-        /// </summary>
-        private readonly Random random;
         #endregion
 
         #region Constructors
@@ -61,9 +63,10 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="half"> The half of the map to work on. </param>
         /// <param name="oddsOfHeight1"> The odds of a tile being changed to height 1. </param>
         /// <param name="oddsOfHeight2"> The odds of a tile being changed to height 2. </param>
+        /// <param name="groupPoints"> The number of points where terrain should be group during the initial seeding. </param>
         /// <param name="generateHeight2"> Determines if the cellular automata should generate height2 or not. </param>
         /// <param name="randomSeed"> The seed for the random generator. If null, will use the MapHelper Random. </param>
-        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25, bool generateHeight2 = true, int? randomSeed = null)
+        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25, int groupPoints = 0, bool generateHeight2 = true, int? randomSeed = null)
         {
             this.Map = new Enums.HeightLevel[xSize, ySize];
 
@@ -80,11 +83,28 @@ namespace OPMGFS.Map.CellularAutomata
             this.caYStart = (half == Enums.Half.Top) ? (this.YSize / 2) - (int)(this.YSize * 0.1) : 0;
             this.caYEnd = (half == Enums.Half.Bottom) ? (this.YSize / 2) + (int)(this.YSize * 0.1) : this.YSize;
 
+            // Create points around which the terrain should be grouped
+            var groupList = new List<Position>();
+            for (var i = 0; i < groupPoints; i++)
+            {
+                var x = this.random.Next(this.caXStart, this.caXEnd);
+                var y = this.random.Next(this.caYStart, this.caYEnd);
+                groupList.Add(new Position(x, y));
+            }
+
             for (var y = this.caYStart; y < this.caYEnd; y++)
             {
                 for (var x = this.caXStart; x < this.caXEnd; x++)
                 {
                     var odds = this.random.NextDouble();
+
+                    if (groupList.Count > 0)
+                    {
+                        // TODO: How do we want "closest to" to work? Look in a square or look in a circle?
+                        var closest = (double)MapHelper.ClosestTo(new Position(x, y), groupList, 8);
+                        if (closest <= 8) odds = odds - ((8d - closest) / 20d);
+                    }
+
                     if (generateHeight2 && odds < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
                     else if (odds < oddsOfHeight1) this.Map[x, y] = Enums.HeightLevel.Height1;
                 }
@@ -93,6 +113,26 @@ namespace OPMGFS.Map.CellularAutomata
             this.ruleSet = new Ruleset();
             this.LoadBasicRuleset();
         }
+
+        public CellularAutomata(int xSize, int ySize, Enums.Half half, Enums.HeightLevel[,] map)
+        {
+            this.Map = (Enums.HeightLevel[,])map.Clone();
+
+            this.XSize = xSize;
+            this.YSize = ySize;
+
+            // Figure out which part of the map that should be looked at.
+            // Make sure we work on a bit more than half the map, in order to avoid that the edge along the middle does not have
+            // "empty" neighbours from the beginning.
+            this.caXStart = (half == Enums.Half.Right) ? (this.XSize / 2) - (int)(this.XSize * 0.1) : 0;
+            this.caXEnd = (half == Enums.Half.Left) ? (this.XSize / 2) + (int)(this.XSize * 0.1) : this.XSize;
+            this.caYStart = (half == Enums.Half.Top) ? (this.YSize / 2) - (int)(this.YSize * 0.1) : 0;
+            this.caYEnd = (half == Enums.Half.Bottom) ? (this.YSize / 2) + (int)(this.YSize * 0.1) : this.YSize;
+
+            this.ruleSet = new Ruleset();
+            this.LoadBasicRuleset();
+        }
+        
         #endregion
 
         #region Properties

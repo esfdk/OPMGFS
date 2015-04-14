@@ -10,6 +10,7 @@
 namespace OPMGFS.Map
 {
     using System;
+    using System.Collections.Generic;
     using System.Drawing;
     using System.IO;
     using System.Text;
@@ -26,6 +27,11 @@ namespace OPMGFS.Map
     public class MapPhenotype
     {
         #region Fields
+
+        /// <summary>
+        /// The half that the map is being generated on.
+        /// </summary>
+        private Half mapHalf;
 
         #endregion
 
@@ -90,6 +96,8 @@ namespace OPMGFS.Map
         /// <returns> The complete map. </returns>
         public MapPhenotype CreateCompleteMap(Half half, Enums.MapFunction function)
         {
+            this.mapHalf = half;
+
             var newHeightLevels = (HeightLevel[,])this.HeightLevels.Clone();
             var newMapItems = (Item[,])this.MapItems.Clone();
 
@@ -143,65 +151,27 @@ namespace OPMGFS.Map
         /// <param name="smoothingNormalNeighbourhood"> If the number of neighbours in the normal Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
         /// <param name="smoothingExtNeighbourhood"> If the number of neighbours in the extended Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
         /// <param name="smoothingGenerations"> The number of "generations" to run. </param>
-        public void SmoothTerrain(int smoothingNormalNeighbourhood = 2, int smoothingExtNeighbourhood = 6, int smoothingGenerations = 10)
+        /// <param name="newRuleset"> The ruleset to use for smoothing. If null, default ruleset is used. </param>
+        public void SmoothTerrain(int smoothingNormalNeighbourhood = 2, int smoothingExtNeighbourhood = 6, int smoothingGenerations = 10, List<Rule> newRuleset = null)
         {
-            var currentMap = (HeightLevel[,])this.HeightLevels.Clone();
-            var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
+            var smoothCA = new CellularAutomata.CellularAutomata(
+                this.XSize,
+                this.YSize,
+                this.mapHalf,
+                this.HeightLevels);
 
-            for (var generations = 0; generations < smoothingGenerations; generations++)
+            if (newRuleset == null)
             {
-                for (var y = 0; y < this.YSize; y++)
-                {
-                    for (var x = 0; x < this.XSize; x++)
-                    {
-                        var neighbours = MapHelper.GetNeighbours(x, y, currentMap);
-                        var neighboursExt = MapHelper.GetNeighbours(x, y, currentMap, RuleEnums.Neighbourhood.MooreExtended);
-
-                        // Smooth Height2
-                        if (currentMap[x, y] == HeightLevel.Height2)
-                        {
-                            // If there are very few other Height2 nearby, smooth down to Height1
-                            if (neighbours[HeightLevel.Height2] <= smoothingNormalNeighbourhood)
-                                    tempMap[x, y] = HeightLevel.Height0;
-                            else if (neighboursExt[HeightLevel.Height2] <= smoothingExtNeighbourhood) // If there are very few Height2 in the extended Moore neighbourhood, smooth down to Height1
-                                tempMap[x, y] = HeightLevel.Height1;
-                            else if (neighboursExt[HeightLevel.Height1] <= 0 && (neighboursExt[HeightLevel.Height2] <= 12)) // If Height2 does not have any Height1 nearby, smooth down to Height0
-                                tempMap[x, y] = HeightLevel.Height0;
-                        }
-
-                        // Smooth Height1
-                        if (currentMap[x, y] == HeightLevel.Height1)
-                        {
-                            // If there are very few other Height1 nearby, smooth down to Height0
-                            if (neighbours[HeightLevel.Height1] <= smoothingNormalNeighbourhood)
-                                    tempMap[x, y] = HeightLevel.Height0;
-                            else if (neighboursExt[HeightLevel.Height1] <= smoothingExtNeighbourhood) // If there are very few Height2 in the extended Moore neighbourhood, smooth down to Height1
-                                tempMap[x, y] = HeightLevel.Height0;
-                        }
-
-                        // Smooth Height0
-                        if (currentMap[x, y] == HeightLevel.Height0)
-                        {
-                            // If there are very few other Height0 nearby, smooth up to either Height2 or Height1 depending on what there are most of.
-                            if (neighbours[HeightLevel.Height0] <= smoothingNormalNeighbourhood)
-                            {
-                                if (neighbours[HeightLevel.Height2] > neighbours[HeightLevel.Height1])
-                                    tempMap[x, y] = HeightLevel.Height2;
-                                else
-                                    tempMap[x, y] = HeightLevel.Height1;
-                            }
-                            else if (neighboursExt[HeightLevel.Height0] <= smoothingExtNeighbourhood) // If there are very few Height0 in the extended Moore neighbourhood, smooth up to Height1
-                                tempMap[x, y] = HeightLevel.Height1;
-                            ////else if (neighboursExt[HeightLevel.Height0] <= neighboursExt[HeightLevel.Height1]) // If there are less Height0 than Height1 in the extended More neighbourhood, smooth up to Height1
-                            ////    tempMap[x, y] = HeightLevel.Height1;
-                        }
-                    }
-                }
-
-                currentMap = (HeightLevel[,])tempMap.Clone();
+                smoothCA.SetRuleset(this.GetSmoothingRules(smoothingNormalNeighbourhood, smoothingExtNeighbourhood));
+                smoothCA.RunGenerations(smoothingGenerations);
+                this.HeightLevels = smoothCA.Map;
             }
-
-            this.HeightLevels = tempMap;
+            else
+            {
+                smoothCA.SetRuleset(newRuleset);
+                smoothCA.RunGenerations(smoothingGenerations);
+                this.HeightLevels = smoothCA.Map;
+            }
         }
 
         /// <summary>
@@ -362,6 +332,70 @@ namespace OPMGFS.Map
             mapHeightLevels = heightLevelBuilder.ToString();
             mapItems = itemBuilder.ToString();
         }
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Gets the rules used for smoothing terrain.
+        /// </summary>
+        /// <param name="smoothingNormalNeighbourhood"> If the number of neighbours in the normal Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
+        /// <param name="smoothingExtNeighbourhood"> If the number of neighbours in the extended Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
+        /// <returns> A list of the rules that are used for smoothing. </returns>
+        private List<Rule> GetSmoothingRules(int smoothingNormalNeighbourhood, int smoothingExtNeighbourhood)
+        {
+            var list = new List<Rule>();
+
+            // Smooth down height 2
+            var ruleH2ToH1 = new RuleDeterministic(HeightLevel.Height1, HeightLevel.Height2);
+            ruleH2ToH1.AddCondition(smoothingNormalNeighbourhood, HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
+
+            var ruleH2ToH1Ext = new RuleDeterministic(HeightLevel.Height1, HeightLevel.Height2)
+            {
+                Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
+            };
+            ruleH2ToH1Ext.AddCondition(smoothingExtNeighbourhood, HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
+
+            var ruleH2ToH0 = new RuleDeterministic(HeightLevel.Height0, HeightLevel.Height2)
+            {
+                Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
+            };
+            ruleH2ToH0.AddCondition(12, HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
+            ruleH2ToH0.AddCondition(0, HeightLevel.Height1, RuleEnums.Comparison.LessThanEqualTo);
+
+            list.Add(ruleH2ToH1);
+            list.Add(ruleH2ToH1Ext);
+            list.Add(ruleH2ToH0);
+
+            // Smooth down height 1
+            var ruleH1ToH0 = new RuleDeterministic(HeightLevel.Height0, HeightLevel.Height1);
+            ruleH1ToH0.AddCondition(smoothingNormalNeighbourhood, HeightLevel.Height1, RuleEnums.Comparison.LessThanEqualTo);
+
+            var ruleH1ToH0Ext = new RuleDeterministic(HeightLevel.Height0, HeightLevel.Height1)
+            {
+                Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
+            };
+            ruleH1ToH0Ext.AddCondition(smoothingExtNeighbourhood, HeightLevel.Height1, RuleEnums.Comparison.LessThanEqualTo);
+
+            list.Add(ruleH1ToH0);
+            list.Add(ruleH1ToH0Ext);
+
+            // Smooth up height 0
+            var ruleH0ToH1 = new RuleDeterministic(HeightLevel.Height1, HeightLevel.Height0);
+            ruleH0ToH1.AddCondition(smoothingNormalNeighbourhood, HeightLevel.Height0, RuleEnums.Comparison.LessThanEqualTo);
+
+            var ruleH0ToH1Ext = new RuleDeterministic(HeightLevel.Height1, HeightLevel.Height0)
+            {
+                Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
+            };
+            ruleH0ToH1Ext.AddCondition(smoothingExtNeighbourhood, HeightLevel.Height0, RuleEnums.Comparison.LessThanEqualTo);
+
+            list.Add(ruleH0ToH1);
+            list.Add(ruleH0ToH1Ext);
+
+            return list;
+        }
+
         #endregion
     }
 }

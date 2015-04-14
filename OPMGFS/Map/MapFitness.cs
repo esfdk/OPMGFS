@@ -145,7 +145,7 @@
 
                     // Check if the area is a base
                     if (this.map.MapItems[tempX, tempY] == Enums.Item.Base
-                        && !this.CloseToAny(new Position(tempX, tempY), this.bases))
+                        && !MapHelper.CloseToAny(new Position(tempX, tempY), this.bases))
                     {
                         this.bases.Add(new Position(tempX + 2, tempY - 2));
                     }
@@ -362,18 +362,6 @@
 
             var normalized = (chokePoints - Max) / (Max - Min);
             return normalized * ChokePointsSignificance;
-        }
-
-        /// <summary>
-        /// Checks if the given position is close to any of the positions in the list.
-        /// </summary>
-        /// <param name="pos"> The position to check. </param>
-        /// <param name="positions"> The list of positions to compare to. </param>
-        /// <param name="range"> The range that defines "close to". </param>
-        /// <returns> True if the position is close to any of the positions in the list; false otherwise. </returns>
-        private bool CloseToAny(Position pos, IEnumerable<Position> positions, int range = 3)
-        {
-            return positions.Any(position => Math.Abs(pos.Item1 - position.Item1) <= range || Math.Abs(pos.Item2 - position.Item2) <= range);
         }
 
         /// <summary>

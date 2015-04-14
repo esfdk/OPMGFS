@@ -267,6 +267,38 @@ namespace OPMGFS.Map
         }
 
         /// <summary>
+        /// Checks if the given position is close to any of the positions in the list.
+        /// </summary>
+        /// <param name="pos"> The position to check. </param>
+        /// <param name="positions"> The list of positions to compare to. </param>
+        /// <param name="range"> The range that defines "close to". </param>
+        /// <returns> True if the position is close to any of the positions in the list; false otherwise. </returns>
+        public static bool CloseToAny(Position pos, IEnumerable<Position> positions, int range = 3)
+        {
+            return positions.Any(position => Math.Abs(pos.Item1 - position.Item1) <= range || Math.Abs(pos.Item2 - position.Item2) <= range);
+        }
+
+        /// <summary>
+        /// Finds the position in the list that the given position is closest to (within range) and returns the actual
+        /// distance to that position.
+        /// </summary>
+        /// <param name="pos"> The position to check. </param>
+        /// <param name="positions"> The list of positions to compare to. </param>
+        /// <param name="range"> The range that defines "close to". </param>
+        /// <returns> The range to the closest position in the list within range. </returns>
+        public static int ClosestTo(Position pos, IEnumerable<Position> positions, int range = 3)
+        {
+            var closestRange = 100000;
+            foreach (var position in positions.Where(position => Math.Abs(pos.Item1 - position.Item1) <= range || Math.Abs(pos.Item2 - position.Item2) <= range))
+            {
+                if (Math.Abs(pos.Item1 - position.Item1) < closestRange) closestRange = Math.Abs(pos.Item1 - position.Item1);
+                if (Math.Abs(pos.Item2 - position.Item2) < closestRange) closestRange = Math.Abs(pos.Item2 - position.Item2);
+            }
+
+            return closestRange;
+        }
+
+        /// <summary>
         /// Checks if a position is within the bounds of the map.
         /// </summary>
         /// <param name="position">Position to check.</param>

@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using System.Threading;
 
     using OPMGFS.Map;
@@ -22,10 +21,10 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             ////TestEvolution();
             ////TestPhenotype();
-            TestPhenotypeConversion();
+            ////TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            ////TestFitness();
+            TestFitness();
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -41,10 +40,11 @@
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
 
             var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: false);
-            ca.SetRuleset(new List<Rule> { ruleBasicHeight1 });
+            ca.SetRuleset(new List<Rule> { ruleBasicHeight1, ruleBasicHeight1 });
             ca.RunGenerations(generateHeight2ThroughRules: false);
 
-            var map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
+            var map = new MapPhenotype((Enums.HeightLevel[,])ca.Map.Clone(), new Enums.Item[Width, Height]);
+
             map.SmoothTerrain();
             map.PlaceCliffs();
 
