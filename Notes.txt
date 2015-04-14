@@ -14,7 +14,6 @@ TODO:
 		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search
 		Jump Point Search
 		Consider both direct (flight) and ground path between points in fitness function
-		Implement upper path limit
 		Figure out cost and/or how to consider siege tank ranges
 		Figure out cost and/or how to consider "openness" of bases / impassable terrain around a base
 		Number of choke points seen by Xel'Naga towers
