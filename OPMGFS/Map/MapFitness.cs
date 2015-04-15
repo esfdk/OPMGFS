@@ -158,12 +158,19 @@
                 this.startBasePosition2);
 
             fitness += this.BaseSpace();
+            Console.WriteLine("1: " + fitness);
             fitness += this.BaseHeightLevel();
+            Console.WriteLine("2: " + fitness);
             fitness += this.PathBetweenStartBases();
+            Console.WriteLine("3: " + fitness);
             fitness += this.NewHeightReached();
+            Console.WriteLine("4: " + fitness);
             fitness += this.DistanceToNearestExpansion();
+            Console.WriteLine("5: " + fitness);
             fitness += this.ExpansionsAvailable();
+            Console.WriteLine("6: " + fitness);
             fitness += this.ChokePoints();
+            Console.WriteLine("7: " + fitness);
 
             //// Fitness:
             ////  X Base space (amount of tiles around the base that are passable)
@@ -276,17 +283,22 @@
         /// <returns> A number between 0.0 and 1.0 based on how many times a new height is reached. </returns>
         private double DistanceToNearestExpansion()
         {
-            // Find the nearest expansion, ignoring whether pathing is possible or not.
-            var nearestExpansion = MapHelper.FindNearestTileOfType(
-                this.startBasePosition1.Item1,
-                this.startBasePosition1.Item2,
-                this.map.MapItems,
-                Enums.Item.Base);
+            // Find the nearest expansion (if any)
+            Position nearestExpansion = null;
+            var closestDistance = 100000;
+            foreach (var @base in this.bases)
+            {
+                var distance = Math.Abs(this.startBasePosition1.Item1 - @base.Item1)
+                               + Math.Abs(this.startBasePosition1.Item2 - @base.Item2);
+
+                if (distance >= closestDistance) continue;
+
+                nearestExpansion = @base;
+                closestDistance = distance;
+            }
 
             if (nearestExpansion == null)
                 return -100000d;
-
-            nearestExpansion = new Position(nearestExpansion.Item1 + 2, nearestExpansion.Item2 - 2); // The middle of the base
 
             // Attempt to find a path to the expansion.
             var pathToNearest = MapPathfinding.FindPathFromTo(
@@ -352,7 +364,7 @@
                 {
                     //// Otherwise, only perform a choke point check every x steps.
 
-                    if (!this.IsPositionChokePoint(this.pathBetweenBases[nodeIndex + 1], chokePointWidth)) continue;
+                    if (!this.IsPositionChokePoint(this.pathBetweenBases[nodeIndex], chokePointWidth)) continue;
 
                     chokePoints++;
                 }
@@ -388,10 +400,10 @@
             // The opposite directions.
             var directionCombinations = new Dictionary<int, int>
                             {
-                                { 1, 2 }, // West + East
-                                { 3, 4 }, // South + north
-                                { 5, 6 }, // South-east + north-west
-                                { 7, 8 }  // South-west + north-east
+                                { 0, 1 }, // West + East
+                                { 2, 3 }, // South + north
+                                { 4, 5 }, // South-east + north-west
+                                { 6, 7 }  // South-west + north-east
                             };
 
             // Find the nearest cliff in each of the 8 directions.
@@ -416,25 +428,25 @@
             }
 
             // The directions to check the ranges between to get a rather clear view
-            var finalCombinations = new Dictionary<int, int> 
-                            { 
-                                { 1, 2 }, // West + east
-                                { 1, 5 }, // West + south-east
-                                { 1, 8 }, // West + north-east
-                                { 2, 7 }, // East + south-west
-                                { 2, 6 }, // East + north-west
-                                { 3, 4 }, // South + north
-                                { 3, 6 }, // South + north-west
-                                { 3, 8 }, // South + north-east
-                                { 4, 7 }, // North + south-west
-                                { 4, 5 }, // North + south-east
-                            };
+            var finalCombinations = new List<Position>
+                                        {
+                                            new Position(0, 1),
+                                            new Position(0, 4),
+                                            new Position(0, 7),
+                                            new Position(1, 6),
+                                            new Position(1, 5),
+                                            new Position(2, 3),
+                                            new Position(2, 5),
+                                            new Position(2, 7),
+                                            new Position(3, 6),
+                                            new Position(3, 4)
+                                        };
 
             // Check the range to cliffs for every interesting direction combination
             foreach (var fc in finalCombinations)
             {
-                var dir1Value = directions[fc.Key].Item2;
-                var dir2Value = directions[fc.Value].Item2;
+                var dir1Value = directions[fc.Item1].Item2;
+                var dir2Value = directions[fc.Item2].Item2;
 
                 if (dir1Value < 0) continue;
                 if (dir2Value < 0) continue;

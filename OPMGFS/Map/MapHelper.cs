@@ -202,7 +202,7 @@ namespace OPMGFS.Map
 
             openPositions.Add(new Position(x, y));
 
-            while (!(openPositions.Count <= 0))
+            while (openPositions.Count > 0)
             {
                 if (result != null) break;
 
@@ -221,6 +221,9 @@ namespace OPMGFS.Map
                     openPositions.Add(neighbour);
                 }
             }
+
+            Console.WriteLine("Visited: " + visitedPositions.Count);
+            Console.WriteLine("Open: " + openPositions.Count);
 
             return result;
         }

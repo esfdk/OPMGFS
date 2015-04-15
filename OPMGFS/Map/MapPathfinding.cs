@@ -248,12 +248,6 @@ namespace OPMGFS.Map
             // If not within map, it is not a valid move.
             if (!MapHelper.WithinMapBounds(toPos, mapHeightLevels.GetLength(0), mapHeightLevels.GetLength(1))) return false;
 
-            // If the height difference is 2 or higher, it is not a valid move.
-            if (
-                Math.Abs(
-                    (int)mapHeightLevels[fromPos.Item1, fromPos.Item2] - (int)mapHeightLevels[toPos.Item1, toPos.Item2])
-                >= 2) return false;
-
             // If the positions are not adjacent, it is not a valid move.
             if (Math.Abs(fromPos.Item1 - toPos.Item1) >= 2 || Math.Abs(fromPos.Item2 - toPos.Item2) >= 2) return false;
 
