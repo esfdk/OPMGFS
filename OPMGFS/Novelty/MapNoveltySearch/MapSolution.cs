@@ -99,7 +99,12 @@
                 {
                     if (this.SearchOptions.MaximumNumberOfBases > newPoints.Count(mp => mp.Type == Enums.MapPointType.Base || mp.Type == Enums.MapPointType.GoldBase))
                     {
-                        newPoints.Add(new MapPoint(r.NextDouble(), r.Next(0, 181), Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
+                        newPoints.Add(
+                            new MapPoint(
+                                r.NextDouble(),
+                                r.Next(0, 181),
+                                Enums.MapPointType.Base,
+                                Enums.WasPlaced.NotAttempted));
                     }
                 }
                 else if (randomNumber < this.SearchOptions.ChanceToAddBase + this.SearchOptions.ChanceToAddGoldBase)
@@ -131,7 +136,6 @@
                          < this.SearchOptions.ChanceToAddBase + this.SearchOptions.ChanceToAddGoldBase
                          + this.SearchOptions.ChanceToAddXelNagaTower + this.SearchOptions.ChanceToAddDestructibleRocks)
                 {
-                    Console.WriteLine("this happened");
                     if (this.SearchOptions.MaximumNumberOfDestructibleRocks
                         > newPoints.Count(mp => mp.Type == Enums.MapPointType.DestructibleRocks))
                     {
@@ -176,6 +180,15 @@
                     potentialMapPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.Ramp));
                 }
             }
+
+            var finalNewPoints = new List<MapPoint>();
+            finalNewPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.StartBase));
+            finalNewPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.Base));
+            finalNewPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.GoldBase));
+            finalNewPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.XelNagaTower));
+            finalNewPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.DestructibleRocks));
+            finalNewPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.Ramp));
+
             return new MapSolution(this.SearchOptions, newPoints);
         }
 

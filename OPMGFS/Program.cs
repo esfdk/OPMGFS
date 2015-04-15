@@ -21,10 +21,10 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             ////TestEvolution();
             ////TestPhenotype();
-            ////TestPhenotypeConversion();
+            TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            TestFitness();
+            ////TestFitness();
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -573,10 +573,10 @@
                 mnso,
                 new List<MapPoint>
                     {
-                        new MapPoint(0.9, 135, Enums.MapPointType.StartBase, Enums.WasPlaced.Yes),
-                        new MapPoint(0.2, 160, Enums.MapPointType.Base, Enums.WasPlaced.Yes),
-                        new MapPoint(0.6, 90, Enums.MapPointType.GoldBase, Enums.WasPlaced.Yes),
-                        new MapPoint(0.4, 150, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.Yes),
+                        //new MapPoint(0.9, 135, Enums.MapPointType.StartBase, Enums.WasPlaced.Yes),
+                        //new MapPoint(0.2, 160, Enums.MapPointType.Base, Enums.WasPlaced.Yes),
+                        //new MapPoint(0.6, 90, Enums.MapPointType.GoldBase, Enums.WasPlaced.Yes),
+                        //new MapPoint(0.4, 150, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.Yes),
                         new MapPoint(0.2, 11, Enums.MapPointType.DestructibleRocks, Enums.WasPlaced.Yes),
                         //new MapPoint(0.2, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
                         //new MapPoint(1, 180, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
@@ -584,15 +584,15 @@
                         //new MapPoint(0.9, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
                         //new MapPoint(0.2, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
                         //new MapPoint(1, 225, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                        new MapPoint(0.8, 315, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)
+                        //new MapPoint(0.8, 315, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)
                     });
 
             var newMap = solution.ConvertToPhenotype(map);
             newMap.SaveMapToPngFile();
 
-            (solution.Mutate(new Random(10)) as MapSolution).ConvertToPhenotype(map).SaveMapToPngFile("-1");
-            (solution.Mutate(new Random(100)) as MapSolution).ConvertToPhenotype(map).SaveMapToPngFile("-2");
-            (solution.Mutate(new Random(1000)) as MapSolution).ConvertToPhenotype(map).SaveMapToPngFile("-3");
+            ((MapSolution)solution.Mutate(new Random(10))).ConvertToPhenotype(map).SaveMapToPngFile("-1");
+            ((MapSolution)solution.Mutate(new Random(100))).ConvertToPhenotype(map).SaveMapToPngFile("-2");
+            ((MapSolution)solution.Mutate(new Random(1000))).ConvertToPhenotype(map).SaveMapToPngFile("-3");
             ////ms.RunGenerations(1);
         }
     }

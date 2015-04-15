@@ -45,6 +45,7 @@ namespace OPMGFS.Map
         {
             this.HeightLevels = new HeightLevel[xSize, ySize];
             this.MapItems = new Item[xSize, ySize];
+            this.DestructibleRocks = new bool[xSize, ySize];
 
             this.XSize = this.HeightLevels.GetLength(0);
             this.YSize = this.HeightLevels.GetLength(1);
@@ -59,9 +60,11 @@ namespace OPMGFS.Map
         {
             this.HeightLevels = heightLevels;
             this.MapItems = mapItems;
-
+            
             this.XSize = this.HeightLevels.GetLength(0);
             this.YSize = this.HeightLevels.GetLength(1);
+
+            this.DestructibleRocks = new bool[XSize, YSize];
         }
         #endregion
 
@@ -85,6 +88,11 @@ namespace OPMGFS.Map
         /// Gets the items in the map.
         /// </summary>
         public Item[,] MapItems { get; private set; }
+
+        /// <summary>
+        /// Gets the destructible rocks in the map.
+        /// </summary>
+        public bool[,] DestructibleRocks { get; private set; }
         #endregion
 
         #region Public Methods
@@ -272,7 +280,14 @@ namespace OPMGFS.Map
                     for (var x = 0; x < this.XSize; x++)
                     {
                         var drawX = (x * MapHelper.SizeOfMapTiles) + 1;
-                        g.DrawImage(itemDic[this.MapItems[x, y]], drawX, drawY);
+                        if (this.DestructibleRocks[x, y])
+                        {
+                            g.DrawImage(itemDic[Item.DestructibleRocks], drawX, drawY);
+                        }
+                        else
+                        {
+                            g.DrawImage(itemDic[this.MapItems[x, y]], drawX, drawY);
+                        }
                     }
                 }
             }

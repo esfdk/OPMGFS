@@ -171,7 +171,70 @@
         /// <returns>True if the rocks were placed, false if not</returns>
         public static bool PlaceDestructibleRocks(int x, int y, MapPhenotype mp)
         {
-            return PlaceTwoByTwo(x, y, mp, Enums.Item.DestructibleRocks);
+            if (!mp.InsideTopHalf(x, y))
+            {
+                return false;
+            }
+
+            // HACK: Removed check for occupied tiles (risks being placed on inside a starting position)
+            if (mp.InsideTopHalf(x + 1, y) && mp.InsideTopHalf(x, y + 1) && mp.InsideTopHalf(x + 1, y + 1))
+            {
+                // Bottom-left
+                if (mp.HeightLevels[x, y] != Enums.HeightLevel.Cliff && mp.HeightLevels[x, y] != Enums.HeightLevel.Impassable 
+                    && mp.MapItems[x, y] != Enums.Item.StartBase && mp.MapItems[x, y] != Enums.Item.XelNagaTower
+                    && mp.MapItems[x, y] != Enums.Item.BlueMinerals && mp.MapItems[x, y] != Enums.Item.GoldMinerals
+                    && mp.MapItems[x, y] != Enums.Item.Gas)
+                {
+                    mp.DestructibleRocks[x, y] = true;
+                    mp.DestructibleRocks[x + 1, y] = true;
+                    mp.DestructibleRocks[x, y + 1] = true;
+                    mp.DestructibleRocks[x + 1, y + 1] = true;
+                }
+            }
+            else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y + 1) && mp.InsideTopHalf(x - 1, y + 1))
+            {
+                // Bottom-right
+                if (mp.HeightLevels[x - 1, y] != Enums.HeightLevel.Cliff && mp.HeightLevels[x - 1, y] != Enums.HeightLevel.Impassable 
+                    && mp.MapItems[x - 1, y] != Enums.Item.StartBase && mp.MapItems[x - 1, y] != Enums.Item.XelNagaTower
+                    && mp.MapItems[x - 1, y] != Enums.Item.BlueMinerals && mp.MapItems[x - 1, y] != Enums.Item.GoldMinerals
+                    && mp.MapItems[x - 1, y] != Enums.Item.Gas)
+                {
+                    mp.DestructibleRocks[x, y] = true;
+                    mp.DestructibleRocks[x - 1, y] = true;
+                    mp.DestructibleRocks[x, y + 1] = true;
+                    mp.DestructibleRocks[x - 1, y + 1] = true;
+                }
+            }
+            else if (mp.InsideTopHalf(x + 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x + 1, y - 1))
+            {
+                // Top-left
+                if (mp.HeightLevels[x, y - 1] != Enums.HeightLevel.Cliff && mp.HeightLevels[x, y - 1] != Enums.HeightLevel.Impassable
+                    && mp.MapItems[x, y - 1] != Enums.Item.StartBase && mp.MapItems[x, y - 1] != Enums.Item.XelNagaTower
+                    && mp.MapItems[x, y - 1] != Enums.Item.BlueMinerals && mp.MapItems[x, y - 1] != Enums.Item.GoldMinerals
+                    && mp.MapItems[x, y - 1] != Enums.Item.Gas)
+                {
+                    mp.DestructibleRocks[x, y] = true;
+                    mp.DestructibleRocks[x + 1, y] = true;
+                    mp.DestructibleRocks[x, y - 1] = true;
+                    mp.DestructibleRocks[x + 1, y - 1] = true;
+                }
+            }
+            else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x - 1, y - 1))
+            {
+                // Top-right
+                if (mp.HeightLevels[x - 1, y - 1] != Enums.HeightLevel.Cliff && mp.HeightLevels[x - 1, y - 1] != Enums.HeightLevel.Impassable
+                    && mp.MapItems[x - 1, y - 1] != Enums.Item.StartBase && mp.MapItems[x - 1, y - 1] != Enums.Item.XelNagaTower
+                    && mp.MapItems[x - 1, y - 1] != Enums.Item.BlueMinerals && mp.MapItems[x - 1, y - 1] != Enums.Item.GoldMinerals
+                    && mp.MapItems[x - 1, y - 1] != Enums.Item.Gas)
+                {
+                    mp.DestructibleRocks[x, y] = true;
+                    mp.DestructibleRocks[x - 1, y] = true;
+                    mp.DestructibleRocks[x, y - 1] = true;
+                    mp.DestructibleRocks[x - 1, y - 1] = true;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -359,7 +422,7 @@
             if (mp.InsideTopHalf(x + 1, y) && mp.InsideTopHalf(x, y + 1) && mp.InsideTopHalf(x + 1, y + 1))
             {
                 // Bottom-left
-                if (mp.HeightLevels[x, y] != Enums.HeightLevel.Cliff)
+                if (mp.HeightLevels[x, y] != Enums.HeightLevel.Cliff && mp.HeightLevels[x, y] != Enums.HeightLevel.Impassable)
                 {
                     FlattenArea(mp.HeightLevels[x, y], x, y, 2, 2, mp);
                     mp.MapItems[x, y] = itemToPlace;
@@ -371,7 +434,7 @@
             else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y + 1) && mp.InsideTopHalf(x - 1, y + 1))
             {
                 // Bottom-right
-                if (mp.HeightLevels[x - 1, y] != Enums.HeightLevel.Cliff)
+                if (mp.HeightLevels[x - 1, y] != Enums.HeightLevel.Cliff && mp.HeightLevels[x, y] != Enums.HeightLevel.Impassable)
                 {
                     FlattenArea(mp.HeightLevels[x - 1, y], x, y, 2, 2, mp);
                     mp.MapItems[x, y] = itemToPlace;
@@ -383,7 +446,7 @@
             else if (mp.InsideTopHalf(x + 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x + 1, y - 1))
             {
                 // Top-left
-                if (mp.HeightLevels[x, y - 1] != Enums.HeightLevel.Cliff)
+                if (mp.HeightLevels[x, y - 1] != Enums.HeightLevel.Cliff && mp.HeightLevels[x, y] != Enums.HeightLevel.Impassable)
                 {
                     FlattenArea(mp.HeightLevels[x, y - 1], x, y, 2, 2, mp);
                     mp.MapItems[x, y] = itemToPlace;
@@ -395,7 +458,7 @@
             else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x - 1, y - 1))
             {
                 // Top-right
-                if (mp.HeightLevels[x - 1, y - 1] != Enums.HeightLevel.Cliff)
+                if (mp.HeightLevels[x - 1, y - 1] != Enums.HeightLevel.Cliff && mp.HeightLevels[x, y] != Enums.HeightLevel.Impassable)
                 {
                     FlattenArea(mp.HeightLevels[x - 1, y - 1], x, y, 2, 2, mp);
                     mp.MapItems[x, y] = itemToPlace;
