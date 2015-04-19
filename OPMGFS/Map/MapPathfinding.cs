@@ -134,39 +134,7 @@ namespace OPMGFS.Map
                     var posToCheck = new Position(position.Item1 + possibleXMove, position.Item2 + possibleYMove);
 
                     // If the move is valid, add it to the list of neighbours.
-                    if (ValidMove(mapHeightLevels, position, posToCheck))
-                        neighbours.Add(posToCheck);
-                }
-            }
-
-            return neighbours;
-        }
-
-        /// <summary>
-        /// Gets the neighbours for the given position.
-        /// </summary>
-        /// <param name="mapHeightLevels"> The height levels of the map. </param>
-        /// <param name="position"> The position to find neighbours for. </param>
-        /// <returns> A list of the neighbours. </returns>
-        public static IEnumerable<Position> Neighbours(Enums.Item[,] mapHeightLevels, Position position)
-        {
-            var neighbours = new List<Position>();
-            var possibleMoves = new[] { -1, 0, 1 };
-
-            // Iterate over all combinations of neighbours.
-            // Don't even bother converting this to LINQ :D
-            foreach (var possibleXMove in possibleMoves)
-            {
-                foreach (var possibleYMove in possibleMoves)
-                {
-                    // If we are looking at the current position, don't do anything.
-                    if (possibleXMove == 0 && possibleYMove == 0)
-                        continue;
-
-                    var posToCheck = new Position(position.Item1 + possibleXMove, position.Item2 + possibleYMove);
-
-                    // If the move is valid, add it to the list of neighbours.
-                    if (ValidMove(mapHeightLevels, position, posToCheck))
+                    if (MapHelper.ValidMove(mapHeightLevels, position, posToCheck))
                         neighbours.Add(posToCheck);
                 }
             }
@@ -208,50 +176,6 @@ namespace OPMGFS.Map
         {
             return Math.Sqrt(Math.Pow(Math.Abs(start.Item1 - end.Item1), 2) 
                             + Math.Pow(Math.Abs(start.Item2 - end.Item2), 2));
-        }
-
-        /// <summary>
-        /// Determines if moving from one position to another is a valid move.
-        /// </summary>
-        /// <param name="mapHeightLevels"> The height levels of the map. </param>
-        /// <param name="fromPos"> The position to travel from. </param>
-        /// <param name="toPos">The position to travel to. </param>
-        /// <returns> True if the move is valid; false otherwise. </returns>
-        private static bool ValidMove(Enums.HeightLevel[,] mapHeightLevels, Position fromPos, Position toPos)
-        {
-            // If not within map, it is not a valid move.
-            if (!MapHelper.WithinMapBounds(toPos, mapHeightLevels.GetLength(0), mapHeightLevels.GetLength(1))) return false;
-
-            // If the height difference is 2 or higher, it is not a valid move.
-            if (
-                Math.Abs(
-                    (int)mapHeightLevels[fromPos.Item1, fromPos.Item2] - (int)mapHeightLevels[toPos.Item1, toPos.Item2])
-                >= 2) return false;
-
-            // If the positions are not adjacent, it is not a valid move.
-            if (Math.Abs(fromPos.Item1 - toPos.Item1) >= 2 || Math.Abs(fromPos.Item2 - toPos.Item2) >= 2) return false;
-
-            if (mapHeightLevels[toPos.Item1, toPos.Item2] == Enums.HeightLevel.Cliff) return false;
-
-            return true;
-        }
-
-        /// <summary>
-        /// Determines if moving from one position to another is a valid move.
-        /// </summary>
-        /// <param name="mapHeightLevels"> The height levels of the map. </param>
-        /// <param name="fromPos"> The position to travel from. </param>
-        /// <param name="toPos">The position to travel to. </param>
-        /// <returns> True if the move is valid; false otherwise. </returns>
-        private static bool ValidMove(Enums.Item[,] mapHeightLevels, Position fromPos, Position toPos)
-        {
-            // If not within map, it is not a valid move.
-            if (!MapHelper.WithinMapBounds(toPos, mapHeightLevels.GetLength(0), mapHeightLevels.GetLength(1))) return false;
-
-            // If the positions are not adjacent, it is not a valid move.
-            if (Math.Abs(fromPos.Item1 - toPos.Item1) >= 2 || Math.Abs(fromPos.Item2 - toPos.Item2) >= 2) return false;
-
-            return true;
         }
         #endregion
 

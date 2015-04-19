@@ -186,49 +186,6 @@ namespace OPMGFS.Map
         }
 
         /// <summary>
-        /// Finds the position of the nearest tile of the given type.
-        /// </summary>
-        /// <param name="x"> The x-coordinate of the start position. </param>
-        /// <param name="y"> The y-coordinate of the start position. </param>
-        /// <param name="map"> The map to work on. </param>
-        /// <param name="toFind"> The type of tile to find. </param>
-        /// <returns> The position of the nearest found  tile of the given type or null. </returns>
-        public static Position FindNearestTileOfType(int x, int y, Enums.Item[,] map, Enums.Item toFind)
-        {
-            var tileList = new List<Enums.Item>();
-            var visitedPositions = new List<Position>();
-            var openPositions = new List<Position>();
-            Position result = null;
-
-            openPositions.Add(new Position(x, y));
-
-            while (openPositions.Count > 0)
-            {
-                if (result != null) break;
-
-                var currentPos = openPositions[0];
-                openPositions.Remove(currentPos);
-
-                visitedPositions.Add(currentPos);
-                tileList.Add(map[currentPos.Item1, currentPos.Item2]);
-
-                var neighbours = MapPathfinding.Neighbours(map, currentPos);
-                foreach (var neighbour in neighbours)
-                {
-                    if (map[neighbour.Item1, neighbour.Item2] == toFind) result = neighbour;
-                    if (visitedPositions.Contains(neighbour) || openPositions.Contains(neighbour)) continue;
-
-                    openPositions.Add(neighbour);
-                }
-            }
-
-            Console.WriteLine("Visited: " + visitedPositions.Count);
-            Console.WriteLine("Open: " + openPositions.Count);
-
-            return result;
-        }
-
-        /// <summary>
         /// Gets the number of different neighbours surrounding the given position.
         /// </summary>
         /// <param name="x"> The x-coordinate to check neighbours for. </param>
@@ -302,17 +259,56 @@ namespace OPMGFS.Map
         }
 
         /// <summary>
+        /// Determines if moving from one position to another is a valid move.
+        /// </summary>
+        /// <param name="mapHeightLevels"> The height levels of the map. </param>
+        /// <param name="fromPos"> The position to travel from. </param>
+        /// <param name="toPos">The position to travel to. </param>
+        /// <returns> True if the move is valid; false otherwise. </returns>
+        public static bool ValidMove(Enums.HeightLevel[,] mapHeightLevels, Position fromPos, Position toPos)
+        {
+            // If not within map, it is not a valid move.
+            if (!WithinMapBounds(toPos, mapHeightLevels.GetLength(0), mapHeightLevels.GetLength(1))) return false;
+
+            // If the height difference is 2 or higher, it is not a valid move.
+            if (
+                Math.Abs(
+                    (int)mapHeightLevels[fromPos.Item1, fromPos.Item2] - (int)mapHeightLevels[toPos.Item1, toPos.Item2])
+                >= 2) return false;
+
+            // If the positions are not adjacent, it is not a valid move.
+            if (Math.Abs(fromPos.Item1 - toPos.Item1) >= 2 || Math.Abs(fromPos.Item2 - toPos.Item2) >= 2) return false;
+
+            if (mapHeightLevels[toPos.Item1, toPos.Item2] == Enums.HeightLevel.Cliff) return false;
+
+            return true;
+        }
+
+        /// <summary>
         /// Checks if a position is within the bounds of the map.
         /// </summary>
         /// <param name="position">Position to check.</param>
         /// <param name="sizeX">The size of the map on the x-axis.</param>
         /// <param name="sizeY">The size of the map on the y-axis.</param>
         /// <returns>True if within the bounds of the map; false otherwise.</returns>
-        public static bool WithinMapBounds(Tuple<int, int> position, int sizeX, int sizeY)
+        public static bool WithinMapBounds(Position position, int sizeX, int sizeY)
         {
             if (position.Item1 < 0 || position.Item1 >= sizeX) return false;
             if (position.Item2 < 0 || position.Item2 >= sizeY) return false;
             return true;
+        }
+
+        /// <summary>
+        /// Checks if a position is within the bounds of the map.
+        /// </summary>
+        /// <param name="x"> The x-coordinate to check. </param>
+        /// <param name="y"> The y-coordinate to check. </param>
+        /// <param name="sizeX">The size of the map on the x-axis.</param>
+        /// <param name="sizeY">The size of the map on the y-axis.</param>
+        /// <returns>True if within the bounds of the map; false otherwise.</returns>
+        public static bool WithinMapBounds(int x, int y, int sizeX, int sizeY)
+        {
+            return WithinMapBounds(new Position(x, y), sizeX, sizeY);
         }
 
         #endregion
@@ -337,8 +333,7 @@ namespace OPMGFS.Map
         public static Dictionary<Enums.HeightLevel, Image> GetHeightmapImageDictionary()
         {
             var imgDir = Path.Combine(GetImageDirectory(), @"Tiles");
-            var tileDic = new Dictionary<Enums.HeightLevel, Image>
-                              {
+            var tileDic = new Dictionary<Enums.HeightLevel, Image> {
                                   { Enums.HeightLevel.Height0, Image.FromFile(Path.Combine(imgDir, @"Height0.png")) },
                                   { Enums.HeightLevel.Height1, Image.FromFile(Path.Combine(imgDir, @"Height1.png")) },
                                   { Enums.HeightLevel.Height2, Image.FromFile(Path.Combine(imgDir, @"Height2.png")) },
@@ -358,8 +353,7 @@ namespace OPMGFS.Map
         public static Dictionary<Enums.Item, Image> GetItemImageDictionary()
         {
             var imgDir = Path.Combine(GetImageDirectory(), @"Tiles");
-            var tileDic = new Dictionary<Enums.Item, Image>
-                              {
+            var tileDic = new Dictionary<Enums.Item, Image> {
                                   { Enums.Item.None, Image.FromFile(Path.Combine(imgDir, @"Transparent.png")) },
                                   { Enums.Item.Base, Image.FromFile(Path.Combine(imgDir, @"Base.png")) },
                                   { Enums.Item.StartBase, Image.FromFile(Path.Combine(imgDir, @"StartBase.png")) },

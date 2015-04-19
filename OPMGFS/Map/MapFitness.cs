@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Diagnostics;
 
     using Position = System.Tuple<int, int>;
 
@@ -92,6 +92,11 @@
         private Enums.HeightLevel heightestLevel = Enums.HeightLevel.Height0;
 
         /// <summary>
+        /// The pathfinding used.
+        /// </summary>
+        private JPSMapPathfinding mapPathfinding;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MapFitness"/> class. 
         /// </summary>
         /// <param name="map"> The map to calculate fitness for. </param>
@@ -100,6 +105,7 @@
             this.ySize = map.YSize;
             this.xSize = map.XSize;
             this.map = map;
+            this.mapPathfinding = new JPSMapPathfinding(map.HeightLevels);
         }
 
         /// <summary>
@@ -152,25 +158,40 @@
                 }
             }
 
-            this.pathBetweenBases = MapPathfinding.FindPathFromTo(
-                this.map.HeightLevels,
+            var sw = new Stopwatch();
+            sw.Start();
+            this.pathBetweenBases = this.mapPathfinding.FindPathFromTo(
                 this.startBasePosition1,
                 this.startBasePosition2);
+            Console.WriteLine("0: " + sw.ElapsedMilliseconds + " - " + fitness);
 
             fitness += this.BaseSpace();
-            Console.WriteLine("1: " + fitness);
+            Console.WriteLine("1: " + sw.ElapsedMilliseconds + " - " + fitness);
+            sw.Restart();
+
             fitness += this.BaseHeightLevel();
-            Console.WriteLine("2: " + fitness);
+            Console.WriteLine("2: " + sw.ElapsedMilliseconds + " - " + fitness);
+            sw.Restart();
+
             fitness += this.PathBetweenStartBases();
-            Console.WriteLine("3: " + fitness);
+            Console.WriteLine("3: " + sw.ElapsedMilliseconds + " - " + fitness);
+            sw.Restart();
+
             fitness += this.NewHeightReached();
-            Console.WriteLine("4: " + fitness);
+            Console.WriteLine("4: " + sw.ElapsedMilliseconds + " - " + fitness);
+            sw.Restart();
+
             fitness += this.DistanceToNearestExpansion();
-            Console.WriteLine("5: " + fitness);
+            Console.WriteLine("5: " + sw.ElapsedMilliseconds + " - " + fitness);
+            sw.Restart();
+
             fitness += this.ExpansionsAvailable();
-            Console.WriteLine("6: " + fitness);
+            Console.WriteLine("6: " + sw.ElapsedMilliseconds + " - " + fitness);
+            sw.Restart();
+
             fitness += this.ChokePoints();
-            Console.WriteLine("7: " + fitness);
+            Console.WriteLine("7: " + sw.ElapsedMilliseconds + " - " + fitness);
+            sw.Restart();
 
             //// Fitness:
             ////  X Base space (amount of tiles around the base that are passable)
@@ -297,14 +318,13 @@
                 closestDistance = distance;
             }
 
-            if (nearestExpansion == null)
-                return -100000d;
-
             // Attempt to find a path to the expansion.
-            var pathToNearest = MapPathfinding.FindPathFromTo(
-                this.map.HeightLevels,
+            var pathToNearest = this.mapPathfinding.FindPathFromTo(
                 this.startBasePosition1,
                 nearestExpansion);
+
+            if (pathToNearest.Count == 0)
+                return -100000d;
 
             var maxPathToExpansion = this.ySize * 0.4;
             var minPathToExpansion = this.ySize * 0.1;

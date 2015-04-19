@@ -11,6 +11,8 @@
     using OPMGFS.Map.MapObjects;
     using OPMGFS.Novelty.MapNoveltySearch;
 
+    using Position = System.Tuple<int, int>;
+
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
     public class Program
     {
@@ -21,13 +23,77 @@
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
             ////TestEvolution();
             ////TestPhenotype();
-            TestPhenotypeConversion();
+            ////TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            ////TestFitness();
+            TestFitness();
+            ////TestPathfinding();
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
+        }
+
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+            Justification = "Reviewed. Suppression is OK here.")]
+        private static void TestPathfinding()
+        {
+            const int Height = 128;
+            const int Width = 128;
+
+            var map = new MapPhenotype(new Enums.HeightLevel[Width, Height], new Enums.Item[Width, Height]);
+            map.HeightLevels[32, 32] = Enums.HeightLevel.Height1;
+            for (int i = 0; i < 6; i++)
+            {
+                map.HeightLevels[29 + i, 29 + i] = Enums.HeightLevel.Height1;
+                map.HeightLevels[93 + i, 93 + i] = Enums.HeightLevel.Height1;
+            }
+
+            map.PlaceCliffs();
+
+            var mapSolution = new MapSolution(new MapNoveltySearchOptions(map));
+            mapSolution.MapPoints.Add(new MapPoint(0.5, 45, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
+            ////mapSolution.MapPoints.Add(new MapPoint(0.4, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.NotAttempted));
+            map = mapSolution.ConvertedPhenotype;
+
+            map.HeightLevels[32, 19] = Enums.HeightLevel.Ramp01;
+            map.HeightLevels[96, 108] = Enums.HeightLevel.Ramp01;
+
+            ////map.SmoothTerrain();
+
+            var start = new Position(32, 32);
+            var end = new Position(96, 96);
+
+            map.SaveMapToPngFile();
+
+            var sw = new Stopwatch();
+            sw.Start();
+            var aStar = MapPathfinding.FindPathFromTo(map.HeightLevels, start, end);
+            sw.Stop();
+            Console.WriteLine("AStar route length: " + aStar.Count + " took " + sw.ElapsedMilliseconds + " milliseconds");
+            sw.Restart();
+            var jps = new JPSMapPathfinding(map.HeightLevels);
+            var jpsPath = jps.FindPathFromTo(start, end);
+            sw.Stop();
+            Console.WriteLine("JPS route length: " + jpsPath.Count + " took " + sw.ElapsedMilliseconds + " milliseconds");
+
+            var map1 = (Enums.HeightLevel[,])map.HeightLevels.Clone();
+            var map2 = (Enums.HeightLevel[,])map.HeightLevels.Clone();
+
+            foreach (var tuple in aStar)
+            {
+                map1[tuple.Item1, tuple.Item2] = Enums.HeightLevel.Impassable;
+            }
+
+            foreach (var tuple in jpsPath)
+            {
+                map2[tuple.Item1, tuple.Item2] = Enums.HeightLevel.Impassable;
+            }
+
+            map = new MapPhenotype(map1, new Enums.Item[Width, Height]);
+            map.SaveMapToPngFile();
+
+            map = new MapPhenotype(map2, new Enums.Item[Width, Height]);
+            map.SaveMapToPngFile();
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
@@ -55,6 +121,21 @@
             map = mapSolution.ConvertedPhenotype;
 
             map.SaveMapToPngFile();
+
+            ////TODO: JPS small bug. See result of this run.
+            ////var start = new Position(32, 32);
+            ////var end = new Position(96, 96);
+            ////JPSMapPathfinding jps = new JPSMapPathfinding(map.HeightLevels);
+            ////var path = jps.FindPathFromTo(start, end);
+            ////foreach (var tuple in path)
+            ////{
+            ////    map.HeightLevels[tuple.Item1, tuple.Item2] = Enums.HeightLevel.Impassable;
+            ////}
+
+            ////map.HeightLevels[63, 65] = Enums.HeightLevel.Ramp12;
+
+            ////map.SaveMapToPngFile();
+
 
             var mapFitness = new MapFitness(map);
             var sw = new Stopwatch();

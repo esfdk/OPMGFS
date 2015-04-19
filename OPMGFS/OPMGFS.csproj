@@ -56,6 +56,7 @@
     <Compile Include="Map\CellularAutomata\RuleProbabilistic.cs" />
     <Compile Include="Map\CellularAutomata\Ruleset.cs" />
     <Compile Include="Map\Enums.cs" />
+    <Compile Include="Map\JPSMapPathfinding.cs" />
     <Compile Include="Map\MapFitness.cs" />
     <Compile Include="Map\MapHelper.cs" />
     <Compile Include="Map\MapObjects\MapPoint.cs" />

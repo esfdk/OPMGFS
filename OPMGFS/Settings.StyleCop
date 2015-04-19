@@ -22,6 +22,7 @@
       <AnalyzerSettings>
         <CollectionProperty Name="Hungarian">
           <Value>ca</Value>
+          <Value>cn</Value>
           <Value>x</Value>
           <Value>y</Value>
         </CollectionProperty>
