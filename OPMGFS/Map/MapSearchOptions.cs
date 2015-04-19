@@ -1,14 +1,12 @@
-﻿namespace OPMGFS.Novelty.MapNoveltySearch
+﻿namespace OPMGFS.Map
 {
-    using OPMGFS.Map;
-
     /// <summary>
     /// Novelty Search Options for map searching.
     /// </summary>
-    public class MapNoveltySearchOptions : NoveltySearchOptions
+    public class MapSearchOptions
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MapNoveltySearchOptions"/> class. 
+        /// Initializes a new instance of the <see cref="MapSearchOptions"/> class. 
         /// </summary>
         /// <param name="mp">
         /// The map phenotype to search on.
@@ -16,8 +14,24 @@
         /// <param name="mapCompletion">
         /// The completion method to use when converting to phenotype.
         /// </param>
-        /// <param name="chanceToAddNewElement">The chance that an element will be added to a solution during mutation.</param>
-        /// <param name="chanceToRemoveElement">The chance that an element will be removed from a solution during mutation.</param>
+        /// <param name="chanceToAddBase">
+        /// The chance To Add Base.
+        /// </param>
+        /// <param name="chanceToAddGoldBase">
+        /// The chance To Add Gold Base.
+        /// </param>
+        /// <param name="chanceToAddXelNagaTower">
+        /// The chance To Add Xel'Naga Tower.
+        /// </param>
+        /// <param name="chanceToAddDestructibleRocks">
+        /// The chance To Add Destructible Rocks.
+        /// </param>
+        /// <param name="chanceToAddNewElement">
+        /// The chance that an element will be added to a solution during mutation.
+        /// </param>
+        /// <param name="chanceToRemoveElement">
+        /// The chance that an element will be removed from a solution during mutation.
+        /// </param>
         /// <param name="maximumDisplacement">
         /// The maximum Displacement.
         /// </param>
@@ -88,33 +102,12 @@
         /// The maximum Number Of Destructible Rocks.
         /// </param>
         /// <param name="minimumNumberOfXelNagaTowers">
-        /// The minimum Number Of Xel Naga Towers.
+        /// The minimum Number Of Xel'Naga Towers.
         /// </param>
         /// <param name="maximumNumberOfXelNagaTowers">
-        /// The maximum Number Of Xel Naga Towers.
+        /// The maximum Number Of Xel'Naga Towers.
         /// </param>
-        /// <param name="mutate">
-        /// Whether the novelty search should use mutation. 
-        /// </param>
-        /// <param name="recombine">
-        /// Whether the novelty search should use recombination. 
-        /// </param>
-        /// <param name="mutationChance">
-        /// The chance of a mutation happening. 
-        /// </param>
-        /// <param name="twoPointCrossover">
-        /// Whether the novelty search should use single point or two point crossover when recombining. 
-        /// </param>
-        /// <param name="numberOfNeighbours">
-        /// The number of neighbours to use in calculation of novelty. 
-        /// </param>
-        /// <param name="addToArchive">
-        /// The amount of individuals to add to the novel archive. 
-        /// </param>
-        /// <param name="minimumNovelty">
-        /// The minimum novelty required for an individual to be added to the novel archive.
-        /// </param>
-        public MapNoveltySearchOptions(
+        public MapSearchOptions(
             MapPhenotype mp,
             Enums.MapFunction mapCompletion = Enums.MapFunction.Turn,
             double chanceToAddBase = 0.15,
@@ -147,15 +140,7 @@
             int minimumNumberOfDestructibleRocks = 1,
             int maximumNumberOfDestructibleRocks = 3,
             int minimumNumberOfXelNagaTowers = 1,
-            int maximumNumberOfXelNagaTowers = 1,
-            bool mutate = true,
-            bool recombine = false,
-            double mutationChance = 0.3,
-            bool twoPointCrossover = false,
-            int numberOfNeighbours = 1,
-            int addToArchive = 1,
-            double minimumNovelty = 0)
-            : base(mutate, recombine, mutationChance, twoPointCrossover, numberOfNeighbours, addToArchive, minimumNovelty)
+            int maximumNumberOfXelNagaTowers = 1)
         {
             this.ChanceToAddBase = chanceToAddBase;
             this.ChanceToAddXelNagaTower = chanceToAddXelNagaTower;
@@ -171,7 +156,6 @@
             this.MaximumDisplacement = maximumDisplacement;
             this.NoPathBetweenStartBases = noPathBetweenStartBases;
             this.MapCompletion = mapCompletion;
-            this.NotPlacedPenalty = notPlacedPenalty;
             this.MaximumNumberOfXelNagaTowers = maximumNumberOfXelNagaTowers;
             this.MinimumNumberOfXelNagaTowers = minimumNumberOfXelNagaTowers;
             this.MaximumNumberOfDestructibleRocks = maximumNumberOfDestructibleRocks;
@@ -188,7 +172,55 @@
             this.MaximumDistance = maximumDistance;
             this.MinimumDegree = minimumDegree;
             this.MaximumDegree = maximumDegree;
+            this.NotPlacedPenalty = notPlacedPenalty;
             this.NotPlacedPenaltyModifier = notPlacedPenaltyModifier;
+            this.Map = mp;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapSearchOptions"/> class.
+        /// </summary>
+        /// <param name="mp">
+        /// The map phenotype.
+        /// </param>
+        /// <param name="mso">
+        /// The map search options to copy..
+        /// </param>
+        public MapSearchOptions(MapPhenotype mp, MapSearchOptions mso)
+        {
+            this.ChanceToAddBase = mso.ChanceToAddBase;
+            this.ChanceToAddGoldBase = mso.ChanceToAddGoldBase;
+            this.ChanceToAddDestructibleRocks = mso.ChanceToAddDestructibleRocks;
+            this.ChanceToAddXelNagaTower = mso.ChanceToAddXelNagaTower;
+            this.ChanceToRemoveElement = mso.ChanceToRemoveElement;
+            this.ChanceToAddNewElement = mso.ChanceToAddNewElement;
+            this.MaximumStartBaseDistance = mso.MaximumStartBaseDistance;
+            this.MinimumStartBaseDistance = mso.MinimumStartBaseDistance;
+            this.TooManyElementsPenalty = mso.TooManyElementsPenalty;
+            this.TooFewElementsPenalty = mso.TooFewElementsPenalty;
+            this.DisplacementAmountPerStep = mso.DisplacementAmountPerStep;
+            this.MaximumDisplacement = mso.MaximumDisplacement;
+            this.NoPathBetweenStartBases = mso.NoPathBetweenStartBases;
+            this.MapCompletion = mso.MapCompletion;
+            this.MaximumNumberOfXelNagaTowers = mso.MaximumNumberOfXelNagaTowers;
+            this.MinimumNumberOfXelNagaTowers = mso.MinimumNumberOfXelNagaTowers;
+            this.MaximumNumberOfDestructibleRocks = mso.MaximumNumberOfDestructibleRocks;
+            this.MinimumNumberOfDestructibleRocks = mso.MinimumNumberOfDestructibleRocks;
+            this.MaximumNumberOfRamps = mso.MaximumNumberOfRamps;
+            this.MinimumNumberOfRamps = mso.MinimumNumberOfRamps;
+            this.MaximumNumberOfBases = mso.MaximumNumberOfBases;
+            this.MinimumNumberOfBases = mso.MinimumNumberOfBases;
+            this.MinimumDegreeModifier = mso.MinimumDegreeModifier;
+            this.MaximumDegreeModifier = mso.MaximumDegreeModifier;
+            this.MinimumDistanceModifier = mso.MinimumDistanceModifier;
+            this.MaximumDistanceModifier = mso.MaximumDistanceModifier;
+            this.MinimumDistance = mso.MinimumDistance;
+            this.MaximumDistance = mso.MaximumDistance;
+            this.MinimumDegree = mso.MinimumDegree;
+            this.MaximumDegree = mso.MaximumDegree;
+            this.NotPlacedPenalty = mso.NotPlacedPenalty;
+            this.NotPlacedPenaltyModifier = mso.NotPlacedPenaltyModifier;
+
             this.Map = mp;
         }
 
@@ -197,12 +229,24 @@
         /// </summary>
         public MapPhenotype Map { get; private set; }
 
+        /// <summary>
+        /// Gets the chance that a new map point will be a base.
+        /// </summary>
         public double ChanceToAddBase { get; private set; }
 
+        /// <summary>
+        /// Gets the chance that a new map point will be a Xel'Naga tower.
+        /// </summary>
         public double ChanceToAddXelNagaTower { get; private set; }
 
+        /// <summary>
+        /// Gets the chance that a new map point will be destructible rocks.
+        /// </summary>
         public double ChanceToAddDestructibleRocks { get; private set; }
 
+        /// <summary>
+        /// Gets the chance that a new map point will be a gold base.
+        /// </summary>
         public double ChanceToAddGoldBase { get; private set; }
 
         /// <summary>
@@ -331,12 +375,12 @@
         public int MaximumNumberOfDestructibleRocks { get; private set; }
 
         /// <summary>
-        /// Gets the minimum number of xel naga towers.
+        /// Gets the minimum number of Xel'Naga towers.
         /// </summary>
         public int MinimumNumberOfXelNagaTowers { get; private set; }
 
         /// <summary>
-        /// Gets the maximum number of xel naga towers.
+        /// Gets the maximum number of Xel'Naga towers.
         /// </summary>
         public int MaximumNumberOfXelNagaTowers { get; private set; }
 

@@ -4,15 +4,17 @@ TODO:
 		Cellular Automata after placing map points
 		Upper limit on pathfinding
 		Expand choke point search
-		
+		Jump Point Search
+				
 	Melnyk
-		Displacement
-		Random add/remove of map elements
-		Destructible rocks in seperate array
+		Displacement (done)
+		Random add/remove of map elements (done)
+		Destructible rocks in seperate array (done)
+		Set up novelty search for testing
+		Set up evolution for testing
 	
 	TBA
 		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search
-		Jump Point Search
 		Consider both direct (flight) and ground path between points in fitness function
 		Figure out cost and/or how to consider siege tank ranges
 		Figure out cost and/or how to consider "openness" of bases / impassable terrain around a base

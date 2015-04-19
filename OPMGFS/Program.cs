@@ -9,6 +9,7 @@
     using OPMGFS.Map;
     using OPMGFS.Map.CellularAutomata;
     using OPMGFS.Map.MapObjects;
+    using OPMGFS.Novelty;
     using OPMGFS.Novelty.MapNoveltySearch;
 
     using Position = System.Tuple<int, int>;
@@ -114,7 +115,7 @@
             map.SmoothTerrain();
             map.PlaceCliffs();
 
-            var mapSolution = new MapSolution(new MapNoveltySearchOptions(map));
+            var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions());
             mapSolution.MapPoints.Add(new MapPoint(0.5, 45, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.75, 90, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.5, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.No));
@@ -477,7 +478,7 @@
 
             map.SaveMapToPngFile(folder: folderString);
 
-            var ms = new MapSearcher(new Random(), 10, 10, new MapNoveltySearchOptions(map));
+            var ms = new MapSearcher(new Random(), 10, 10, new MapSearchOptions(map), new NoveltySearchOptions());
 
             ms.RunGenerations(5);
 
@@ -646,27 +647,29 @@
             map.HeightLevels[57, 3] = Enums.HeightLevel.Impassable;
             map.HeightLevels[57, 4] = Enums.HeightLevel.Impassable;
 
-            var mnso = new MapNoveltySearchOptions(map, mutationChance: 1.0, chanceToAddNewElement: 1.0, chanceToAddDestructibleRocks:1.0, chanceToAddBase:0.0, chanceToAddGoldBase: 0.0, chanceToAddXelNagaTower: 0.0, maximumNumberOfDestructibleRocks:100);
+            var mso = new MapSearchOptions(map);
+            var nso = new NoveltySearchOptions();
 
             ////var ms = new MapSearcher(new Random(), 5, 5, mnso);
 
             ////var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
             var solution = new MapSolution(
-                mnso,
+                mso,
+                nso,
                 new List<MapPoint>
                     {
-                        //new MapPoint(0.9, 135, Enums.MapPointType.StartBase, Enums.WasPlaced.Yes),
-                        //new MapPoint(0.2, 160, Enums.MapPointType.Base, Enums.WasPlaced.Yes),
-                        //new MapPoint(0.6, 90, Enums.MapPointType.GoldBase, Enums.WasPlaced.Yes),
-                        //new MapPoint(0.4, 150, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.Yes),
+                        ////new MapPoint(0.9, 135, Enums.MapPointType.StartBase, Enums.WasPlaced.Yes),
+                        ////new MapPoint(0.2, 160, Enums.MapPointType.Base, Enums.WasPlaced.Yes),
+                        ////new MapPoint(0.6, 90, Enums.MapPointType.GoldBase, Enums.WasPlaced.Yes),
+                        ////new MapPoint(0.4, 150, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.Yes),
                         new MapPoint(0.2, 11, Enums.MapPointType.DestructibleRocks, Enums.WasPlaced.Yes),
-                        //new MapPoint(0.2, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                        //new MapPoint(1, 180, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                        //new MapPoint(0.8, 0, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes),
-                        //new MapPoint(0.9, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                        //new MapPoint(0.2, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                        //new MapPoint(1, 225, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
-                        //new MapPoint(0.8, 315, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)
+                        ////new MapPoint(0.2, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                        ////new MapPoint(1, 180, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                        ////new MapPoint(0.8, 0, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes),
+                        ////new MapPoint(0.9, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                        ////new MapPoint(0.2, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                        ////new MapPoint(1, 225, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
+                        ////new MapPoint(0.8, 315, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)
                     });
 
             var newMap = solution.ConvertToPhenotype(map);

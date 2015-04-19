@@ -62,13 +62,13 @@
     <Compile Include="Map\MapObjects\MapPoint.cs" />
     <Compile Include="Map\MapPathfinding.cs" />
     <Compile Include="Map\MapPhenotype.cs" />
-    <Compile Include="Map\MapSolutionConverter.cs" />
+    <Compile Include="Map\MapConversionHelper.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerNovelArchive.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerPopulation.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerSearcher.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerSolution.cs" />
     <Compile Include="Novelty\MapNoveltySearch\MapNovelArchive.cs" />
-    <Compile Include="Novelty\MapNoveltySearch\MapNoveltySearchOptions.cs" />
+    <Compile Include="Map\MapSearchOptions.cs" />
     <Compile Include="Novelty\MapNoveltySearch\MapPopulation.cs" />
     <Compile Include="Novelty\MapNoveltySearch\MapSearcher.cs" />
     <Compile Include="Novelty\MapNoveltySearch\MapSolution.cs" />

@@ -14,13 +14,25 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="MapSearcher"/> class.
         /// </summary>
-        /// <param name="r"> The random to use in searching. </param>
-        /// <param name="feasibleSize"> The feasible size. </param>
-        /// <param name="infeasibleSize"> The infeasible size. </param>
-        /// <param name="searchOptions"> The options for this search.</param>
-        public MapSearcher(Random r, int feasibleSize, int infeasibleSize, MapNoveltySearchOptions searchOptions) : base(r)
+        /// <param name="r">
+        /// The random to use in searching. 
+        /// </param>
+        /// <param name="feasibleSize">
+        /// The feasible size. 
+        /// </param>
+        /// <param name="infeasibleSize">
+        /// The infeasible size. 
+        /// </param>
+        /// <param name="mapSearchOptions">
+        /// The map options for this search.
+        /// </param>
+        /// <param name="noveltySearchOptions">
+        /// The novelty Search Options.
+        /// </param>
+        public MapSearcher(Random r, int feasibleSize, int infeasibleSize, MapSearchOptions mapSearchOptions, NoveltySearchOptions noveltySearchOptions) : base(r)
         {
-            this.SearchOptions = searchOptions;
+            this.MapSearchOptions = mapSearchOptions;
+            this.NoveltySearchOptions = noveltySearchOptions;
             this.FeasiblePopulation = new MapPopulation(true, feasibleSize);
             this.InfeasiblePopulation = new MapPopulation(false, infeasibleSize);
             this.Archive = new MapNovelArchive();
@@ -66,7 +78,7 @@
                     list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
                 }
 
-                var ms = new MapSolution(this.SearchOptions, list);
+                var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list);
                 FeasiblePopulation.CurrentGeneration.Add(ms);
             }
 
@@ -141,7 +153,7 @@
                     list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
                 }
 
-                var ms = new MapSolution(this.SearchOptions, list);
+                var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list);
                 InfeasiblePopulation.CurrentGeneration.Add(ms);
             }
         }
@@ -149,7 +161,12 @@
         /// <summary>
         /// Gets the options for this search.
         /// </summary>
-        public MapNoveltySearchOptions SearchOptions { get; private set; }
+        public MapSearchOptions MapSearchOptions { get; private set; }
+
+        /// <summary>
+        /// Gets the options for this search.
+        /// </summary>
+        public NoveltySearchOptions NoveltySearchOptions { get; private set; }
 
         /// <summary>
         /// Runs a number of generations to search for maps.
@@ -157,25 +174,25 @@
         /// <param name="generations">Number of generations to run.</param>
         public void RunGenerations(int generations)
         {
-            //Console.WriteLine("Generation 0");
+            ////Console.WriteLine("Generation 0");
 
-            //Console.WriteLine("-----------------");
-            //Console.WriteLine("Feasible Population");
+            ////Console.WriteLine("-----------------");
+            ////Console.WriteLine("Feasible Population");
             foreach (var ms in FeasiblePopulation.CurrentGeneration)
             {
                 Console.WriteLine(ms);
             }
 
-            //Console.WriteLine("------------------");
-            //Console.WriteLine("Infeasible Population");
+            ////Console.WriteLine("------------------");
+            ////Console.WriteLine("Infeasible Population");
             foreach (var ms in InfeasiblePopulation.CurrentGeneration)
             {
                 Console.WriteLine(ms);
             }
 
-            //Console.WriteLine("------------------");
+            ////Console.WriteLine("------------------");
 
-            //Console.WriteLine("-------------------");
+            ////Console.WriteLine("-------------------");
             for (var i = 0; i < generations; i++)
             {
                 Console.WriteLine("Generation " + i);

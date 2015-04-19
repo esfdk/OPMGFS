@@ -64,7 +64,7 @@ namespace OPMGFS.Map
             this.XSize = this.HeightLevels.GetLength(0);
             this.YSize = this.HeightLevels.GetLength(1);
 
-            this.DestructibleRocks = new bool[XSize, YSize];
+            this.DestructibleRocks = new bool[this.XSize, this.YSize];
         }
         #endregion
 

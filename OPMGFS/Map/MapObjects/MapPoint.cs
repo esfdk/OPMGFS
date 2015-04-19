@@ -63,7 +63,7 @@
         /// <returns>
         /// The <see cref="MapPoint"/> created by the mutation.
         /// </returns>
-        public MapPoint Mutate(Random r, MapNoveltySearchOptions mnso)
+        public MapPoint Mutate(Random r, MapSearchOptions mnso)
         {
             var positiveChange = r.Next(2);
             var newDistance = positiveChange == 1 
