@@ -5,108 +5,43 @@
     /// </summary>
     public class MapSearchOptions
     {
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="MapSearchOptions"/> class. 
         /// </summary>
-        /// <param name="mp">
-        /// The map phenotype to search on.
-        /// </param>
-        /// <param name="mapCompletion">
-        /// The completion method to use when converting to phenotype.
-        /// </param>
-        /// <param name="chanceToAddBase">
-        /// The chance To Add Base.
-        /// </param>
-        /// <param name="chanceToAddGoldBase">
-        /// The chance To Add Gold Base.
-        /// </param>
-        /// <param name="chanceToAddXelNagaTower">
-        /// The chance To Add Xel'Naga Tower.
-        /// </param>
-        /// <param name="chanceToAddDestructibleRocks">
-        /// The chance To Add Destructible Rocks.
-        /// </param>
-        /// <param name="chanceToAddNewElement">
-        /// The chance that an element will be added to a solution during mutation.
-        /// </param>
-        /// <param name="chanceToRemoveElement">
-        /// The chance that an element will be removed from a solution during mutation.
-        /// </param>
-        /// <param name="maximumDisplacement">
-        /// The maximum Displacement.
-        /// </param>
-        /// <param name="displacementAmountPerStep">
-        /// The displacement Amount Per Step.
-        /// </param>
-        /// <param name="tooFewElementsPenalty">
-        /// The element Not Placed Penalty.
-        /// </param>
-        /// <param name="tooManyElementsPenalty">
-        /// The too Many Elements Penalty.
-        /// </param>
-        /// <param name="noPathBetweenStartBases">
-        /// The penalty to apply to map phenotypes that do not have a path between starting bases.
-        /// </param>
-        /// <param name="notPlacedPenalty">
-        /// The amount to add to the distance when a map point was not placed during conversion. 
-        /// </param>
-        /// <param name="notPlacedPenaltyModifier">
-        /// The amount to modify the distance of angle/distance when a map point was not placed during conversion.
-        /// </param>
-        /// <param name="minimumStartBaseDistance">
-        /// The minimum Start Base Distance.
-        /// </param>
-        /// <param name="maximumStartBaseDistance">
-        /// The maximum Start Base Distance.
-        /// </param>
-        /// <param name="maximumDegree">
-        /// The maximum Degree.
-        /// </param>
-        /// <param name="minimumDegree">
-        /// The minimum Degree.
-        /// </param>
-        /// <param name="maximumDistance">
-        /// The maximum Distance.
-        /// </param>
-        /// <param name="minimumDistance">
-        /// The minimum Distance.
-        /// </param>
-        /// <param name="maximumDistanceModifier">
-        /// The maximum Distance Modifier.
-        /// </param>
-        /// <param name="minimumDistanceModifier">
-        /// The minimum Distance Modifier.
-        /// </param>
-        /// <param name="maximumDegreeModifier">
-        /// The maximum Degree Modifier.
-        /// </param>
-        /// <param name="minimumDegreeModifier">
-        /// The minimum Degree Modifier.
-        /// </param>
-        /// <param name="minimumNumberOfBases">
-        /// The minimum Number Of Bases.
-        /// </param>
-        /// <param name="maximumNumberOfBases">
-        /// The maximum Number Of Bases.
-        /// </param>
-        /// <param name="minimumNumberOfRamps">
-        /// The minimum Number Of Ramps.
-        /// </param>
-        /// <param name="maximumNumberOfRamps">
-        /// The maximum Number Of Ramps.
-        /// </param>
-        /// <param name="minimumNumberOfDestructibleRocks">
-        /// The minimum Number Of Destructible Rocks.
-        /// </param>
-        /// <param name="maximumNumberOfDestructibleRocks">
-        /// The maximum Number Of Destructible Rocks.
-        /// </param>
-        /// <param name="minimumNumberOfXelNagaTowers">
-        /// The minimum Number Of Xel'Naga Towers.
-        /// </param>
-        /// <param name="maximumNumberOfXelNagaTowers">
-        /// The maximum Number Of Xel'Naga Towers.
-        /// </param>
+        /// <param name="mp"> The map phenotype to search on. </param>
+        /// <param name="mapCompletion"> The completion method to use when converting to phenotype. </param>
+        /// <param name="chanceToAddBase"> The chance To Add Base. </param>
+        /// <param name="chanceToAddGoldBase"> The chance To Add Gold Base. </param>
+        /// <param name="chanceToAddXelNagaTower"> The chance To Add Xel'Naga Tower. </param>
+        /// <param name="chanceToAddDestructibleRocks"> The chance To Add Destructible Rocks. </param>
+        /// <param name="chanceToAddNewElement"> The chance that an element will be added to a solution during mutation. </param>
+        /// <param name="chanceToRemoveElement"> The chance that an element will be removed from a solution during mutation. </param>
+        /// <param name="maximumDisplacement"> The maximum Displacement. </param>
+        /// <param name="displacementAmountPerStep"> The displacement Amount Per Step. </param>
+        /// <param name="tooFewElementsPenalty"> The element Not Placed Penalty. </param>
+        /// <param name="tooManyElementsPenalty"> The too Many Elements Penalty. </param>
+        /// <param name="noPathBetweenStartBasesPenalty"> The penalty to apply to map phenotypes that do not have a path between starting bases. </param>
+        /// <param name="notPlacedPenalty"> The amount to add to the distance when a map point was not placed during conversion.  </param>
+        /// <param name="notPlacedPenaltyModifier"> The amount to modify the distance of angle/distance when a map point was not placed during conversion. </param>
+        /// <param name="minimumStartBaseDistance"> The minimum Start Base Distance. </param>
+        /// <param name="maximumStartBaseDistance"> The maximum Start Base Distance. </param>
+        /// <param name="maximumDegree"> The maximum Degree. </param>
+        /// <param name="minimumDegree"> The minimum Degree. </param>
+        /// <param name="maximumDistance"> The maximum Distance. </param>
+        /// <param name="minimumDistance"> The minimum Distance. </param>
+        /// <param name="maximumDistanceModifier"> The maximum Distance Modifier. </param>
+        /// <param name="minimumDistanceModifier"> The minimum Distance Modifier. </param>
+        /// <param name="maximumDegreeModifier"> The maximum Degree Modifier. </param>
+        /// <param name="minimumDegreeModifier"> The minimum Degree Modifier. </param>
+        /// <param name="minimumNumberOfBases"> The minimum Number Of Bases. </param>
+        /// <param name="maximumNumberOfBases"> The maximum Number Of Bases. </param>
+        /// <param name="minimumNumberOfRamps"> The minimum Number Of Ramps. </param>
+        /// <param name="maximumNumberOfRamps"> The maximum Number Of Ramps. </param>
+        /// <param name="minimumNumberOfDestructibleRocks"> The minimum Number Of Destructible Rocks. </param>
+        /// <param name="maximumNumberOfDestructibleRocks"> The maximum Number Of Destructible Rocks. </param>
+        /// <param name="minimumNumberOfXelNagaTowers"> The minimum Number Of Xel'Naga Towers. </param>
+        /// <param name="maximumNumberOfXelNagaTowers"> The maximum Number Of Xel'Naga Towers. </param>
         public MapSearchOptions(
             MapPhenotype mp,
             Enums.MapFunction mapCompletion = Enums.MapFunction.Turn,
@@ -120,7 +55,7 @@
             int displacementAmountPerStep = 1,
             double tooFewElementsPenalty = 5, 
             double tooManyElementsPenalty = 5,
-            double noPathBetweenStartBases = 100,
+            double noPathBetweenStartBasesPenalty = 100,
             double notPlacedPenalty = 10,
             double notPlacedPenaltyModifier = 1.5, 
             double minimumStartBaseDistance = 0.3, 
@@ -154,7 +89,7 @@
             this.TooFewElementsPenalty = tooFewElementsPenalty;
             this.DisplacementAmountPerStep = displacementAmountPerStep;
             this.MaximumDisplacement = maximumDisplacement;
-            this.NoPathBetweenStartBases = noPathBetweenStartBases;
+            this.NoPathBetweenStartBasesPenalty = noPathBetweenStartBasesPenalty;
             this.MapCompletion = mapCompletion;
             this.MaximumNumberOfXelNagaTowers = maximumNumberOfXelNagaTowers;
             this.MinimumNumberOfXelNagaTowers = minimumNumberOfXelNagaTowers;
@@ -200,7 +135,7 @@
             this.TooFewElementsPenalty = mso.TooFewElementsPenalty;
             this.DisplacementAmountPerStep = mso.DisplacementAmountPerStep;
             this.MaximumDisplacement = mso.MaximumDisplacement;
-            this.NoPathBetweenStartBases = mso.NoPathBetweenStartBases;
+            this.NoPathBetweenStartBasesPenalty = mso.NoPathBetweenStartBasesPenalty;
             this.MapCompletion = mso.MapCompletion;
             this.MaximumNumberOfXelNagaTowers = mso.MaximumNumberOfXelNagaTowers;
             this.MinimumNumberOfXelNagaTowers = mso.MinimumNumberOfXelNagaTowers;
@@ -223,12 +158,19 @@
 
             this.Map = mp;
         }
+        #endregion
 
         /// <summary>
         /// Gets the map that is being searched.
         /// </summary>
         public MapPhenotype Map { get; private set; }
 
+        /// <summary>
+        /// Gets the map completion function.
+        /// </summary>
+        public Enums.MapFunction MapCompletion { get; private set; }
+
+        #region Chance To Add Elements
         /// <summary>
         /// Gets the chance that a new map point will be a base.
         /// </summary>
@@ -258,7 +200,9 @@
         /// Gets the chance to remove an element from a solution.
         /// </summary>
         public double ChanceToRemoveElement { get; private set; }
+        #endregion
 
+        #region Displacement Options
         /// <summary>
         /// Gets the maximum amount that the search should try to displace a location placement.
         /// </summary>
@@ -268,7 +212,9 @@
         /// Gets the amount that a location should be displaced per displacement attempt.
         /// </summary>
         public int DisplacementAmountPerStep { get; private set; }
+        #endregion
 
+        #region Feasibility Penalties
         /// <summary>
         /// Gets the penalty that should be applied when there are too few of a type of element.
         /// </summary>
@@ -282,7 +228,7 @@
         /// <summary>
         /// Gets the penalty that should be applied to feasibility if there is no path between starting bases.
         /// </summary>
-        public double NoPathBetweenStartBases { get; private set; }
+        public double NoPathBetweenStartBasesPenalty { get; private set; }
 
         /// <summary>
         /// Gets the distance to add whenever a map point was not placed when calculating distance.
@@ -293,7 +239,9 @@
         /// Gets the distance to add whenever a map point was not placed when calculating distance.
         /// </summary>
         public double NotPlacedPenaltyModifier { get; private set; }
+        #endregion
 
+        #region Map Point Degree/Distance Options
         /// <summary>
         /// Gets the maximum degree.
         /// </summary>
@@ -343,7 +291,9 @@
         /// Gets the maximum distance of a start base.
         /// </summary>
         public double MaximumStartBaseDistance { get; private set; }
+        #endregion
 
+        #region Number of Map Elements
         /// <summary>
         /// Gets the minimum number of bases.
         /// </summary>
@@ -383,10 +333,6 @@
         /// Gets the maximum number of Xel'Naga towers.
         /// </summary>
         public int MaximumNumberOfXelNagaTowers { get; private set; }
-
-        /// <summary>
-        /// Gets the map completion function.
-        /// </summary>
-        public Enums.MapFunction MapCompletion { get; private set; }
+        #endregion
     }
 }

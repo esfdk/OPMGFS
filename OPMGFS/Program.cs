@@ -51,7 +51,7 @@
 
             map.PlaceCliffs();
 
-            var mapSolution = new MapSolution(new MapNoveltySearchOptions(map));
+            var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions());
             mapSolution.MapPoints.Add(new MapPoint(0.5, 45, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
             ////mapSolution.MapPoints.Add(new MapPoint(0.4, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.NotAttempted));
             map = mapSolution.ConvertedPhenotype;

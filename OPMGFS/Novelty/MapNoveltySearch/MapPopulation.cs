@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Policy;
 
     /// <summary>
     /// A population of maps used in map novelty search.

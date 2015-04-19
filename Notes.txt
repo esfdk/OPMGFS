@@ -12,6 +12,7 @@ TODO:
 		Destructible rocks in seperate array (done)
 		Set up novelty search for testing
 		Set up evolution for testing
+		Set up way to easily change between both kinds of Constrained Novelty Search
 	
 	TBA
 		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search

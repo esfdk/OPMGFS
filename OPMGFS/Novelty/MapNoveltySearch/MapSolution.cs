@@ -13,6 +13,7 @@
     /// </summary>
     public class MapSolution : Solution
     {
+        #region Fields
         /// <summary>
         /// The phenotype matching this solution.
         /// </summary>
@@ -22,7 +23,9 @@
         /// Whether this solution has been converted to its phenotype.
         /// </summary>
         private bool hasBeenConverted;
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="MapSolution"/> class.
         /// </summary>
@@ -58,7 +61,9 @@
         {
             this.MapPoints = mapPoints;
         }
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Gets the map points of this solution.
         /// </summary>
@@ -89,7 +94,9 @@
                 this.convertedPhenotype = value;
             }
         }
+        #endregion
 
+        #region Public Methods
         /// <summary>
         /// Mutates this solution into a new solution.
         /// </summary>
@@ -261,7 +268,9 @@
             s += "--------------------";
             return s;
         }
+        #endregion
 
+        #region Protected Methods
         /// <summary>
         /// The distance between two solutions is the distance of each element in one solution to every other element in the other solution.
         /// </summary>
@@ -374,19 +383,19 @@
                 }
 
                 distance =
-                    MapPathfinding.FindPathFromTo(this.ConvertedPhenotype.HeightLevels, topBasePoint, bottomBasePoint)
-                        .Count == 0
-                        ? distance + this.MapSearchOptions.NoPathBetweenStartBases
+                    MapPathfinding.FindPathFromTo(this.ConvertedPhenotype.HeightLevels, topBasePoint, bottomBasePoint).Count == 0
+                        ? distance + this.MapSearchOptions.NoPathBetweenStartBasesPenalty
                         : distance;
             }
             else
             {
-                distance += this.MapSearchOptions.NoPathBetweenStartBases;
+                distance += this.MapSearchOptions.NoPathBetweenStartBasesPenalty;
             }
 
             this.DistanceToFeasibility = distance;
 
             return this.DistanceToFeasibility;
         }
+        #endregion
     }
 }
