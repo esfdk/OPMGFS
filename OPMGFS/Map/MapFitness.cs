@@ -221,11 +221,12 @@
                 this.map.HeightLevels,
                 Radius);
 
-            var maxReachable = (((Radius * 2) + 1) * ((Radius * 2) + 1)) - Math.Pow(5, 2);
-            var actualReachable = reachable.Count - Math.Pow(5, 2);
+            var max = (((Radius * 2) + 1) * ((Radius * 2) + 1)) - Math.Pow(5, 2);
+            var min = 0;
+            var actual = reachable.Count - Math.Pow(5, 2);
 
             // Normalizes the value to between 0.0 and 1.0
-            var normalized = (actualReachable - 0) / (maxReachable - 0);
+            var normalized = (actual - min) / (max - min);
             return normalized * BaseSpaceSignificance;
         }
 
@@ -235,10 +236,11 @@
         /// <returns> A number between 0.0 and 1.0 describing how high the base is compared to the highest possible point on the map. </returns>
         private double BaseHeightLevel()
         {
-            var actualBaseHeight = (double)(int)this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
-            var maxHeight = (double)(int)this.heightestLevel;
+            var max = (double)(int)this.heightestLevel;
+            var min = 0d;
+            var actual = (double)(int)this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
 
-            var normalized = (actualBaseHeight - 0d) / (maxHeight - 0d);
+            var normalized = (actual - min) / (max - min);
             return normalized * BaseHeightSignificance;
         }
 
@@ -251,14 +253,26 @@
             if (this.pathBetweenBases.Count <= 0) 
                 return -100000d;
 
-            var minPath = (this.ySize * 0.1) + (this.xSize * 0.1);
-            var maxPath = (this.ySize * 0.70) + (this.xSize * 0.70);
-            var actualPath = this.pathBetweenBases.Count > maxPath
-                                 ? maxPath - (this.pathBetweenBases.Count - maxPath)
-                                 : this.pathBetweenBases.Count;
+            // Ground path distance
+            var maxGround = (this.ySize * 0.70) + (this.xSize * 0.70);
+            var minGround = (this.ySize * 0.1) + (this.xSize * 0.1);
+            var actualGround = this.pathBetweenBases.Count > maxGround
+                            ? maxGround - (this.pathBetweenBases.Count - maxGround)
+                            : this.pathBetweenBases.Count;
+            var normalizedGround = (actualGround - minGround) / (maxGround - minGround);
 
-            var normalized = (actualPath - minPath) / (maxPath - minPath);
-            return normalized * PathBetweenBasesSignificance;
+            // Direct line distance
+            var maxDirect = Math.Sqrt(Math.Pow(this.xSize * 0.7, 2) + Math.Pow(this.ySize * 0.7, 2));
+            var minDirect = Math.Sqrt(Math.Pow(this.xSize * 0.1, 2) + Math.Pow(this.ySize * 0.1, 2));
+            var direct = Math.Sqrt(
+                                Math.Pow(Math.Abs(this.startBasePosition1.Item1 - this.startBasePosition2.Item1), 2)
+                                + Math.Pow(Math.Abs(this.startBasePosition1.Item2 - this.startBasePosition2.Item2), 2));
+            var actualDirect = direct > maxGround
+                                ? maxGround - (direct - maxGround)
+                                : direct;
+            var normalizedDirect = (actualDirect - minDirect) / (maxDirect - minDirect);
+
+            return ((normalizedGround + normalizedDirect) / 2) * PathBetweenBasesSignificance;
         }
 
         /// <summary>
@@ -267,13 +281,10 @@
         /// <returns> A number between 0.0 and 1.0 based on how many times a new height is reached. </returns>
         private double NewHeightReached()
         {
-            const double MinHeightChange = 0d;
-            const double MaxHeightChange = 5d;
-
             if (this.pathBetweenBases.Count <= 0) 
                 return 0d;
 
-            var actualChanges = 0d;
+            var actual = 0d;
             var previousHeightLevel =
                 this.map.HeightLevels[this.pathBetweenBases[0].Item1, this.pathBetweenBases[0].Item2];
 
@@ -284,17 +295,19 @@
                      || this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp12)
                     && this.map.HeightLevels[node.Item1, node.Item2] != previousHeightLevel)
                 {
-                    actualChanges += 1d;
+                    actual += 1d;
                 }
 
                 previousHeightLevel = this.map.HeightLevels[node.Item1, node.Item2];
             }
 
-            actualChanges = (actualChanges > MaxHeightChange)
-                                ? MaxHeightChange - (actualChanges - MaxHeightChange)
-                                : actualChanges;
+            const double Max = 5d;
+            const double Min = 0d;
+            actual = (actual > Max)
+                        ? Max - (actual - Max)
+                        : actual;
 
-            var normalized = (actualChanges - MinHeightChange) / (MaxHeightChange - MinHeightChange);
+            var normalized = (actual - Min) / (Max - Min);
             return normalized * NewHeightReachedSignificance;
         }
 
@@ -326,14 +339,13 @@
             if (pathToNearest.Count == 0)
                 return -100000d;
 
-            var maxPathToExpansion = this.ySize * 0.4;
-            var minPathToExpansion = this.ySize * 0.1;
-
-            var actualDistance = (pathToNearest.Count > maxPathToExpansion)
-                                     ? maxPathToExpansion - (this.pathBetweenBases.Count - maxPathToExpansion)
+            var max = this.ySize * 0.4;
+            var min = this.ySize * 0.1;
+            var actualDistance = (pathToNearest.Count > max)
+                                     ? max - (this.pathBetweenBases.Count - max)
                                      : this.pathBetweenBases.Count;
 
-            var normalized = (actualDistance - minPathToExpansion) / (maxPathToExpansion - minPathToExpansion);
+            var normalized = (actualDistance - min) / (max - min);
             return normalized * DistanceToExpansionSignificance;
         }
 
@@ -344,11 +356,15 @@
         private double ExpansionsAvailable()
         {
             //// ReSharper disable RedundantCast
-            var maxExpasions = (double)(int)(this.ySize / 40);
-            var minExpansions = (double)(int)(this.ySize / 60);
+            var max = (double)(int)(this.ySize / 40);
+            var min = (double)(int)(this.ySize / 60);
             //// ReSharper restore RedundantCast
 
-            var normalized = ((this.bases.Count / 2d) - minExpansions) / (maxExpasions - minExpansions);
+            var actual = (this.bases.Count / 2d > max) 
+                            ? max - ((this.bases.Count  / 2d) - max)
+                            : this.bases.Count / 2d;
+
+            var normalized = ((actual / 2d) - min) / (max - min);
             return normalized * ExpansionsAvailableSignificance;
         }
 
@@ -359,8 +375,6 @@
         /// <returns> A number between 0.0 and 1.0 based on how many choke points that are found. </returns>
         private double ChokePoints(int chokePointWidth = 2)
         {
-            const int Max = 4;
-            const int Min = 0;
             var chokePoints = 0;
 
             var previousHeightLevel =
@@ -390,9 +404,13 @@
                 }
             }
 
-            chokePoints = (chokePoints > Max) ? Max - (chokePoints - Max) : chokePoints;
+            const int Max = 4;
+            const int Min = 0;
+            var actual = (chokePoints > Max) 
+                            ? Max - (chokePoints - Max) 
+                            : chokePoints;
 
-            var normalized = (chokePoints - Max) / (Max - Min);
+            var normalized = (actual - Max) / (Max - Min);
             return normalized * ChokePointsSignificance;
         }
 

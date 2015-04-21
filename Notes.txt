@@ -1,10 +1,11 @@
 TODO:
 	Grooss
+		(done) Cellular Automata after placing map points
+		(done) Expand choke point search
+		(done) Jump Point Search
+		(ground/flight done) Calculate both ground and flight distances (consider blink/reaper pathing? Probably too expensive)
+		Upper limit on pathfinding (not done, but probably not needed due to JPS' speed)
 		Better Smoothing
-		Cellular Automata after placing map points
-		Upper limit on pathfinding
-		Expand choke point search
-		Jump Point Search
 				
 	Melnyk
 		Displacement (done)
@@ -26,7 +27,6 @@ Notes:
 	Test parameters by generating the exact same maps (through fixed seed), but with different evaluation parameters
 	Preprocess bad start maps
 	Use an upper limit on path length (if path is too long, stop pathfinding)
-	Calculate both ground and flight distances (consider blink/reaper pathing? Probably too expensive)
 	Good Maps: Foxtrot Labs, Xel'Naga Caverns, Waystation
 	
 	
