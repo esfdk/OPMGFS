@@ -64,6 +64,8 @@
         /// <returns> A list representing the path from the start position to the end position. </returns>
         public List<Position> FindPathFromTo(Position startPosition, Position endPosition)
         {
+            if (startPosition == null || endPosition == null) return new List<Position>();
+
             var openList = new List<Node>();
             var closedList = new List<Node>();
 

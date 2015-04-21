@@ -59,7 +59,7 @@
             double notPlacedPenalty = 10,
             double notPlacedPenaltyModifier = 1.5, 
             double minimumStartBaseDistance = 0.3, 
-            double maximumStartBaseDistance = 1.0,
+            double maximumStartBaseDistance = 0.8,
             double maximumDegree = 180,
             double minimumDegree = 0,
             double maximumDistance = 1.0,

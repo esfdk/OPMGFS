@@ -24,9 +24,13 @@ namespace OPMGFS.Evolution
         /// <param name="mutationChance">
         /// The chance of mutation happening.
         /// </param>
-        protected Evolvable(double mutationChance)
+        /// <param name="r">
+        /// The random.
+        /// </param>
+        protected Evolvable(double mutationChance, Random r)
         {
             this.MutationChance = mutationChance;
+            this.Random = r;
         }
 
         /// <summary>
@@ -34,7 +38,7 @@ namespace OPMGFS.Evolution
         /// Mutation chance is set to 30% by default.
         /// </summary>
         protected Evolvable()
-            : this(0.3)
+            : this(0.3, new Random())
         {
         }
 
@@ -52,6 +56,11 @@ namespace OPMGFS.Evolution
         /// </summary>
         protected double MutationChance { get; set; }
 
+        /// <summary>
+        /// Gets or sets the random object for this evolvable.
+        /// </summary>
+        protected Random Random { get; set; }
+
         #endregion
 
         #region Public Methods
@@ -59,17 +68,15 @@ namespace OPMGFS.Evolution
         /// <summary>
         /// Spawns a mutation of the object.
         /// </summary>
-        /// <param name="r">The random used to spawn the mutation.</param>
         /// <returns>The mutation of the object.</returns>
-        public abstract Evolvable SpawnMutation(Random r);
+        public abstract Evolvable SpawnMutation();
 
         /// <summary>
         /// Creates a recombination between this evolvable and other.
         /// </summary>
         /// <param name="other">The other evolvable to create a recombination with.</param>
-        /// <param name="r">The random used to perform the recombination.</param>
         /// <returns>A recombination between this evolvable and other.</returns>
-        public abstract Evolvable SpawnRecombination(Evolvable other, Random r);
+        public abstract Evolvable SpawnRecombination(Evolvable other);
 
         /// <summary>
         /// Calculates the fitness of the object.
@@ -79,8 +86,7 @@ namespace OPMGFS.Evolution
         /// <summary>
         /// Initializes the object, setting its values.
         /// </summary>
-        /// <param name="r">The random used to initialize the object.</param>
-        public abstract void InitializeObjects(Random r);
+        public abstract void InitializeObject();
 
         #endregion
     }

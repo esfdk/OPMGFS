@@ -6,6 +6,7 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
 
+    using OPMGFS.Evolution;
     using OPMGFS.Map;
     using OPMGFS.Map.CellularAutomata;
     using OPMGFS.Map.MapObjects;
@@ -27,13 +28,16 @@
             ////TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            TestFitness();
+            ////TestFitness();
             ////TestPathfinding();
+
+            RunEvolution(new Random(), new MapSearchOptions(null));
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
         }
 
+        #region Test Methods
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
             Justification = "Reviewed. Suppression is OK here.")]
         private static void TestPathfinding()
@@ -411,53 +415,46 @@
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestEvolution()
         {
-            ////var evolverTest = new Evolver<EvolvableDoubleArray>(10, 10, 2, 10, 0.3);
-            ////evolverTest.ParentSelectionStrategy = Options.SelectionStrategy.ChanceBased;
-            ////evolverTest.PopulationSelectionStrategy = Options.SelectionStrategy.ChanceBased;
-            ////evolverTest.PopulationStrategy = Options.PopulationStrategy.Recombination;
+            var evolverTest = new Evolver<EvolvableDoubleArray>(10, 10, 2, 10, 0.3, new Random());
+            evolverTest.ParentSelectionStrategy = Enums.SelectionStrategy.ChanceBased;
+            evolverTest.PopulationSelectionStrategy = Enums.SelectionStrategy.ChanceBased;
+            evolverTest.PopulationStrategy = Enums.PopulationStrategy.Recombination;
 
-            ////for (var i = 0; i < evolverTest.Population.Count; i++)
-            ////{
-            ////    Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
-            ////    //foreach (var number in evolvableDoubleArray.Numbers)
-            ////    //{
-            ////    //    Console.Write(number + ", ");
-            ////    //}
-            ////    Console.Write("]");
-            ////    Console.WriteLine();
-            ////}
+            for (var i = 0; i < evolverTest.Population.Count; i++)
+            {
+                Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
+                Console.Write("]");
+                Console.WriteLine();
+            }
 
-            ////Console.WriteLine();
-            ////Console.WriteLine("------------------");
-            ////Console.WriteLine("Starting Evolution");
-            ////Console.WriteLine("------------------");
-            ////Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("------------------");
+            Console.WriteLine("Starting Evolution");
+            Console.WriteLine("------------------");
+            Console.WriteLine();
 
-            ////var best = (EvolvableDoubleArray)evolverTest.Evolve();
+            var best = (EvolvableDoubleArray)evolverTest.Evolve();
 
-            ////for (var i = 0; i < evolverTest.Population.Count; i++)
-            ////{
-            ////    Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
-            ////    //foreach (var number in evolvableDoubleArray.Numbers)
-            ////    //{
-            ////    //    Console.Write(number + ", ");
-            ////    //}
-            ////    Console.Write("]");
-            ////    Console.WriteLine();
-            ////}
+            for (var i = 0; i < evolverTest.Population.Count; i++)
+            {
+                Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
+                //foreach (var number in evolvableDoubleArray.Numbers)
+                //{
+                //    Console.Write(number + ", ");
+                //}
+                Console.Write("]");
+                Console.WriteLine();
+            }
 
-            ////Console.WriteLine();
-            ////Console.WriteLine("The best one had fitness " + best.Fitness + " and looked like this: [");
-            ////foreach (var number in best.Numbers)
-            ////{
-            ////    Console.Write(number + ", ");
-            ////}
-            ////Console.Write("]");
+            Console.WriteLine();
+            Console.WriteLine("The best one had fitness " + best.Fitness + " and looked like this: [");
+            foreach (var number in best.Numbers)
+            {
+                Console.Write(number + ", ");
+            }
+            Console.Write("]");
 
-            ////Console.ReadLine();
-
-            ////var integersearcher  = new IntegerSearcher(20, 20);
-            ////integersearcher.RunGenerations(10);
+            Console.ReadLine();
         }
 
         private static void TestMapNoveltySearch()
@@ -680,5 +677,102 @@
             ((MapSolution)solution.Mutate(new Random(1000))).ConvertToPhenotype(map).SaveMapToPngFile("-3");
             ////ms.RunGenerations(1);
         }
+        #endregion
+
+        #region Search Methods
+
+        public static void RunEvolution(
+            Random r,
+            MapSearchOptions mapSearchOptions,
+            int mapSize = 128,
+            int numberOfGenerations = 100,
+            int populationSize = 100,
+            int numberOfParents = 15,
+            int numberOfChildren = 20,
+            double mutationChance = 0.3,
+            Enums.SelectionStrategy selectionStrategy = Enums.SelectionStrategy.HighestFitness,
+            Enums.SelectionStrategy parentSelectionStrategy = Enums.SelectionStrategy.HighestFitness,
+            Enums.PopulationStrategy populationStrategy = Enums.PopulationStrategy.Mutation,
+            string folderName = "MapEvolution",
+            double oddsOfHeight = 0.5,
+            double oddsOfHeight2 = 0.25,
+            int groupPoints = 0,
+            bool generateHeight2 = true,
+            List<int> caRandomSeeds = null,
+            List<Rule> caRuleset = null,
+            int? drops = null,
+            int? radius = null,
+            int caGenerations = 10,
+            bool generateHeight2ThroughRules = true)
+        {
+            var baseMaps = new List<MapPhenotype>();
+
+            CellularAutomata ca;
+
+            if (caRandomSeeds == null || caRandomSeeds.Count == 0)
+            {
+                ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, groupPoints, generateHeight2);
+                if (caRuleset != null)
+                {
+                    ca.SetRuleset(caRuleset);
+                }
+
+                if (drops != null && radius != null)
+                {
+                    ca.AddImpassableTerrain((int)drops, (int)radius);
+                }
+
+                ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
+                var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
+                baseMaps.Add(map);
+            }
+            else
+            {
+                foreach (var seed in caRandomSeeds)
+                {
+                    ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, groupPoints, generateHeight2, seed);
+                    if (caRuleset != null)
+                    {
+                        ca.SetRuleset(caRuleset);
+                    }
+
+                    if (drops != null && radius != null)
+                    {
+                        ca.AddImpassableTerrain((int)drops, (int)radius);
+                    }
+                    
+                    ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
+                    var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
+                    baseMaps.Add(map);
+                }
+            }
+
+            foreach (var map in baseMaps)
+            {
+                var mso = new MapSearchOptions(map, mapSearchOptions);
+                var evolver = new Evolver<EvolvableMap>(
+                    numberOfGenerations,
+                    populationSize,
+                    numberOfParents,
+                    numberOfChildren,
+                    mutationChance,
+                    r,
+                    new object[] { mso, mutationChance, r })
+                                  {
+                                      PopulationSelectionStrategy = selectionStrategy,
+                                      ParentSelectionStrategy = parentSelectionStrategy,
+                                      PopulationStrategy = populationStrategy
+                                  };
+
+                evolver.Evolve();
+
+                foreach (var individual in evolver.Population)
+                {
+                    individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("_Fitness_{0}", individual.Fitness));
+                }
+            }
+        }
+
+        #endregion
     }
 }

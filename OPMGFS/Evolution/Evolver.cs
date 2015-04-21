@@ -13,6 +13,8 @@ namespace OPMGFS.Evolution
     using System.Collections.Generic;
     using System.Linq;
 
+    using OPMGFS.Map;
+
     /// <summary>
     /// The evolver.
     /// </summary>
@@ -28,20 +30,22 @@ namespace OPMGFS.Evolution
         /// <param name="numberOfChildren">The number of children to create for every generation.</param>
         /// <param name="mutationChance">The chance of mutation happening in the parents.</param>
         /// <param name="r">The random object used in this evolver.</param>
-        public Evolver(int numberOfGenerations, int populationSize, int numberOfParents, int numberOfChildren, double mutationChance, Random r)
+        /// <param name="initialisationArguments">The arguments used when initialising new objects.</param>
+        public Evolver(int numberOfGenerations, int populationSize, int numberOfParents, int numberOfChildren, double mutationChance, Random r, object[] initialisationArguments = null)
         {
             this.Random = r;
             this.Population = new List<T>();
 
-            this.ParentSelectionStrategy = EvolutionOptions.SelectionStrategy.HighestFitness;
-            this.PopulationSelectionStrategy = EvolutionOptions.SelectionStrategy.HighestFitness;
-            this.PopulationStrategy = EvolutionOptions.PopulationStrategy.Mutation;
+            this.ParentSelectionStrategy = Enums.SelectionStrategy.HighestFitness;
+            this.PopulationSelectionStrategy = Enums.SelectionStrategy.HighestFitness;
+            this.PopulationStrategy = Enums.PopulationStrategy.Mutation;
 
             this.NumberOfGenerations = numberOfGenerations;
             this.PopulationSize = populationSize;
             this.NumberOfParents = numberOfParents;
             this.NumberOfChildren = numberOfChildren;
             this.MutationChance = mutationChance;
+            this.InitialisationArguments = initialisationArguments ?? new object[] { this.MutationChance, this.Random };
 
             // this.GenerateInitialPopulation();
             // this.EvaluatePopulation();
@@ -60,17 +64,22 @@ namespace OPMGFS.Evolution
         /// <summary>
         /// Gets or sets a value that determines how parents are selected for the population step.
         /// </summary>
-        public EvolutionOptions.SelectionStrategy ParentSelectionStrategy { get; set; }
+        public Enums.SelectionStrategy ParentSelectionStrategy { get; set; }
 
         /// <summary>
         /// Gets or sets a value that determines how the next population is selected.
         /// </summary>
-        public EvolutionOptions.SelectionStrategy PopulationSelectionStrategy { get; set; }
+        public Enums.SelectionStrategy PopulationSelectionStrategy { get; set; }
 
         /// <summary>
         /// Gets or sets a value that determines how a new population is created.
         /// </summary>
-        public EvolutionOptions.PopulationStrategy PopulationStrategy { get; set; }
+        public Enums.PopulationStrategy PopulationStrategy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the initialisation arguments.
+        /// </summary>
+        private object[] InitialisationArguments { get; set; }
 
         /// <summary>
         /// Gets or sets the number of generations for the evolution.
@@ -143,8 +152,8 @@ namespace OPMGFS.Evolution
             {
                 Console.WriteLine("Generating " + i);
 
-                var temp = (T)Activator.CreateInstance(typeof(T), new object[] { this.MutationChance });
-                temp.InitializeObjects(this.Random);
+                var temp = (T)Activator.CreateInstance(typeof(T), this.InitialisationArguments);
+                temp.InitializeObject();
                 this.Population.Add(temp);
             }
         }
@@ -170,11 +179,11 @@ namespace OPMGFS.Evolution
 
             switch (this.ParentSelectionStrategy)
             {
-                case EvolutionOptions.SelectionStrategy.HighestFitness:
+                case Enums.SelectionStrategy.HighestFitness:
                     parentIndicies = this.SelectionHighestFitness(this.NumberOfParents);
                     break;
 
-                case EvolutionOptions.SelectionStrategy.ChanceBased:
+                case Enums.SelectionStrategy.ChanceBased:
                     parentIndicies = this.SelectionChanceBased(this.NumberOfParents);
                     break;
 
@@ -198,16 +207,16 @@ namespace OPMGFS.Evolution
 
                 switch (this.PopulationStrategy)
                 {
-                    case EvolutionOptions.PopulationStrategy.Mutation:
-                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation(this.Random);
+                    case Enums.PopulationStrategy.Mutation:
+                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation();
                         break;
 
-                    case EvolutionOptions.PopulationStrategy.Recombination:
-                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnRecombination(candidates[(i + 1) % this.NumberOfParents], this.Random);
+                    case Enums.PopulationStrategy.Recombination:
+                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnRecombination(candidates[(i + 1) % this.NumberOfParents]);
                         break;
 
                     default:
-                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation(this.Random);
+                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation();
                         break;
                 }
 
@@ -224,11 +233,11 @@ namespace OPMGFS.Evolution
 
             switch (this.ParentSelectionStrategy)
             {
-                case EvolutionOptions.SelectionStrategy.HighestFitness:
+                case Enums.SelectionStrategy.HighestFitness:
                     populationIndicies = this.SelectionHighestFitness(this.PopulationSize);
                     break;
 
-                case EvolutionOptions.SelectionStrategy.ChanceBased:
+                case Enums.SelectionStrategy.ChanceBased:
                     populationIndicies = this.SelectionChanceBased(this.PopulationSize);
                     break;
 

@@ -22,6 +22,7 @@
         /// <returns>The mutated list of map points.</returns>
         public static List<MapPoint> MutateMapPoints(List<MapPoint> mapPoints, double mutationChance, MapSearchOptions mso, Random r)
         {
+            // TODO: Make option to only mutate into "legal" map points
             var newPoints = mapPoints.Select(mp => r.NextDouble() < mutationChance ? mp.Mutate(r, mso) : mp).ToList();
 
             var randomNumber = r.NextDouble();
@@ -578,6 +579,59 @@
 
             return newMap;
         }
+
+        public static List<MapPoint> GenerateInitialMapPoints(MapSearchOptions mso, Random r)
+        {
+            var mapPoints = new List<MapPoint>();
+            mapPoints.Add(new MapPoint(
+                (r.NextDouble() * (mso.MaximumStartBaseDistance - mso.MinimumStartBaseDistance)) + mso.MinimumStartBaseDistance,
+                (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                Enums.MapPointType.StartBase,
+                Enums.WasPlaced.NotAttempted));
+
+            var numberOfBases = r.Next(mso.MinimumNumberOfBases, mso.MaximumNumberOfBases + 1);
+            for (var i = 0; i < numberOfBases; i++)
+            {
+                var gold = r.NextDouble() < mso.ChanceToAddGoldBase;
+                mapPoints.Add(new MapPoint(
+                    (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
+                    (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                    gold ? Enums.MapPointType.GoldBase: Enums.MapPointType.Base,
+                    Enums.WasPlaced.NotAttempted));
+            }
+            
+            var numberOfXelNaga = r.Next(mso.MinimumNumberOfXelNagaTowers, mso.MaximumNumberOfXelNagaTowers + 1);
+            for (var i = 0; i < numberOfXelNaga; i++)
+            {
+                mapPoints.Add(new MapPoint(
+                    (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
+                    (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                    Enums.MapPointType.XelNagaTower, 
+                    Enums.WasPlaced.NotAttempted));
+            }
+
+            var numberOfDestructibleRocks = r.Next(mso.MinimumNumberOfDestructibleRocks, mso.MaximumNumberOfDestructibleRocks + 1);
+            for (var i = 0; i < numberOfDestructibleRocks; i++)
+            {
+                mapPoints.Add(new MapPoint(
+                    (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
+                    (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                    Enums.MapPointType.DestructibleRocks,
+                    Enums.WasPlaced.NotAttempted));
+            }
+
+            var numberOfRamps = r.Next(mso.MinimumNumberOfRamps, mso.MaximumNumberOfRamps + 1);
+            for (var i = 0; i < numberOfRamps; i++)
+            {
+                mapPoints.Add(new MapPoint(
+                    (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
+                    (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                    Enums.MapPointType.Ramp,
+                    Enums.WasPlaced.NotAttempted));
+            }
+
+            return mapPoints;
+        }
         #endregion
 
         #region Flatten/Occupy Methods
@@ -680,10 +734,12 @@
                 return false;
             }
 
-            if (IsAreaOccupied(x - 11, y - 11, 24, 24, mp))
-            {
-                return false;
-            }
+
+            // HACK: Not sure if startbase should make check
+            ////if (IsAreaOccupied(x - 11, y - 11, 24, 24, mp))
+            ////{
+            ////    return false;
+            ////}
 
             var height = mp.HeightLevels[x, y];
 
