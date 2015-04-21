@@ -89,7 +89,7 @@
         /// <summary>
         /// The highest level found.
         /// </summary>
-        private Enums.HeightLevel heightestLevel = Enums.HeightLevel.Height0;
+        private Enums.HeightLevel heighestLevel = Enums.HeightLevel.Height0;
 
         /// <summary>
         /// The pathfinding used.
@@ -151,9 +151,9 @@
                     // Check for highest level
                     if ((this.map.HeightLevels[tempX, tempY] == Enums.HeightLevel.Height1
                          || this.map.HeightLevels[tempX, tempY] == Enums.HeightLevel.Height2)
-                        && this.map.HeightLevels[tempX, tempY] > this.heightestLevel)
+                        && this.map.HeightLevels[tempX, tempY] > this.heighestLevel)
                     {
-                        this.heightestLevel = this.map.HeightLevels[tempX, tempY];
+                        this.heighestLevel = this.map.HeightLevels[tempX, tempY];
                     }
 
                     // Check if the area is a base
@@ -243,7 +243,7 @@
         /// <returns> A number between 0.0 and 1.0 describing how high the base is compared to the highest possible point on the map. </returns>
         private double BaseHeightLevel()
         {
-            var max = (double)(int)this.heightestLevel;
+            var max = (double)(int)this.heighestLevel;
             var min = 0d;
             var actual = (double)(int)this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
 
