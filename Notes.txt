@@ -23,6 +23,7 @@ TODO:
 		Figure out cost and/or how to consider siege tank ranges
 		Figure out cost and/or how to consider "openness" of bases / impassable terrain around a base
 		Number of choke points seen by Xel'Naga towers
+		Time limit on evolution (maybe on novelty search, if it isn't already?)
 	
 Notes:
 	Quality = Novelty of map + mechanical quality
