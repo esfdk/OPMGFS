@@ -5,6 +5,8 @@ TODO:
 		Upper limit on pathfinding
 		Expand choke point search
 		Jump Point Search
+		Set up constructor for map fitness significance
+		Consider destructible rocks in jump point search
 				
 	Melnyk
 		Displacement (done)

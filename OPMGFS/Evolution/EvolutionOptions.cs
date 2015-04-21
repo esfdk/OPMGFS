@@ -13,11 +13,6 @@
         public static readonly double Tolerance = 0.000001d;
 
         /// <summary>
-        /// The random generator used by the evolver.
-        /// </summary>
-        public static readonly Random Random = new Random();
-
-        /// <summary>
         /// A value that determines how parents are selected for the population step.
         /// </summary>
         public enum SelectionStrategy

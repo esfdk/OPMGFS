@@ -9,12 +9,13 @@
 
 namespace OPMGFS.Evolution
 {
+    using System;
     using System.Linq;
 
     /// <summary>
     /// The evolvable double array (used for testing)
     /// </summary>
-    public class EvolvableDoubleArray : IEvolvable
+    public class EvolvableDoubleArray : Evolvable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EvolvableDoubleArray"/> class. 
@@ -52,8 +53,9 @@ namespace OPMGFS.Evolution
         /// <summary>
         /// Spawns a mutation of this object.
         /// </summary>
+        /// <param name="r">The random used to spawn the mutation.</param>
         /// <returns>A mutation of this object.</returns>
-        public override IEvolvable SpawnMutation()
+        public override Evolvable SpawnMutation(Random r)
         {
             var tempDArray = new EvolvableDoubleArray(this.MutationChance);
             var tempArray = new double[10];
@@ -62,10 +64,10 @@ namespace OPMGFS.Evolution
             {
                 tempArray[i] = this.Numbers[i];
 
-                if (EvolutionOptions.Random.NextDouble() > this.MutationChance)
+                if (r.NextDouble() > this.MutationChance)
                     continue;
 
-                tempArray[i] += EvolutionOptions.Random.NextDouble() - 0.5;
+                tempArray[i] += r.NextDouble() - 0.5;
             }
 
             tempDArray.SetNumbers(tempArray);
@@ -77,8 +79,9 @@ namespace OPMGFS.Evolution
         /// Creates a recombination between this object and other.
         /// </summary>
         /// <param name="other">The object to recombine with this object. Must be an EvolvableDoubleArray.</param>
+        /// <param name="r">The random used to perform the recombination.</param>
         /// <returns>A recombination between the two objects.</returns>
-        public override IEvolvable SpawnRecombination(IEvolvable other)
+        public override Evolvable SpawnRecombination(Evolvable other, Random r)
         {
             if (other.GetType() != this.GetType()) return this;
             var tempOther = (EvolvableDoubleArray)other;
@@ -88,7 +91,7 @@ namespace OPMGFS.Evolution
 
             for (int i = 0; i < this.Numbers.Length; i++)
             {
-                tempArray[i] = ((this.Numbers[i] + tempOther.Numbers[i]) / 2) + (EvolutionOptions.Random.NextDouble() - 0.5);
+                tempArray[i] = ((this.Numbers[i] + tempOther.Numbers[i]) / 2) + (r.NextDouble() - 0.5);
             }
 
             tempDArray.SetNumbers(tempArray);
@@ -107,10 +110,11 @@ namespace OPMGFS.Evolution
         /// <summary>
         /// Initializes the values of the double array
         /// </summary>
-        public override void InitializeObject()
+        /// <param name="r">The random used to initialize the object.</param>
+        public override void InitializeObjects(Random r)
         {
             for (var i = 0; i < this.Numbers.Length; i++)
-                this.Numbers[i] = EvolutionOptions.Random.NextDouble() - 0.5;
+                this.Numbers[i] = r.NextDouble() - 0.5;
         }
     }
 }

@@ -108,6 +108,13 @@
             this.mapPathfinding = new JPSMapPathfinding(map.HeightLevels);
         }
 
+        /*
+        public MapFitness(MapPhenotype map, ) : base(map)
+        {
+            // TODO: Implement settings 
+        }
+        */
+
         /// <summary>
         /// Calculates the fitness for the map.
         /// </summary>

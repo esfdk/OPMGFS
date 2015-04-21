@@ -16,8 +16,8 @@ namespace OPMGFS.Evolution
     /// <summary>
     /// The evolver.
     /// </summary>
-    /// <typeparam name="T">A type that is a subtype of IEvolvable.</typeparam>
-    public class Evolver<T> where T : IEvolvable
+    /// <typeparam name="T">A type that is a subtype of Evolvable.</typeparam>
+    public class Evolver<T> where T : Evolvable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Evolver{T}"/> class. 
@@ -27,8 +27,10 @@ namespace OPMGFS.Evolution
         /// <param name="numberOfParents">The number of children to spawn mutations from.</param>
         /// <param name="numberOfChildren">The number of children to create for every generation.</param>
         /// <param name="mutationChance">The chance of mutation happening in the parents.</param>
-        public Evolver(int numberOfGenerations, int populationSize, int numberOfParents, int numberOfChildren, double mutationChance)
+        /// <param name="r">The random object used in this evolver.</param>
+        public Evolver(int numberOfGenerations, int populationSize, int numberOfParents, int numberOfChildren, double mutationChance, Random r)
         {
+            this.Random = r;
             this.Population = new List<T>();
 
             this.ParentSelectionStrategy = EvolutionOptions.SelectionStrategy.HighestFitness;
@@ -44,6 +46,11 @@ namespace OPMGFS.Evolution
             // this.GenerateInitialPopulation();
             // this.EvaluatePopulation();
         }
+
+        /// <summary>
+        /// Gets the random used for this evolver.
+        /// </summary>
+        public Random Random { get; private set; }
 
         /// <summary>
         /// Gets the current population.
@@ -94,7 +101,7 @@ namespace OPMGFS.Evolution
         /// Starts, and handles, the evolution.
         /// </summary>
         /// <returns>The best individual at the end of the evolution.</returns>
-        public IEvolvable Evolve()
+        public Evolvable Evolve()
         {
             this.GenerateInitialPopulation();
             this.EvaluatePopulation();
@@ -107,7 +114,7 @@ namespace OPMGFS.Evolution
                 this.SelectPopulationForNextGeneration();
             }
 
-            IEvolvable best = null;
+            Evolvable best = null;
 
             foreach (var individual in this.Population)
             {
@@ -137,7 +144,7 @@ namespace OPMGFS.Evolution
                 Console.WriteLine("Generating " + i);
 
                 var temp = (T)Activator.CreateInstance(typeof(T), new object[] { this.MutationChance });
-                temp.InitializeObject();
+                temp.InitializeObjects(this.Random);
                 this.Population.Add(temp);
             }
         }
@@ -192,15 +199,15 @@ namespace OPMGFS.Evolution
                 switch (this.PopulationStrategy)
                 {
                     case EvolutionOptions.PopulationStrategy.Mutation:
-                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation();
+                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation(this.Random);
                         break;
 
                     case EvolutionOptions.PopulationStrategy.Recombination:
-                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnRecombination(candidates[(i + 1) % this.NumberOfParents]);
+                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnRecombination(candidates[(i + 1) % this.NumberOfParents], this.Random);
                         break;
 
                     default:
-                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation();
+                        tempChild = (T)candidates[i % this.NumberOfParents].SpawnMutation(this.Random);
                         break;
                 }
 
@@ -330,7 +337,7 @@ namespace OPMGFS.Evolution
                     var normalizedValue = (this.Population[i].Fitness - lowestFitness)
                                           / (highestFitness - lowestFitness);
 
-                    if (EvolutionOptions.Random.NextDouble() < normalizedValue)
+                    if (this.Random.NextDouble() < normalizedValue)
                         parentIndicies.Add(i);
                 }
             }
