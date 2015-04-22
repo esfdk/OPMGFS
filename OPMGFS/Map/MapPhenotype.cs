@@ -221,9 +221,19 @@ namespace OPMGFS.Map
         /// <summary>
         /// Saves the map to a PNG file.
         /// </summary>
-        /// <param name="fileNameAddition"> An extra part to add to the file name, when generating maps during testing. </param>
-        /// <param name="folder"> Save the map to a special folder in Images/Finished Maps. NOTE: Just give the name of the folder to create/save in, no extra characters such as \. </param>
-        public void SaveMapToPngFile(string fileNameAddition = "", string folder = "")
+        /// <param name="fileNameAddition">
+        /// An extra part to add to the file name, when generating maps during testing. 
+        /// </param>
+        /// <param name="folder">
+        /// Save the map to a special folder in Images/Finished Maps. NOTE: Just give the name of the folder to create/save in, no extra characters such as \. 
+        /// </param>
+        /// <param name="heightMap">
+        /// Whether the height map should be printed.
+        /// </param>
+        /// <param name="itemMap">
+        /// Whether the item map should be printed.
+        /// </param>
+        public void SaveMapToPngFile(string fileNameAddition = "", string folder = "", bool heightMap = true, bool itemMap = true)
         {
             // The dictionaries and bitmap.
             var heightDic = MapHelper.GetHeightmapImageDictionary();
@@ -267,8 +277,11 @@ namespace OPMGFS.Map
                 }
             }
 
-            // Saving map
-            bm.Save(Path.Combine(mapDir, mapHeightFile));
+            if (heightMap)
+            {
+                // Saving map
+                bm.Save(Path.Combine(mapDir, mapHeightFile));
+            }
 
             // Adding Items to the map.
             using (var g = Graphics.FromImage(bm))
@@ -292,8 +305,11 @@ namespace OPMGFS.Map
                 }
             }
 
-            // Saving map
-            bm.Save(Path.Combine(mapDir, mapItemFile));
+            if (itemMap)
+            {
+                // Saving map
+                bm.Save(Path.Combine(mapDir, mapItemFile));
+            }
         }
 
         /// <summary>

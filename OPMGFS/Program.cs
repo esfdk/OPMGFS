@@ -685,10 +685,10 @@
             Random r,
             MapSearchOptions mapSearchOptions,
             int mapSize = 128,
-            int numberOfGenerations = 100,
-            int populationSize = 100,
-            int numberOfParents = 15,
-            int numberOfChildren = 20,
+            int numberOfGenerations = 10,
+            int populationSize = 10,
+            int numberOfParents = 5,
+            int numberOfChildren = 5,
             double mutationChance = 0.3,
             Enums.SelectionStrategy selectionStrategy = Enums.SelectionStrategy.HighestFitness,
             Enums.SelectionStrategy parentSelectionStrategy = Enums.SelectionStrategy.HighestFitness,
@@ -703,7 +703,11 @@
             int? drops = null,
             int? radius = null,
             int caGenerations = 10,
-            bool generateHeight2ThroughRules = true)
+            bool generateHeight2ThroughRules = true,
+            int smoothingNormalNeighbourhood = 2,
+            int smoothingExtNeighbourhood = 6,
+            int smoothingGenerations = 10,
+            List<Rule> smoothingRuleSet = null)
         {
             var baseMaps = new List<MapPhenotype>();
 
@@ -724,6 +728,7 @@
 
                 ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
                 var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
+                map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
                 baseMaps.Add(map);
             }
             else
@@ -743,6 +748,7 @@
                     
                     ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
                     var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
+                    map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
                     baseMaps.Add(map);
                 }
             }
@@ -768,7 +774,7 @@
 
                 foreach (var individual in evolver.Population)
                 {
-                    individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("_Fitness_{0}", individual.Fitness));
+                    individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("_Fitness_{0}", individual.Fitness), heightMap: false);
                 }
             }
         }
