@@ -260,7 +260,7 @@ namespace OPMGFS.Evolution
             var individualIndicies = new List<int>();
 
             double[] lowestFitness = { 1000000d };
-            var lowestIndex = 0;
+            var lowestIndex = -1;
 
             // Iterate over the entire population
             for (var i = 0; i < this.Population.Count; i++)
@@ -290,7 +290,7 @@ namespace OPMGFS.Evolution
                         individualIndicies.Add(i);
 
                         lowestFitness[0] = 1000000d;
-                        lowestIndex = 0;
+                        lowestIndex = -1;
 
                         // Find the individual with the lowest fitness and save its index, in case it needs to be replaced.
                         foreach (var parentIndicy in individualIndicies.Where(parentIndicy => this.Population[parentIndicy].Fitness < lowestFitness[0]))

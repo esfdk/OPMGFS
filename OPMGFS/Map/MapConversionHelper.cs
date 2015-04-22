@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     using OPMGFS.Map.MapObjects;
@@ -253,6 +254,8 @@
         /// </returns>
         public static MapPhenotype ConvertToPhenotype(List<MapPoint> mapPoints, MapSearchOptions mso)
         {
+            var sw = new Stopwatch();
+            sw.Start();
             var heightLevels = mso.Map.HeightLevels.Clone() as Enums.HeightLevel[,];
             var items = mso.Map.MapItems.Clone() as Enums.Item[,];
 
@@ -564,9 +567,9 @@
                         break;
                     case Enums.MapPointType.Ramp:
                         // TODO: Should we attempt to displace ramps?
-                        var location = FindClosestCliff(xPos, yPos, newMap);
-                        if (location == null) break;
-                        mp.WasPlaced = PlaceRamp(location.Item1, location.Item2, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        //var location = FindClosestCliff(xPos, yPos, newMap);
+                        //if (location == null) break;
+                        //mp.WasPlaced = PlaceRamp(location.Item1, location.Item2, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.DestructibleRocks:
                         mp.WasPlaced = PlaceDestructibleRocks(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
@@ -576,6 +579,8 @@
                         break;
                 }
             }
+
+            Console.WriteLine("Map Conversion took {0} milliseconds.", sw.ElapsedMilliseconds);
 
             return newMap;
         }

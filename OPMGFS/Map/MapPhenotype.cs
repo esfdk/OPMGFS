@@ -168,6 +168,8 @@ namespace OPMGFS.Map
                 this.mapHalf,
                 this.HeightLevels);
 
+            // TODO: Cliff smoothing
+
             if (newRuleset == null)
             {
                 smoothCA.SetRuleset(this.GetSmoothingRules(smoothingNormalNeighbourhood, smoothingExtNeighbourhood));
@@ -241,7 +243,7 @@ namespace OPMGFS.Map
             var bm = new Bitmap((this.XSize * MapHelper.SizeOfMapTiles) + 1, (this.YSize * MapHelper.SizeOfMapTiles) + 1);
 
             // The file names
-            var currentTime = string.Empty + DateTime.Now;
+            var currentTime = string.Format("{0}.{1}_{2}.{3}", DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute); 
             currentTime = currentTime.Replace("/", ".");
             currentTime = currentTime.Replace(":", ".");
             currentTime = currentTime.Replace(" ", "_");
@@ -258,7 +260,7 @@ namespace OPMGFS.Map
             Directory.CreateDirectory(mapDir);
 
             var mapHeightFile = @"Map_" + currentTime + fileNameAddition + ".png";
-            var mapItemFile = @"Map_" + currentTime + "_With_Items" + fileNameAddition + ".png";
+            var mapItemFile = @"Map_" + currentTime + "_Items" + fileNameAddition + ".png";
 
             // Creating heightmap
             using (var g = Graphics.FromImage(bm))

@@ -770,11 +770,18 @@
                                       PopulationStrategy = populationStrategy
                                   };
 
+                Console.WriteLine(evolver.Population.Count);
+
                 evolver.Evolve();
+
+                Console.WriteLine(evolver.Population.Count);
+
+                var i = 0;
 
                 foreach (var individual in evolver.Population)
                 {
-                    individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("_Fitness_{0}", individual.Fitness), heightMap: false);
+                    i++;
+                    individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Map_{0}_Fitness_{1}", i, individual.Fitness), heightMap: false);
                 }
             }
         }
