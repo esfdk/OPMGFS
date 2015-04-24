@@ -46,6 +46,7 @@ namespace OPMGFS.Map
             this.HeightLevels = new HeightLevel[xSize, ySize];
             this.MapItems = new Item[xSize, ySize];
             this.DestructibleRocks = new bool[xSize, ySize];
+            this.CliffPositions = new HashSet<Tuple<int, int>>();
 
             this.XSize = this.HeightLevels.GetLength(0);
             this.YSize = this.HeightLevels.GetLength(1);
@@ -65,6 +66,7 @@ namespace OPMGFS.Map
             this.YSize = this.HeightLevels.GetLength(1);
 
             this.DestructibleRocks = new bool[this.XSize, this.YSize];
+            this.CliffPositions = new HashSet<Tuple<int, int>>();
         }
         #endregion
 
@@ -93,6 +95,11 @@ namespace OPMGFS.Map
         /// Gets the destructible rocks in the map.
         /// </summary>
         public bool[,] DestructibleRocks { get; private set; }
+
+        /// <summary>
+        /// Gets a list of all positions that contains a cliff.
+        /// </summary>
+        public HashSet<Tuple<int, int>> CliffPositions { get; private set; } 
         #endregion
 
         #region Public Methods
@@ -168,8 +175,7 @@ namespace OPMGFS.Map
                 this.mapHalf,
                 this.HeightLevels);
 
-            // TODO: Cliff smoothing
-
+            // ITODO: Cliff smoothing
             if (newRuleset == null)
             {
                 smoothCA.SetRuleset(this.GetSmoothingRules(smoothingNormalNeighbourhood, smoothingExtNeighbourhood));
@@ -365,6 +371,31 @@ namespace OPMGFS.Map
             mapHeightLevels = heightLevelBuilder.ToString();
             mapItems = itemBuilder.ToString();
         }
+
+        /// <summary>
+        /// Updates the list of cliff positions.
+        /// </summary>
+        public void UpdateCliffPositions(Half half)
+        {
+            var xStart = (half == Half.Right) ? this.XSize / 2 : 0;
+            var xEnd = (half == Half.Left) ? this.XSize / 2 : this.XSize;
+            var yStart = (half == Half.Top) ? this.YSize / 2 : 0;
+            var yEnd = (half == Half.Bottom) ? this.YSize / 2 : this.YSize;
+
+            this.CliffPositions.Clear();
+
+            for (var x = xStart; x < xEnd; x++)
+            {
+                for (var y = yStart; y < yEnd; y++)
+                {
+                    if (this.HeightLevels[x, y] == HeightLevel.Cliff)
+                    {
+                        this.CliffPositions.Add(new Tuple<int, int>(x, y));
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Private methods

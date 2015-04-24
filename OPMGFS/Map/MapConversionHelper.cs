@@ -23,7 +23,7 @@
         /// <returns>The mutated list of map points.</returns>
         public static List<MapPoint> MutateMapPoints(List<MapPoint> mapPoints, double mutationChance, MapSearchOptions mso, Random r)
         {
-            // TODO: Make option to only mutate into "legal" map points
+            // ITODO: Make option to only mutate into "legal" map points
             var newPoints = mapPoints.Select(mp => r.NextDouble() < mutationChance ? mp.Mutate(r, mso) : mp).ToList();
 
             var randomNumber = r.NextDouble();
@@ -260,6 +260,7 @@
             var items = mso.Map.MapItems.Clone() as Enums.Item[,];
 
             var newMap = new MapPhenotype(heightLevels, items);
+            newMap.UpdateCliffPositions(Enums.Half.Top); // ITODO: Think of more efficient place to put this. Possibly in an overloaded phenotype constructor?
 
             foreach (var mp in mapPoints)
             {
@@ -567,9 +568,22 @@
                         break;
                     case Enums.MapPointType.Ramp:
                         // TODO: Should we attempt to displace ramps?
-                        //var location = FindClosestCliff(xPos, yPos, newMap);
-                        //if (location == null) break;
-                        //mp.WasPlaced = PlaceRamp(location.Item1, location.Item2, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        placed = PlaceRamp(xPos, yPos, newMap);
+                        if (!placed)
+                        {
+                            var cliffPos = newMap.CliffPositions.ToList();
+                            var hash = Math.Abs((mp.Degree * mp.Distance).GetHashCode());
+                            var index = hash % cliffPos.Count;
+                            var pos = cliffPos[index];
+                            placed = PlaceRamp(pos.Item1, pos.Item2, newMap);
+                        }
+
+                        mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        
+                        // Old technique for placing ramps
+                        ////var location = FindClosestCliff(xPos, yPos, newMap);
+                        ////if (location == null) break;
+                        ////mp.WasPlaced = PlaceRamp(location.Item1, location.Item2, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.DestructibleRocks:
                         mp.WasPlaced = PlaceDestructibleRocks(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
@@ -601,7 +615,7 @@
                 mapPoints.Add(new MapPoint(
                     (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
                     (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
-                    gold ? Enums.MapPointType.GoldBase: Enums.MapPointType.Base,
+                    gold ? Enums.MapPointType.GoldBase : Enums.MapPointType.Base,
                     Enums.WasPlaced.NotAttempted));
             }
             
@@ -660,7 +674,17 @@
             {
                 for (var j = startY; j < startY + lengthY; j++)
                 {
+                    if (mp.HeightLevels[i, j] == Enums.HeightLevel.Cliff && height != Enums.HeightLevel.Cliff)
+                    {
+                        mp.CliffPositions.Remove(new Tuple<int, int>(i, j));
+                    }
+
                     mp.HeightLevels[i, j] = height;
+
+                    if (height == Enums.HeightLevel.Cliff)
+                    {
+                        mp.CliffPositions.Add(new Tuple<int, int>(i, j));
+                    }
                 }
             }
         }
@@ -738,7 +762,6 @@
             {
                 return false;
             }
-
 
             // HACK: Not sure if startbase should make check
             ////if (IsAreaOccupied(x - 11, y - 11, 24, 24, mp))
@@ -1159,6 +1182,20 @@
                             mp.HeightLevels[x + 2, y] = ramp;
                             mp.HeightLevels[x + 2, y + 1] = ramp;
 
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 2, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 2, y + 1));
+
+                            mp.CliffPositions.Add(new Tuple<int, int>(x, y - 1));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x, y + 2));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x + 1, y - 1));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x + 1, y + 2));
+
                             return true;
                         }
                     }
@@ -1188,6 +1225,20 @@
 
                             mp.HeightLevels[x + 1, y] = ramp;
                             mp.HeightLevels[x + 1, y + 1] = ramp;
+
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 2, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 2, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
+
+                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y - 1));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y + 2));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x, y - 1));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x, y + 2));
 
                             return true;
                         }
@@ -1243,6 +1294,20 @@
                             mp.HeightLevels[x, y - 2] = ramp;
                             mp.HeightLevels[x + 1, y - 2] = ramp;
 
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y - 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y - 2));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 2));
+
+                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y - 1));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y - 1));
+
                             return true;
                         }
                     }
@@ -1272,6 +1337,20 @@
 
                             mp.HeightLevels[x, y - 1] = ramp;
                             mp.HeightLevels[x + 1, y - 1] = ramp;
+
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 2));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 2));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y - 1));
+                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 1));
+
+                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y + 1));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y + 1));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y));
+                            mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y));
 
                             return true;
                         }

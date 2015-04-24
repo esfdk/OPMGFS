@@ -1,31 +1,39 @@
 TODO:
 	Grooss
+		Set up visual studio task list priorities
+		Set up constructor for map fitness significance settings
+		Consider destructible rocks in jump point search
+		Distance to ALL expansions considered
+		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search		
+		Consider both direct (flight) and ground path between points in fitness function
+		Better Smoothing
+		Upper limit on pathfinding (not done, but probably not needed due to JPS' speed)
+		
+	Melnyk
+		(done? needs discussion) Impement other version of ramp placement
+		Set up novelty search for testing
+		Eliminate unfeasible results from evolution?
+		Set up way to easily change between both kinds of Constrained Novelty Search
+	
+	Uassigned TODOs
+		Figure out cost and/or how to consider "openness" of bases / impassable terrain around a base
+	
+	Low prio TODOs
+		Figure out cost and/or how to consider siege tank ranges
+		Number of choke points seen by Xel'Naga towers
+		Impassable terrain around edge of map (possibly in base map generation)
+		Blink/reaper pathing calculation
+		
+	Finished TODOs
 		(done) Cellular Automata after placing map points
 		(done) Expand choke point search
 		(done) Jump Point Search
-		(ground/flight done) Calculate both ground and flight distances (consider blink/reaper pathing? Probably too expensive)
-		Upper limit on pathfinding (not done, but probably not needed due to JPS' speed)
-		Better Smoothing
-		Set up constructor for map fitness significance
-		Consider destructible rocks in jump point search
-		Distance to ALL expansions considered
-				
-	Melnyk
-		Displacement (done)
-		Random add/remove of map elements (done)
-		Destructible rocks in seperate array (done)
-		Set up novelty search for testing
-		Set up evolution for testing
-		Set up way to easily change between both kinds of Constrained Novelty Search
-	
-	TBA
-		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search
-		Consider both direct (flight) and ground path between points in fitness function
-		Figure out cost and/or how to consider siege tank ranges
-		Figure out cost and/or how to consider "openness" of bases / impassable terrain around a base
-		Number of choke points seen by Xel'Naga towers
-		Impassable terrain around edge of map (possibly in base map generation)
-	
+		(done) Displacement (done)
+		(done) Random add/remove of map elements (done)
+		(done) Destructible rocks in seperate array
+		(done) Set up evolution for testing
+		(ground/flight done) Calculate both ground and flight distances
+		
 Notes:
 	Quality = Novelty of map + mechanical quality
 	Test parameters by generating the exact same maps (through fixed seed), but with different evaluation parameters

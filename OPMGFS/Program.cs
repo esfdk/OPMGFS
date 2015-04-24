@@ -127,7 +127,7 @@
 
             map.SaveMapToPngFile();
 
-            ////TODO: JPS small bug. See result of this run.
+            ////ITODO: JPS small bug. See result of this run.
             ////var start = new Position(32, 32);
             ////var end = new Position(96, 96);
             ////JPSMapPathfinding jps = new JPSMapPathfinding(map.HeightLevels);
@@ -729,6 +729,7 @@
                 ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
                 var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                 map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
+                map.PlaceCliffs();
                 baseMaps.Add(map);
             }
             else
@@ -749,6 +750,7 @@
                     ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
                     var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                     map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
+                    map.PlaceCliffs();
                     baseMaps.Add(map);
                 }
             }

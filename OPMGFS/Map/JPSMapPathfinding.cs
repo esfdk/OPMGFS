@@ -45,7 +45,7 @@
         /// <param name="mapHeightLevels"> The map height levels. </param>
         public JPSMapPathfinding(Enums.HeightLevel[,] mapHeightLevels)
         {
-            // TODO: Add option to include destructible rocks
+            // ITODO: Add option to include destructible rocks
             this.map = mapHeightLevels;
         }
 
