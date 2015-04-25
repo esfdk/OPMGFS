@@ -14,42 +14,42 @@
         /// <summary>
         /// The significance of the space around the start base.
         /// </summary>
-        private const int BaseSpaceSignificance = 5;
+        private readonly int baseSpaceSignificance = 5;
 
         /// <summary>
         /// The significance of the height of the start base.
         /// </summary>
-        private const int BaseHeightSignificance = 5;
+        private readonly int baseHeightSignificance = 5;
 
         /// <summary>
         /// The significance of the distance between the bases.
         /// </summary>
-        private const int PathBetweenBasesSignificance = 5;
+        private readonly int pathBetweenBasesSignificance = 5;
 
         /// <summary>
         /// The significance of how many times a new height is reached.
         /// </summary>
-        private const int NewHeightReachedSignificance = 5;
+        private readonly int newHeightReachedSignificance = 5;
 
         /// <summary>
-        /// The significance of how many times a new height is reached.
+        /// The significance of how far there is to the nearest expansion.
         /// </summary>
-        private const int DistanceToExpansionSignificance = 5;
+        private readonly int distanceToExpansionSignificance = 5;
 
         /// <summary>
         /// The significance of how many expansions that are available.
         /// </summary>
-        private const int ExpansionsAvailableSignificance = 5;
+        private readonly int expansionsAvailableSignificance = 5;
 
         /// <summary>
         /// The significance of how many choke points that are available.
         /// </summary>
-        private const int ChokePointsSignificance = 5;
+        private readonly int chokePointsSignificance = 5;
 
         /// <summary>
         /// Every x (the value) will be checked for a choke point.
         /// </summary>
-        private const int ChokePointSearchStep = 3;
+        private readonly int chokePointSearchStep = 3;
 
         /// <summary>
         /// The Y-size of the map.
@@ -79,12 +79,17 @@
         /// <summary>
         /// The path between bases.
         /// </summary>
-        private List<Position> pathBetweenBases;
+        private List<Position> pathBetweenStartBases;
 
         /// <summary>
         /// The positions of the normal bases found.
         /// </summary>
         private List<Position> bases;
+
+        /// <summary>
+        /// The furthest an expansion should be from the main base, depending
+        /// </summary>
+        private List<Tuple<int, double>> expansionMaxDistances;
 
         /// <summary>
         /// The highest level found.
@@ -100,18 +105,48 @@
         /// Initializes a new instance of the <see cref="MapFitness"/> class. 
         /// </summary>
         /// <param name="map"> The map to calculate fitness for. </param>
-        public MapFitness(MapPhenotype map)
+        /// <param name="baseSpaceSignificance"> The significance of the space around the start base. </param>
+        /// <param name="baseHeightSignificance"> The significance of the height of the start base. </param>
+        /// <param name="pathBetweenBasesSignificance"> The significance of the distance between the bases. </param>
+        /// <param name="newHeightReachedSignificance"> The significance of how many times a new height is reached. </param>
+        /// <param name="distanceToExpansionSignificance"> The significance of how far there is to the nearest expansion. </param>
+        /// <param name="expansionsAvailableSignificance"> The significance of how many expansions that are available. </param>
+        /// <param name="chokePointsSignificance"> The significance of how many choke points that are available. </param>
+        public MapFitness(
+            MapPhenotype map,
+            int baseSpaceSignificance = 5,
+            int baseHeightSignificance = 5,
+            int pathBetweenBasesSignificance = 5,
+            int newHeightReachedSignificance = 5,
+            int distanceToExpansionSignificance = 5,
+            int expansionsAvailableSignificance = 5,
+            int chokePointsSignificance = 5)
         {
+            // TODO: Grooss - Implement settings 
             this.ySize = map.YSize;
             this.xSize = map.XSize;
             this.map = map;
-            this.mapPathfinding = new JPSMapPathfinding(map.HeightLevels);
+            this.mapPathfinding = new JPSMapPathfinding(map.HeightLevels, map.DestructibleRocks);
+            this.expansionMaxDistances = new List<Tuple<int, double>> 
+                    {
+                        new Tuple<int, double>(1, 0.3),
+                        new Tuple<int, double>(2, 0.5),
+                        new Tuple<int, double>(3, 0.7),
+                        new Tuple<int, double>(4, 0.9)
+                    };
+
+            this.baseSpaceSignificance = baseSpaceSignificance;
+            this.baseHeightSignificance = baseHeightSignificance;
+            this.pathBetweenBasesSignificance = pathBetweenBasesSignificance;
+            this.newHeightReachedSignificance = newHeightReachedSignificance;
+            this.distanceToExpansionSignificance = distanceToExpansionSignificance;
+            this.expansionsAvailableSignificance = expansionsAvailableSignificance;
+            this.chokePointsSignificance = chokePointsSignificance;
         }
 
         /*
         public MapFitness(MapPhenotype map, ) : base(map)
         {
-            // TODO: Implement settings 
         }
         */
 
@@ -169,7 +204,7 @@
 
             var sw = new Stopwatch();
             sw.Start();
-            this.pathBetweenBases = this.mapPathfinding.FindPathFromTo(
+            this.pathBetweenStartBases = this.mapPathfinding.FindPathFromTo(
                 this.startBasePosition1,
                 this.startBasePosition2);
             Console.WriteLine("Path Between Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
@@ -191,7 +226,7 @@
             Console.WriteLine("New Height Reached: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
-            fitness += this.DistanceToNearestExpansion();
+            fitness += this.DistanceToAllExpansions();
             Console.WriteLine("Distance To Nearest Expansion: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
@@ -237,7 +272,7 @@
 
             // Normalizes the value to between 0.0 and 1.0
             var normalized = (actual - min) / (max - min);
-            return normalized * BaseSpaceSignificance;
+            return normalized * this.baseSpaceSignificance;
         }
 
         /// <summary>
@@ -251,7 +286,7 @@
             var actual = (double)(int)this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
 
             var normalized = (actual - min) / (max - min);
-            return normalized * BaseHeightSignificance;
+            return normalized * this.baseHeightSignificance;
         }
 
         /// <summary>
@@ -260,15 +295,15 @@
         /// <returns> A number between 0.0 and 1.0 based on how far the bases are from each other. </returns>
         private double PathBetweenStartBases()
         {
-            if (this.pathBetweenBases.Count <= 0) 
+            if (this.pathBetweenStartBases.Count <= 0) 
                 return -100000d;
 
             // Ground path distance
             var maxGround = (this.ySize * 0.70) + (this.xSize * 0.70);
             var minGround = (this.ySize * 0.1) + (this.xSize * 0.1);
-            var actualGround = this.pathBetweenBases.Count > maxGround
-                            ? maxGround - (this.pathBetweenBases.Count - maxGround)
-                            : this.pathBetweenBases.Count;
+            var actualGround = this.pathBetweenStartBases.Count > maxGround
+                            ? maxGround - (this.pathBetweenStartBases.Count - maxGround)
+                            : this.pathBetweenStartBases.Count;
             var normalizedGround = (actualGround - minGround) / (maxGround - minGround);
 
             // Direct line distance
@@ -277,12 +312,12 @@
             var direct = Math.Sqrt(
                                 Math.Pow(Math.Abs(this.startBasePosition1.Item1 - this.startBasePosition2.Item1), 2)
                                 + Math.Pow(Math.Abs(this.startBasePosition1.Item2 - this.startBasePosition2.Item2), 2));
-            var actualDirect = direct > maxGround
-                                ? maxGround - (direct - maxGround)
+            var actualDirect = direct > maxDirect
+                                ? maxDirect - (direct - maxDirect)
                                 : direct;
             var normalizedDirect = (actualDirect - minDirect) / (maxDirect - minDirect);
 
-            return ((normalizedGround + normalizedDirect) / 2) * PathBetweenBasesSignificance;
+            return ((normalizedGround + normalizedDirect) / 2) * this.pathBetweenBasesSignificance;
         }
 
         /// <summary>
@@ -291,15 +326,15 @@
         /// <returns> A number between 0.0 and 1.0 based on how many times a new height is reached. </returns>
         private double NewHeightReached()
         {
-            if (this.pathBetweenBases.Count <= 0) 
+            if (this.pathBetweenStartBases.Count <= 0) 
                 return 0d;
 
             var actual = 0d;
             var previousHeightLevel =
-                this.map.HeightLevels[this.pathBetweenBases[0].Item1, this.pathBetweenBases[0].Item2];
+                this.map.HeightLevels[this.pathBetweenStartBases[0].Item1, this.pathBetweenStartBases[0].Item2];
 
             // Figure out how many times a new height is reached by looking at when ramps are encountered.
-            foreach (var node in this.pathBetweenBases)
+            foreach (var node in this.pathBetweenStartBases)
             {
                 if ((this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp01
                      || this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp12)
@@ -318,13 +353,104 @@
                         : actual;
 
             var normalized = (actual - Min) / (Max - Min);
-            return normalized * NewHeightReachedSignificance;
+            return normalized * this.newHeightReachedSignificance;
+        }
+
+        /// <summary>
+        /// Figures out how close the X closest expansions are to the start base, where X is half the expansions.
+        /// </summary>
+        /// <returns> A number between 0.0 and 1.0 based on how far the X nearest expansion are from the start base. </returns>
+        private double DistanceToAllExpansions()
+        {
+            if (this.bases.Count <= 0) return 0d;
+
+            var noOfBasesPerStart = this.bases.Count / 2;
+            var closestExpansions = new List<Tuple<int, double>>();
+
+            for (var i = 0; i < this.bases.Count; i++)
+            {
+                // Calculate distance to expansion
+                var tempBase = this.bases[i];
+                var distance = Math.Abs(this.startBasePosition1.Item1 - tempBase.Item1)
+                               + Math.Abs(this.startBasePosition1.Item2 - tempBase.Item2);
+
+                // If list isn't "full" yet, add to the list and go to next base.
+                if (closestExpansions.Count < noOfBasesPerStart)
+                {
+                    closestExpansions.Add(new Tuple<int, double>(i, distance));
+                    continue;
+                }
+
+                // Find the expansion in closest that is the furthest from the base.
+                var tempClosest = new Tuple<int, double>(-1, -1);
+                for (var j = 0; j < closestExpansions.Count; j++)
+                {
+                    var exp = closestExpansions[j];
+                    if (exp.Item2 > tempClosest.Item2)
+                        tempClosest = new Tuple<int, double>(j, exp.Item2);
+                }
+
+                // If the current expansion is closer than the furthes one in the closest list, replace the one in the list.
+                if (distance < tempClosest.Item2)
+                    closestExpansions[tempClosest.Item1] = new Tuple<int, double>(i, distance);
+            }
+
+            // Calculate total normalized value for paths to the nearest expansions.
+            var totalNormalized = 0.0d;
+            for (int i = 0; i < closestExpansions.Count; i++)
+            {
+                var tempExpansion = this.bases[closestExpansions[i].Item1];
+                var pathToExpansion = this.mapPathfinding.FindPathFromTo(this.startBasePosition1, tempExpansion);
+
+                // Ground distance
+                var min = 0.1;
+                var max = 0.1;
+                var actualDistance = (pathToExpansion.Count > max)
+                                         ? max - (pathToExpansion.Count - max)
+                                         : pathToExpansion.Count;
+
+                switch (i)
+                {
+                    case 1:
+                        max = this.expansionMaxDistances[1].Item2;
+                        break;
+
+                    case 2:
+                        max = this.expansionMaxDistances[2].Item2;
+                        break;
+
+                    case 3:
+                        max = this.expansionMaxDistances[3].Item2;
+                        break;
+
+                    default:
+                        max = this.expansionMaxDistances[4].Item2;
+                        break;
+                }
+
+                var normalizedGround = (actualDistance - min) / (max - min);
+
+                // Direct (flight) distance
+                var maxDirect = Math.Sqrt(Math.Pow(this.xSize * 0.7, 2) + Math.Pow(this.ySize * 0.7, 2));
+                var minDirect = Math.Sqrt(Math.Pow(this.xSize * 0.1, 2) + Math.Pow(this.ySize * 0.1, 2));
+                var direct = Math.Sqrt(
+                                    Math.Pow(Math.Abs(this.startBasePosition1.Item1 - tempExpansion.Item1), 2)
+                                    + Math.Pow(Math.Abs(this.startBasePosition1.Item2 - tempExpansion.Item2), 2));
+                var actualDirect = direct > maxDirect
+                                    ? maxDirect - (direct - maxDirect)
+                                    : direct;
+                var normalizedDirect = (actualDirect - minDirect) / (maxDirect - minDirect);
+
+                totalNormalized += (normalizedGround + normalizedDirect) / 2;
+            }
+
+            return (totalNormalized / closestExpansions.Count) * this.distanceToExpansionSignificance;
         }
 
         /// <summary>
         /// Figures out how close the closest expansion is to the start base.
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 based on how many times a new height is reached. </returns>
+        /// <returns> A number between 0.0 and 1.0 based on how far the nearest expansion is from the start base. </returns>
         private double DistanceToNearestExpansion()
         {
             // Find the nearest expansion (if any)
@@ -352,11 +478,11 @@
             var max = this.ySize * 0.4;
             var min = this.ySize * 0.1;
             var actualDistance = (pathToNearest.Count > max)
-                                     ? max - (this.pathBetweenBases.Count - max)
-                                     : this.pathBetweenBases.Count;
+                                     ? max - (pathToNearest.Count - max)
+                                     : pathToNearest.Count;
 
             var normalized = (actualDistance - min) / (max - min);
-            return normalized * DistanceToExpansionSignificance;
+            return normalized * this.distanceToExpansionSignificance;
         }
 
         /// <summary>
@@ -375,7 +501,7 @@
                             : this.bases.Count / 2d;
 
             var normalized = ((actual / 2d) - min) / (max - min);
-            return normalized * ExpansionsAvailableSignificance;
+            return normalized * this.expansionsAvailableSignificance;
         }
 
         /// <summary>
@@ -390,9 +516,9 @@
             var previousHeightLevel =
                 this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
 
-            for (var nodeIndex = 0; nodeIndex < this.pathBetweenBases.Count; nodeIndex++)
+            for (var nodeIndex = 0; nodeIndex < this.pathBetweenStartBases.Count; nodeIndex++)
             {
-                var node = this.pathBetweenBases[nodeIndex];
+                var node = this.pathBetweenStartBases[nodeIndex];
 
                 if (this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp01
                      || this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp12)
@@ -400,15 +526,15 @@
                     //// If we encounter a ramp, perform a choke point check on ramps
 
                     if (this.map.HeightLevels[node.Item1, node.Item2] == previousHeightLevel) continue;
-                    if (!this.IsRampChokePoint(this.pathBetweenBases[nodeIndex + 1], chokePointWidth)) continue;
+                    if (!this.IsRampChokePoint(this.pathBetweenStartBases[nodeIndex + 1], chokePointWidth)) continue;
 
                     chokePoints++;
                 }
-                else if (nodeIndex % ChokePointSearchStep == 0)
+                else if (nodeIndex % this.chokePointSearchStep == 0)
                 {
                     //// Otherwise, only perform a choke point check every x steps.
 
-                    if (!this.IsPositionChokePoint(this.pathBetweenBases[nodeIndex], chokePointWidth)) continue;
+                    if (!this.IsPositionChokePoint(this.pathBetweenStartBases[nodeIndex], chokePointWidth)) continue;
 
                     chokePoints++;
                 }
@@ -421,7 +547,7 @@
                             : chokePoints;
 
             var normalized = (actual - Max) / (Max - Min);
-            return normalized * ChokePointsSignificance;
+            return normalized * this.chokePointsSignificance;
         }
 
         /// <summary>
@@ -464,14 +590,20 @@
 
                     var newPos1 = new Position(pos.Item1 + (dir1.Item1 * i), pos.Item2 + (dir1.Item2 * i));
                     var newPos2 = new Position(pos.Item1 + (dir2.Item1 * i), pos.Item2 + (dir2.Item2 * i));
-                    // TODO: Check if inside map
-                    if (directions[dc.Key].Item2 < 0
-                        && this.map.HeightLevels[newPos1.Item1, newPos1.Item2] == Enums.HeightLevel.Cliff) 
-                        directions[dc.Key] = new Tuple<Position, int>(dir1, i);
 
-                    if (directions[dc.Value].Item2 < 0
-                        && this.map.HeightLevels[newPos2.Item1, newPos2.Item2] == Enums.HeightLevel.Cliff)
-                        directions[dc.Value] = new Tuple<Position, int>(dir2, i);
+                    if (MapHelper.WithinMapBounds(newPos1, this.map.XSize, this.map.YSize))
+                    {
+                        if (directions[dc.Key].Item2 < 0
+                            && this.map.HeightLevels[newPos1.Item1, newPos1.Item2] == Enums.HeightLevel.Cliff) 
+                            directions[dc.Key] = new Tuple<Position, int>(dir1, i);
+                    }
+
+                    if (MapHelper.WithinMapBounds(newPos2, this.map.XSize, this.map.YSize))
+                    {
+                        if (directions[dc.Value].Item2 < 0
+                            && this.map.HeightLevels[newPos2.Item1, newPos2.Item2] == Enums.HeightLevel.Cliff) 
+                            directions[dc.Value] = new Tuple<Position, int>(dir2, i);
+                    }
                 }
             }
 

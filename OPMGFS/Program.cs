@@ -127,7 +127,6 @@
 
             map.SaveMapToPngFile();
 
-            ////ITODO: JPS small bug. See result of this run.
             ////var start = new Position(32, 32);
             ////var end = new Position(96, 96);
             ////JPSMapPathfinding jps = new JPSMapPathfinding(map.HeightLevels);

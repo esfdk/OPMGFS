@@ -9,7 +9,7 @@
 
     /// <summary>
     /// A class that does pathfinding by using the Jump Point Search algorithm.
-    /// Inspired by http://gamedevelopment.tutsplus.com/tutorials/how-to-speed-up-a-pathfinding-with-the-jump-point-search-algorithm--gamedev-5818
+    /// Inspired by <see href="http://gamedevelopment.tutsplus.com/tutorials/how-to-speed-up-a-pathfinding-with-the-jump-point-search-algorithm--gamedev-5818"/>
     /// </summary>
     public class JPSMapPathfinding
     {
@@ -19,6 +19,11 @@
         /// The map that pathfinding is done on.
         /// </summary>
         private readonly Enums.HeightLevel[,] map;
+
+        /// <summary>
+        /// The destructible rocks of the map.
+        /// </summary>
+        private readonly bool[,] destructibleRocks;
 
         /// <summary>
         /// A list of the different ways one can go from any position in order to find neighbours.
@@ -43,10 +48,11 @@
         /// Initializes a new instance of the <see cref="JPSMapPathfinding"/> class.
         /// </summary>
         /// <param name="mapHeightLevels"> The map height levels. </param>
-        public JPSMapPathfinding(Enums.HeightLevel[,] mapHeightLevels)
+        /// <param name="destructibleRocks"> The destructible rocks in the map. </param>
+        public JPSMapPathfinding(Enums.HeightLevel[,] mapHeightLevels, bool[,] destructibleRocks)
         {
-            // ITODO: Add option to include destructible rocks
             this.map = mapHeightLevels;
+            this.destructibleRocks = destructibleRocks;
         }
 
         #endregion
@@ -64,6 +70,7 @@
         /// <returns> A list representing the path from the start position to the end position. </returns>
         public List<Position> FindPathFromTo(Position startPosition, Position endPosition)
         {
+            // TODO: Grooss - Upper limit on pathfinding (if necessary)
             if (startPosition == null || endPosition == null) return new List<Position>();
 
             var openList = new List<Node>();
@@ -500,7 +507,7 @@
             if (Math.Abs((int)this.map[x, y] - (int)this.map[cameFrom.Item1, cameFrom.Item2]) >= 2) 
                 return true;
 
-            return false;
+            return this.destructibleRocks[x, y];
         }
 
         #endregion
