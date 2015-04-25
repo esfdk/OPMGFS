@@ -1,11 +1,16 @@
 ﻿namespace OPMGFS.Map
 {
+    using System.Collections.Generic;
+
+    using OPMGFS.Map.CellularAutomata;
+
     /// <summary>
     /// Novelty Search Options for map searching.
     /// </summary>
     public class MapSearchOptions
     {
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MapSearchOptions"/> class. 
         /// </summary>
@@ -42,6 +47,10 @@
         /// <param name="maximumNumberOfDestructibleRocks"> The maximum Number Of Destructible Rocks. </param>
         /// <param name="minimumNumberOfXelNagaTowers"> The minimum Number Of Xel'Naga Towers. </param>
         /// <param name="maximumNumberOfXelNagaTowers"> The maximum Number Of Xel'Naga Towers. </param>
+        /// <param name="smoothingNormalNeighborhood">How many neighbors in the normal Moore neighborhood need to be present before smoothing happens.</param>
+        /// <param name="smoothingExtendedNeighborhood">How many neighbors in the extended Moore neighborhood need to be present before smoothing happens.</param>
+        /// <param name="smoothingGenerations">How many generations to run smoothing.</param>
+        /// <param name="smoothingRuleset">The ruleset to use when smoothing.</param>
         public MapSearchOptions(
             MapPhenotype mp,
             Enums.MapFunction mapCompletion = Enums.MapFunction.Turn,
@@ -59,7 +68,7 @@
             double notPlacedPenalty = 10,
             double notPlacedPenaltyModifier = 1.5, 
             double minimumStartBaseDistance = 0.3, 
-            double maximumStartBaseDistance = 1.0,
+            double maximumStartBaseDistance = 0.8,
             double maximumDegree = 180,
             double minimumDegree = 0,
             double maximumDistance = 1.0,
@@ -75,8 +84,16 @@
             int minimumNumberOfDestructibleRocks = 1,
             int maximumNumberOfDestructibleRocks = 3,
             int minimumNumberOfXelNagaTowers = 1,
-            int maximumNumberOfXelNagaTowers = 1)
+            int maximumNumberOfXelNagaTowers = 1, 
+            int smoothingNormalNeighborhood = 2, 
+            int smoothingExtendedNeighborhood = 6, 
+            int smoothingGenerations = 10, 
+            List<Rule> smoothingRuleset = null)
         {
+            this.SmoothingRuleset = smoothingRuleset;
+            this.SmoothingGenerations = smoothingGenerations;
+            this.SmoothingExtendedNeighborhood = smoothingExtendedNeighborhood;
+            this.SmoothingNormalNeighborhood = smoothingNormalNeighborhood;
             this.ChanceToAddBase = chanceToAddBase;
             this.ChanceToAddXelNagaTower = chanceToAddXelNagaTower;
             this.ChanceToAddDestructibleRocks = chanceToAddDestructibleRocks;
@@ -123,6 +140,10 @@
         /// </param>
         public MapSearchOptions(MapPhenotype mp, MapSearchOptions mso)
         {
+            this.SmoothingRuleset = mso.SmoothingRuleset;
+            this.SmoothingGenerations = mso.SmoothingGenerations;
+            this.SmoothingExtendedNeighborhood = mso.SmoothingExtendedNeighborhood;
+            this.SmoothingNormalNeighborhood = mso.SmoothingNormalNeighborhood;
             this.ChanceToAddBase = mso.ChanceToAddBase;
             this.ChanceToAddGoldBase = mso.ChanceToAddGoldBase;
             this.ChanceToAddDestructibleRocks = mso.ChanceToAddDestructibleRocks;
@@ -333,6 +354,18 @@
         /// Gets the maximum number of Xel'Naga towers.
         /// </summary>
         public int MaximumNumberOfXelNagaTowers { get; private set; }
+        #endregion
+
+        #region Smoothing Parameters
+
+        public int SmoothingNormalNeighborhood { get; private set; }
+
+        public int SmoothingExtendedNeighborhood { get; private set; }
+
+        public int SmoothingGenerations { get; private set; }
+
+        public List<Rule> SmoothingRuleset { get; private set; }
+
         #endregion
     }
 }

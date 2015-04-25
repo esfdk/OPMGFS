@@ -165,39 +165,42 @@
                 }
             }
 
+            if (this.startBasePosition1 == null || this.startBasePosition2 == null) return -200000;
+
             var sw = new Stopwatch();
             sw.Start();
             this.pathBetweenBases = this.mapPathfinding.FindPathFromTo(
                 this.startBasePosition1,
                 this.startBasePosition2);
-            Console.WriteLine("0: " + sw.ElapsedMilliseconds + " - " + fitness);
+            Console.WriteLine("Path Between Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
+            sw.Restart();
 
             fitness += this.BaseSpace();
-            Console.WriteLine("1: " + sw.ElapsedMilliseconds + " - " + fitness);
+            Console.WriteLine("Base Space: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.BaseHeightLevel();
-            Console.WriteLine("2: " + sw.ElapsedMilliseconds + " - " + fitness);
+            Console.WriteLine("Base Height Level: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.PathBetweenStartBases();
-            Console.WriteLine("3: " + sw.ElapsedMilliseconds + " - " + fitness);
+            Console.WriteLine("Path Between Start Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.NewHeightReached();
-            Console.WriteLine("4: " + sw.ElapsedMilliseconds + " - " + fitness);
+            Console.WriteLine("New Height Reached: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.DistanceToNearestExpansion();
-            Console.WriteLine("5: " + sw.ElapsedMilliseconds + " - " + fitness);
+            Console.WriteLine("Distance To Nearest Expansion: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.ExpansionsAvailable();
-            Console.WriteLine("6: " + sw.ElapsedMilliseconds + " - " + fitness);
+            Console.WriteLine("Expansions Available: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.ChokePoints();
-            Console.WriteLine("7: " + sw.ElapsedMilliseconds + " - " + fitness);
+            Console.WriteLine("Choke Points: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             //// Fitness:
@@ -208,7 +211,7 @@
             ////  X Distance to nearest expansion
             ////  X Expansions available
             ////  X Choke points (find route between bases and look for ramps, then find their width)
-
+            
             return fitness;
         }
 
@@ -461,7 +464,7 @@
 
                     var newPos1 = new Position(pos.Item1 + (dir1.Item1 * i), pos.Item2 + (dir1.Item2 * i));
                     var newPos2 = new Position(pos.Item1 + (dir2.Item1 * i), pos.Item2 + (dir2.Item2 * i));
-
+                    // TODO: Check if inside map
                     if (directions[dc.Key].Item2 < 0
                         && this.map.HeightLevels[newPos1.Item1, newPos1.Item2] == Enums.HeightLevel.Cliff) 
                         directions[dc.Key] = new Tuple<Position, int>(dir1, i);

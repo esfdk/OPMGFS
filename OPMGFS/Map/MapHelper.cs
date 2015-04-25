@@ -41,13 +41,17 @@ namespace OPMGFS.Map
         #region Properties
 
         /// <summary>
-        /// Gets the random generator.
+        /// Gets or sets the random generator.
         /// </summary>
         public static Random Random 
         { 
             get
             {
                 return random;
+            }
+            set
+            {
+                random = value;
             }
         }
 

@@ -20,15 +20,16 @@
         private bool hasBeenConverted;
         #endregion
 
-        public EvolvableMap(MapSearchOptions mso, double mutationChance) : base(mutationChance)
+        public EvolvableMap(MapSearchOptions mso, double mutationChance, Random r) : base(mutationChance, r)
         {
             this.MapSearchOptions = mso;
             this.convertedPhenotype = null;
             this.hasBeenConverted = false;
+            this.MapPoints = new List<MapPoint>();
         }
 
-        public EvolvableMap(MapSearchOptions mso, double mutationChance, List<MapPoint> mapPoints)
-            : this(mso, mutationChance)
+        public EvolvableMap(MapSearchOptions mso, double mutationChance, Random r, List<MapPoint> mapPoints)
+            : this(mso, mutationChance, r)
         {
             this.MapPoints = mapPoints;
         }
@@ -53,18 +54,18 @@
             }
         }
 
-        public override Evolvable SpawnMutation(Random r)
+        public override Evolvable SpawnMutation()
         {
             var newPoints = MapConversionHelper.MutateMapPoints(
                 this.MapPoints,
                 this.MutationChance,
                 this.MapSearchOptions,
-                r);
+                this.Random);
 
-            return new EvolvableMap(this.MapSearchOptions, this.MutationChance, newPoints);
+            return new EvolvableMap(this.MapSearchOptions, this.MutationChance, this.Random, newPoints);
         }
 
-        public override Evolvable SpawnRecombination(Evolvable other, Random r)
+        public override Evolvable SpawnRecombination(Evolvable other)
         {
             throw new NotImplementedException();
         }
@@ -76,11 +77,9 @@
             this.Fitness = mapFitness.CalculateFitness();
         }
 
-        public override void InitializeObjects(Random r)
+        public override void InitializeObject()
         {
-            this.MapPoints = new List<MapPoint>();
-            
-            // TODO: Fill in list of map points
+            this.MapPoints = MapConversionHelper.GenerateInitialMapPoints(this.MapSearchOptions, this.Random);
         }
 
         /// <summary>

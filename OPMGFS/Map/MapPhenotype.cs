@@ -46,6 +46,7 @@ namespace OPMGFS.Map
             this.HeightLevels = new HeightLevel[xSize, ySize];
             this.MapItems = new Item[xSize, ySize];
             this.DestructibleRocks = new bool[xSize, ySize];
+            this.CliffPositions = new HashSet<Tuple<int, int>>();
 
             this.XSize = this.HeightLevels.GetLength(0);
             this.YSize = this.HeightLevels.GetLength(1);
@@ -65,6 +66,7 @@ namespace OPMGFS.Map
             this.YSize = this.HeightLevels.GetLength(1);
 
             this.DestructibleRocks = new bool[this.XSize, this.YSize];
+            this.CliffPositions = new HashSet<Tuple<int, int>>();
         }
         #endregion
 
@@ -93,6 +95,11 @@ namespace OPMGFS.Map
         /// Gets the destructible rocks in the map.
         /// </summary>
         public bool[,] DestructibleRocks { get; private set; }
+
+        /// <summary>
+        /// Gets a list of all positions that contains a cliff.
+        /// </summary>
+        public HashSet<Tuple<int, int>> CliffPositions { get; private set; } 
         #endregion
 
         #region Public Methods
@@ -168,6 +175,7 @@ namespace OPMGFS.Map
                 this.mapHalf,
                 this.HeightLevels);
 
+            // ITODO: Cliff smoothing
             if (newRuleset == null)
             {
                 smoothCA.SetRuleset(this.GetSmoothingRules(smoothingNormalNeighbourhood, smoothingExtNeighbourhood));
@@ -221,9 +229,19 @@ namespace OPMGFS.Map
         /// <summary>
         /// Saves the map to a PNG file.
         /// </summary>
-        /// <param name="fileNameAddition"> An extra part to add to the file name, when generating maps during testing. </param>
-        /// <param name="folder"> Save the map to a special folder in Images/Finished Maps. NOTE: Just give the name of the folder to create/save in, no extra characters such as \. </param>
-        public void SaveMapToPngFile(string fileNameAddition = "", string folder = "")
+        /// <param name="fileNameAddition">
+        /// An extra part to add to the file name, when generating maps during testing. 
+        /// </param>
+        /// <param name="folder">
+        /// Save the map to a special folder in Images/Finished Maps. NOTE: Just give the name of the folder to create/save in, no extra characters such as \. 
+        /// </param>
+        /// <param name="heightMap">
+        /// Whether the height map should be printed.
+        /// </param>
+        /// <param name="itemMap">
+        /// Whether the item map should be printed.
+        /// </param>
+        public void SaveMapToPngFile(string fileNameAddition = "", string folder = "", bool heightMap = true, bool itemMap = true)
         {
             // The dictionaries and bitmap.
             var heightDic = MapHelper.GetHeightmapImageDictionary();
@@ -231,7 +249,7 @@ namespace OPMGFS.Map
             var bm = new Bitmap((this.XSize * MapHelper.SizeOfMapTiles) + 1, (this.YSize * MapHelper.SizeOfMapTiles) + 1);
 
             // The file names
-            var currentTime = string.Empty + DateTime.Now;
+            var currentTime = string.Format("{0}.{1}_{2}.{3}", DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute); 
             currentTime = currentTime.Replace("/", ".");
             currentTime = currentTime.Replace(":", ".");
             currentTime = currentTime.Replace(" ", "_");
@@ -248,7 +266,7 @@ namespace OPMGFS.Map
             Directory.CreateDirectory(mapDir);
 
             var mapHeightFile = @"Map_" + currentTime + fileNameAddition + ".png";
-            var mapItemFile = @"Map_" + currentTime + "_With_Items" + fileNameAddition + ".png";
+            var mapItemFile = @"Map_" + currentTime + "_Items" + fileNameAddition + ".png";
 
             // Creating heightmap
             using (var g = Graphics.FromImage(bm))
@@ -267,8 +285,11 @@ namespace OPMGFS.Map
                 }
             }
 
-            // Saving map
-            bm.Save(Path.Combine(mapDir, mapHeightFile));
+            if (heightMap)
+            {
+                // Saving map
+                bm.Save(Path.Combine(mapDir, mapHeightFile));
+            }
 
             // Adding Items to the map.
             using (var g = Graphics.FromImage(bm))
@@ -292,8 +313,11 @@ namespace OPMGFS.Map
                 }
             }
 
-            // Saving map
-            bm.Save(Path.Combine(mapDir, mapItemFile));
+            if (itemMap)
+            {
+                // Saving map
+                bm.Save(Path.Combine(mapDir, mapItemFile));
+            }
         }
 
         /// <summary>
@@ -347,6 +371,31 @@ namespace OPMGFS.Map
             mapHeightLevels = heightLevelBuilder.ToString();
             mapItems = itemBuilder.ToString();
         }
+
+        /// <summary>
+        /// Updates the list of cliff positions.
+        /// </summary>
+        public void UpdateCliffPositions(Half half)
+        {
+            var xStart = (half == Half.Right) ? this.XSize / 2 : 0;
+            var xEnd = (half == Half.Left) ? this.XSize / 2 : this.XSize;
+            var yStart = (half == Half.Top) ? this.YSize / 2 : 0;
+            var yEnd = (half == Half.Bottom) ? this.YSize / 2 : this.YSize;
+
+            this.CliffPositions.Clear();
+
+            for (var x = xStart; x < xEnd; x++)
+            {
+                for (var y = yStart; y < yEnd; y++)
+                {
+                    if (this.HeightLevels[x, y] == HeightLevel.Cliff)
+                    {
+                        this.CliffPositions.Add(new Tuple<int, int>(x, y));
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Private methods

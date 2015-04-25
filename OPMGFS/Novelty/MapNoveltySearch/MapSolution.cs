@@ -257,6 +257,7 @@
             this.ConvertedPhenotype = map.CreateCompleteMap(Enums.Half.Top, this.MapSearchOptions.MapCompletion);
             this.hasBeenConverted = true;
             this.ConvertedPhenotype.PlaceCliffs();
+            this.ConvertedPhenotype.SmoothTerrain(this.MapSearchOptions.SmoothingNormalNeighborhood, this.MapSearchOptions.SmoothingExtendedNeighborhood, this.MapSearchOptions.SmoothingGenerations, this.MapSearchOptions.SmoothingRuleset);
             return this.ConvertedPhenotype;
         }
 
@@ -382,8 +383,10 @@
                         break;
                 }
 
+                var jps = new JPSMapPathfinding(this.ConvertedPhenotype.HeightLevels);
+
                 distance =
-                    MapPathfinding.FindPathFromTo(this.ConvertedPhenotype.HeightLevels, topBasePoint, bottomBasePoint).Count == 0
+                    jps.FindPathFromTo(topBasePoint, bottomBasePoint).Count == 0
                         ? distance + this.MapSearchOptions.NoPathBetweenStartBasesPenalty
                         : distance;
             }
