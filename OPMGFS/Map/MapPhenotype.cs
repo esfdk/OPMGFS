@@ -375,6 +375,9 @@ namespace OPMGFS.Map
         /// <summary>
         /// Updates the list of cliff positions.
         /// </summary>
+        /// <param name="half">
+        /// The half to look for cliffs on.
+        /// </param>
         public void UpdateCliffPositions(Half half)
         {
             var xStart = (half == Half.Right) ? this.XSize / 2 : 0;

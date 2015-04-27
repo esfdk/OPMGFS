@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
 
     using OPMGFS.Map.MapObjects;
@@ -254,8 +253,6 @@
         /// </returns>
         public static MapPhenotype ConvertToPhenotype(List<MapPoint> mapPoints, MapSearchOptions mso)
         {
-            var sw = new Stopwatch();
-            sw.Start();
             var heightLevels = mso.Map.HeightLevels.Clone() as Enums.HeightLevel[,];
             var items = mso.Map.MapItems.Clone() as Enums.Item[,];
 
@@ -594,19 +591,21 @@
                 }
             }
 
-            Console.WriteLine("Map Conversion took {0} milliseconds.", sw.ElapsedMilliseconds);
-
             return newMap;
         }
 
         public static List<MapPoint> GenerateInitialMapPoints(MapSearchOptions mso, Random r)
         {
-            var mapPoints = new List<MapPoint>();
-            mapPoints.Add(new MapPoint(
-                (r.NextDouble() * (mso.MaximumStartBaseDistance - mso.MinimumStartBaseDistance)) + mso.MinimumStartBaseDistance,
-                (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
-                Enums.MapPointType.StartBase,
-                Enums.WasPlaced.NotAttempted));
+            var mapPoints = new List<MapPoint>
+                                {
+                                    new MapPoint(
+                                        (r.NextDouble()
+                                         * (mso.MaximumStartBaseDistance - mso.MinimumStartBaseDistance))
+                                        + mso.MinimumStartBaseDistance,
+                                        (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                                        Enums.MapPointType.StartBase,
+                                        Enums.WasPlaced.NotAttempted)
+                                };
 
             var numberOfBases = r.Next(mso.MinimumNumberOfBases, mso.MaximumNumberOfBases + 1);
             for (var i = 0; i < numberOfBases; i++)

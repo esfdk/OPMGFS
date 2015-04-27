@@ -207,35 +207,35 @@
             this.pathBetweenStartBases = this.mapPathfinding.FindPathFromTo(
                 this.startBasePosition1,
                 this.startBasePosition2);
-            Console.WriteLine("Path Between Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
+            //Console.WriteLine("Path Between Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.BaseSpace();
-            Console.WriteLine("Base Space: " + sw.ElapsedMilliseconds + " - " + fitness);
+            //Console.WriteLine("Base Space: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.BaseHeightLevel();
-            Console.WriteLine("Base Height Level: " + sw.ElapsedMilliseconds + " - " + fitness);
+            //Console.WriteLine("Base Height Level: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.PathBetweenStartBases();
-            Console.WriteLine("Path Between Start Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
+            //Console.WriteLine("Path Between Start Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.NewHeightReached();
-            Console.WriteLine("New Height Reached: " + sw.ElapsedMilliseconds + " - " + fitness);
+            //Console.WriteLine("New Height Reached: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.DistanceToAllExpansions();
-            Console.WriteLine("Distance To Nearest Expansion: " + sw.ElapsedMilliseconds + " - " + fitness);
+            //Console.WriteLine("Distance To Nearest Expansion: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.ExpansionsAvailable();
-            Console.WriteLine("Expansions Available: " + sw.ElapsedMilliseconds + " - " + fitness);
+            //Console.WriteLine("Expansions Available: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             fitness += this.ChokePoints();
-            Console.WriteLine("Choke Points: " + sw.ElapsedMilliseconds + " - " + fitness);
+            //Console.WriteLine("Choke Points: " + sw.ElapsedMilliseconds + " - " + fitness);
             sw.Restart();
 
             //// Fitness:
@@ -411,6 +411,10 @@
 
                 switch (i)
                 {
+                    case 0:
+                        max = this.expansionMaxDistances[0].Item2;
+                        break;
+
                     case 1:
                         max = this.expansionMaxDistances[1].Item2;
                         break;
@@ -419,12 +423,8 @@
                         max = this.expansionMaxDistances[2].Item2;
                         break;
 
-                    case 3:
-                        max = this.expansionMaxDistances[3].Item2;
-                        break;
-
                     default:
-                        max = this.expansionMaxDistances[4].Item2;
+                        max = this.expansionMaxDistances[3].Item2;
                         break;
                 }
 
@@ -690,7 +690,7 @@
 
             // Check the actual width.
             var actualWidth = Math.Abs(firstPos.Item1 - secondPos.Item1) + Math.Abs(firstPos.Item2 - secondPos.Item2) - 1;
-            Console.WriteLine(actualWidth);
+            Console.WriteLine("Actual width of choke points: " + actualWidth);
             return actualWidth <= width;
         }
     }

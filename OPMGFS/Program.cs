@@ -32,7 +32,9 @@
             ////TestPathfinding();
 
             var maps = GetBaseMaps();
-            RunEvolution(maps, new Random(), new MapSearchOptions(null));
+            //RunEvolution(maps, new Random(), new MapSearchOptions(null));
+            //Console.WriteLine("Evolution Done");
+            //maps = GetBaseMaps();
             RunNoveltysearch(maps, new Random(), new MapSearchOptions(null));
 
             Console.WriteLine("Everything is done running");
@@ -40,8 +42,7 @@
         }
 
         #region Test Methods
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-            Justification = "Reviewed. Suppression is OK here.")]
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestPathfinding()
         {
             const int Height = 128;
@@ -458,6 +459,7 @@
             Console.ReadLine();
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestMapNoveltySearch()
         {
             var folderString = "test 3";
@@ -486,6 +488,7 @@
             }
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestPhenotypeConversion()
         {
             var map = new MapPhenotype(128, 128);
@@ -681,7 +684,6 @@
         #endregion
 
         #region Search Methods
-
         public static void RunEvolution(
             List<MapPhenotype> maps,
             Random r,
@@ -697,8 +699,11 @@
             string folderName = "MapEvolution",
             double lowestFitnessLevelForPrint = double.MinValue)
         {
+            var baseMapCounter = 0;
             foreach (var map in maps)
             {
+                map.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter));
+
                 var mso = new MapSearchOptions(map, mapSearchOptions);
                 var evolver = new Evolver<EvolvableMap>(
                     numberOfGenerations,
@@ -715,15 +720,18 @@
                                   };
 
                 evolver.Evolve();
-                var i = 0;
+                var variationValue = 0;
+
                 foreach (var individual in evolver.Population)
                 {
-                    i++;
+                    variationValue++;
                     if (individual.Fitness >= lowestFitnessLevelForPrint)
                     {
-                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Map_{0}_Fitness_{1}", i, individual.Fitness), "MapEvolution", false);
+                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Base Map {0}_Map {1}_Fitness {2}", baseMapCounter, variationValue, individual.Fitness), folderName, false);
                     }
                 }
+
+                baseMapCounter++;
             }
         }
 
@@ -736,24 +744,34 @@
             double lowestFitnessLevelForPrint = double.MinValue,
             string folderName = "MapNovelty")
         {
+            var baseMapCounter = 0;
             foreach (var map in maps)
             {
+                map.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter));
                 var mso = mapSearchOptions == null ? new MapSearchOptions(map) : new MapSearchOptions(map, mapSearchOptions);
                 var nso = noveltySearchOptions ?? new NoveltySearchOptions();
                 var searcher = new MapSearcher(r, mso, nso);
+                Console.WriteLine("Created searcher");
+
                 searcher.RunGenerations(numberOfGenerations);
-                
-                var i = 0;
-                foreach (var solution in searcher.Archive.Archive)
+
+                var variationValue = 0;
+                foreach (var solution in searcher.InfeasiblePopulation.CurrentGeneration)
                 {
                     var individual = (MapSolution)solution;
-                    i++;
+                    variationValue++;
                     var fitness = new MapFitness(individual.ConvertedPhenotype).CalculateFitness();
                     if (fitness >= lowestFitnessLevelForPrint)
                     {
-                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Map_{0}_Fitness_{1}", i, fitness), folderName, false);
+                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Base Map {0}_Map {1}_Fitness {2}", baseMapCounter, variationValue, fitness), folderName, false);
+                    }
+                    else
+                    {
+                        Console.WriteLine("fitness too low: " + fitness);
                     }
                 }
+
+                baseMapCounter++;
             }
         }
 

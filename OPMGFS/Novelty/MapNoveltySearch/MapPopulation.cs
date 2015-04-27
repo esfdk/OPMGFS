@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     /// <summary>
@@ -71,7 +72,7 @@
                     }
 
                     var index = 0;
-                    var highestNovelty = -5000.0;
+                    var highestNovelty = double.MinValue;
 
                     for (var j = 0; j < allIndividuals.Count; j++)
                     {
@@ -108,16 +109,16 @@
                     }
 
                     var index = 0;
-                    var highestDistance = double.MaxValue;
+                    var lowestDistance = double.MaxValue;
 
                     for (var j = 0; j < allIndividuals.Count; j++)
                     {
-                        if (!(allIndividuals[j].DistanceToFeasibility < highestDistance))
+                        if (!(allIndividuals[j].DistanceToFeasibility < lowestDistance))
                         {
                             continue;
                         }
 
-                        highestDistance = allIndividuals[j].Novelty;
+                        lowestDistance = allIndividuals[j].DistanceToFeasibility;
                         index = j;
                     }
 

@@ -14,6 +14,8 @@ TODO:
 		(done? needs discussion) Impement other version of ramp placement
 		(done. Needs way to input map settings)Set up novelty search for testing
 		(maybe not necessary, )Eliminate unfeasible results from evolution?
+		Figure out how to make smoothing faster or simply cut it out completely ?0
+		Figure out what makes advancing generation slow
 		Implement FI2NS
 	
 	Uassigned TODOs

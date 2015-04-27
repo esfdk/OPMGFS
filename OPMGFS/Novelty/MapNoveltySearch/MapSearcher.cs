@@ -151,6 +151,11 @@
                 var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list);
                 InfeasiblePopulation.CurrentGeneration.Add(ms);
             }
+
+            foreach (var ms in this.FeasiblePopulation.CurrentGeneration)
+            {
+                ms.CalculateNovelty(this.FeasiblePopulation, this.Archive, this.NoveltySearchOptions.NumberOfNeighbours);
+            }
         }
 
         /// <summary>

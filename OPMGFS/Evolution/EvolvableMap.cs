@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     using OPMGFS.Map;
     using OPMGFS.Map.MapObjects;
@@ -127,10 +128,26 @@
         /// </returns>
         public MapPhenotype ConvertToPhenotype()
         {
+            var sw = new Stopwatch();
+            sw.Start();
+            
             var map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, this.MapSearchOptions);
+            Console.WriteLine("Converting to phenotype took {0} milliseconds", sw.ElapsedMilliseconds);
+            sw.Restart();
+            
             this.ConvertedPhenotype = map.CreateCompleteMap(Enums.Half.Top, this.MapSearchOptions.MapCompletion);
+            Console.WriteLine("Creating complete map took {0} milliseconds", sw.ElapsedMilliseconds);
+            sw.Restart();
             this.hasBeenConverted = true;
+            
             this.ConvertedPhenotype.PlaceCliffs();
+            Console.WriteLine("Placing cliffs took {0} milliseconds", sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            // HACK: Currently not smoothing terrain after conversion
+            ////this.ConvertedPhenotype.SmoothTerrain(this.MapSearchOptions.SmoothingNormalNeighborhood, this.MapSearchOptions.SmoothingExtendedNeighborhood, this.MapSearchOptions.SmoothingGenerations, this.MapSearchOptions.SmoothingRuleset);
+            ////Console.WriteLine("Smoothing terrain took {0} milliseconds", sw.ElapsedMilliseconds);
+            ////sw.Restart();
             return this.ConvertedPhenotype;
         }
     }
