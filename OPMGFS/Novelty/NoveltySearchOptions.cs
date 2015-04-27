@@ -26,9 +26,19 @@
         /// <param name="addToArchive">
         /// The amount of individuals to add to the novel archive.
         /// </param>
-        /// <param name="minimumNovelty">The minimum novelty required for an individual to be added to the novel archive.</param>
-        public NoveltySearchOptions(bool mutate = true, bool recombine = false, double mutationChance = 0.3, bool twoPointCrossover = false, int numberOfNeighbours = 1, int addToArchive = 1, double minimumNovelty = 0)
+        /// <param name="minimumNovelty">
+        /// The minimum novelty required for an individual to be added to the novel archive.
+        /// </param>
+        /// <param name="feasiblePopulationSize">
+        /// The feasible Population Size.
+        /// </param>
+        /// <param name="infeasiblePopulationSize">
+        /// The infeasible Population Size.
+        /// </param>
+        public NoveltySearchOptions(bool mutate = true, bool recombine = false, double mutationChance = 0.3, bool twoPointCrossover = false, int numberOfNeighbours = 1, int addToArchive = 1, double minimumNovelty = 0, int feasiblePopulationSize = 10, int infeasiblePopulationSize = 10)
         {
+            this.InfeasiblePopulationSize = infeasiblePopulationSize;
+            this.FeasiblePopulationSize = feasiblePopulationSize;
             this.MinimumNovelty = minimumNovelty;
             this.TwoPointCrossover = twoPointCrossover;
             this.MutationChance = mutationChance;
@@ -52,6 +62,16 @@
         /// Gets a value indicating whether recombination should happen.
         /// </summary>
         public bool Recombine { get; private set; }
+
+        /// <summary>
+        /// Gets the size that the feasible population should be.
+        /// </summary>
+        public int FeasiblePopulationSize { get; private set; }
+
+        /// <summary>
+        /// Gets the size that the infeasible population should be.
+        /// </summary>
+        public int InfeasiblePopulationSize { get; private set; }
 
         /// <summary>
         /// Gets the mutation chance.

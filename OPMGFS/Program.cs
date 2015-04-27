@@ -31,7 +31,9 @@
             ////TestFitness();
             ////TestPathfinding();
 
-            RunEvolution(new Random(), new MapSearchOptions(null));
+            var maps = GetBaseMaps();
+            RunEvolution(maps, new Random(), new MapSearchOptions(null));
+            RunNoveltysearch(maps, new Random(), new MapSearchOptions(null));
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -76,7 +78,7 @@
             sw.Stop();
             Console.WriteLine("AStar route length: " + aStar.Count + " took " + sw.ElapsedMilliseconds + " milliseconds");
             sw.Restart();
-            var jps = new JPSMapPathfinding(map.HeightLevels);
+            var jps = new JPSMapPathfinding(map.HeightLevels, map.DestructibleRocks);
             var jpsPath = jps.FindPathFromTo(start, end);
             sw.Stop();
             Console.WriteLine("JPS route length: " + jpsPath.Count + " took " + sw.ElapsedMilliseconds + " milliseconds");
@@ -474,7 +476,7 @@
 
             map.SaveMapToPngFile(folder: folderString);
 
-            var ms = new MapSearcher(new Random(), 10, 10, new MapSearchOptions(map), new NoveltySearchOptions());
+            var ms = new MapSearcher(new Random(), new MapSearchOptions(map), new NoveltySearchOptions());
 
             ms.RunGenerations(5);
 
@@ -681,9 +683,9 @@
         #region Search Methods
 
         public static void RunEvolution(
+            List<MapPhenotype> maps,
             Random r,
             MapSearchOptions mapSearchOptions,
-            int mapSize = 128,
             int numberOfGenerations = 10,
             int populationSize = 10,
             int numberOfParents = 5,
@@ -693,6 +695,70 @@
             Enums.SelectionStrategy parentSelectionStrategy = Enums.SelectionStrategy.HighestFitness,
             Enums.PopulationStrategy populationStrategy = Enums.PopulationStrategy.Mutation,
             string folderName = "MapEvolution",
+            double lowestFitnessLevelForPrint = double.MinValue)
+        {
+            foreach (var map in maps)
+            {
+                var mso = new MapSearchOptions(map, mapSearchOptions);
+                var evolver = new Evolver<EvolvableMap>(
+                    numberOfGenerations,
+                    populationSize,
+                    numberOfParents,
+                    numberOfChildren,
+                    mutationChance,
+                    r,
+                    new object[] { mso, mutationChance, r })
+                                  {
+                                      PopulationSelectionStrategy = selectionStrategy,
+                                      ParentSelectionStrategy = parentSelectionStrategy,
+                                      PopulationStrategy = populationStrategy
+                                  };
+
+                evolver.Evolve();
+                var i = 0;
+                foreach (var individual in evolver.Population)
+                {
+                    i++;
+                    if (individual.Fitness >= lowestFitnessLevelForPrint)
+                    {
+                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Map_{0}_Fitness_{1}", i, individual.Fitness), "MapEvolution", false);
+                    }
+                }
+            }
+        }
+
+        public static void RunNoveltysearch(
+            List<MapPhenotype> maps,
+            Random r,
+            MapSearchOptions mapSearchOptions = null,
+            NoveltySearchOptions noveltySearchOptions = null,
+            int numberOfGenerations = 10,
+            double lowestFitnessLevelForPrint = double.MinValue,
+            string folderName = "MapNovelty")
+        {
+            foreach (var map in maps)
+            {
+                var mso = mapSearchOptions == null ? new MapSearchOptions(map) : new MapSearchOptions(map, mapSearchOptions);
+                var nso = noveltySearchOptions ?? new NoveltySearchOptions();
+                var searcher = new MapSearcher(r, mso, nso);
+                searcher.RunGenerations(numberOfGenerations);
+                
+                var i = 0;
+                foreach (var solution in searcher.Archive.Archive)
+                {
+                    var individual = (MapSolution)solution;
+                    i++;
+                    var fitness = new MapFitness(individual.ConvertedPhenotype).CalculateFitness();
+                    if (fitness >= lowestFitnessLevelForPrint)
+                    {
+                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Map_{0}_Fitness_{1}", i, fitness), folderName, false);
+                    }
+                }
+            }
+        }
+
+        public static List<MapPhenotype> GetBaseMaps(
+            int mapSize = 128,
             double oddsOfHeight = 0.5,
             double oddsOfHeight2 = 0.25,
             int groupPoints = 0,
@@ -745,7 +811,7 @@
                     {
                         ca.AddImpassableTerrain((int)drops, (int)radius);
                     }
-                    
+
                     ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
                     var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                     map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
@@ -754,39 +820,8 @@
                 }
             }
 
-            foreach (var map in baseMaps)
-            {
-                var mso = new MapSearchOptions(map, mapSearchOptions);
-                var evolver = new Evolver<EvolvableMap>(
-                    numberOfGenerations,
-                    populationSize,
-                    numberOfParents,
-                    numberOfChildren,
-                    mutationChance,
-                    r,
-                    new object[] { mso, mutationChance, r })
-                                  {
-                                      PopulationSelectionStrategy = selectionStrategy,
-                                      ParentSelectionStrategy = parentSelectionStrategy,
-                                      PopulationStrategy = populationStrategy
-                                  };
-
-                Console.WriteLine(evolver.Population.Count);
-
-                evolver.Evolve();
-
-                Console.WriteLine(evolver.Population.Count);
-
-                var i = 0;
-
-                foreach (var individual in evolver.Population)
-                {
-                    i++;
-                    individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Map_{0}_Fitness_{1}", i, individual.Fitness), heightMap: false);
-                }
-            }
+            return baseMaps;
         }
-
         #endregion
     }
 }

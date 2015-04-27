@@ -17,27 +17,22 @@
         /// <param name="r">
         /// The random to use in searching. 
         /// </param>
-        /// <param name="feasibleSize">
-        /// The feasible size. 
-        /// </param>
-        /// <param name="infeasibleSize">
-        /// The infeasible size. 
-        /// </param>
         /// <param name="mapSearchOptions">
         /// The map options for this search.
         /// </param>
         /// <param name="noveltySearchOptions">
         /// The novelty Search Options.
         /// </param>
-        public MapSearcher(Random r, int feasibleSize, int infeasibleSize, MapSearchOptions mapSearchOptions, NoveltySearchOptions noveltySearchOptions) : base(r)
+        public MapSearcher(Random r, MapSearchOptions mapSearchOptions, NoveltySearchOptions noveltySearchOptions) : base(r)
         {
             this.MapSearchOptions = mapSearchOptions;
             this.NoveltySearchOptions = noveltySearchOptions;
-            this.FeasiblePopulation = new MapPopulation(true, feasibleSize);
-            this.InfeasiblePopulation = new MapPopulation(false, infeasibleSize);
+            this.FeasiblePopulation = new MapPopulation(true, noveltySearchOptions.FeasiblePopulationSize);
+            this.InfeasiblePopulation = new MapPopulation(false, noveltySearchOptions.InfeasiblePopulationSize);
             this.Archive = new MapNovelArchive();
 
-            for (var i = 0; i < feasibleSize; i++)
+            // ITODO: Implement better "early filling" of feasible/infeasible populations
+            for (var i = 0; i < noveltySearchOptions.FeasiblePopulationSize; i++)
             {
                 var list = new List<MapPoint>
                                {
@@ -82,7 +77,7 @@
                 FeasiblePopulation.CurrentGeneration.Add(ms);
             }
 
-            for (var i = 0; i < feasibleSize; i++)
+            for (var i = 0; i < noveltySearchOptions.InfeasiblePopulationSize; i++)
             {
                 var list = new List<MapPoint>
                                {
@@ -173,30 +168,9 @@
         /// </summary>
         /// <param name="generations">Number of generations to run.</param>
         public void RunGenerations(int generations)
-        {
-            ////Console.WriteLine("Generation 0");
-
-            ////Console.WriteLine("-----------------");
-            ////Console.WriteLine("Feasible Population");
-            foreach (var ms in FeasiblePopulation.CurrentGeneration)
-            {
-                Console.WriteLine(ms);
-            }
-
-            ////Console.WriteLine("------------------");
-            ////Console.WriteLine("Infeasible Population");
-            foreach (var ms in InfeasiblePopulation.CurrentGeneration)
-            {
-                Console.WriteLine(ms);
-            }
-
-            ////Console.WriteLine("------------------");
-
-            ////Console.WriteLine("-------------------");
+        {   
             for (var i = 0; i < generations; i++)
             {
-                Console.WriteLine("Generation " + i);
-
                 this.NextGeneration();
             }
         }
@@ -219,22 +193,6 @@
 
             FeasiblePopulation.CurrentGeneration.AddRange(feasibleIndividuals);
             InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);
-
-            Console.WriteLine("-----------------");
-            Console.WriteLine("Feasible Population");
-            foreach (var ms in FeasiblePopulation.CurrentGeneration)
-            {
-                Console.WriteLine(ms);
-            }
-
-            Console.WriteLine("------------------");
-            Console.WriteLine("Infeasible Population");
-            foreach (var ms in InfeasiblePopulation.CurrentGeneration)
-            {
-                Console.WriteLine(ms);
-            }
-
-            Console.WriteLine("------------------");
         }
     }
 }

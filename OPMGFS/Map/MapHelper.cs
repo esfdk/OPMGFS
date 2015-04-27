@@ -49,6 +49,7 @@ namespace OPMGFS.Map
             {
                 return random;
             }
+
             set
             {
                 random = value;

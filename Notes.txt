@@ -12,9 +12,9 @@ TODO:
 		
 	Melnyk
 		(done? needs discussion) Impement other version of ramp placement
-		Set up novelty search for testing
-		Eliminate unfeasible results from evolution?
-		Set up way to easily change between both kinds of Constrained Novelty Search
+		(done. Needs way to input map settings)Set up novelty search for testing
+		(maybe not necessary, )Eliminate unfeasible results from evolution?
+		Implement FI2NS
 	
 	Uassigned TODOs
 		Figure out cost and/or how to consider "openness" of bases / impassable terrain around a base
