@@ -254,6 +254,7 @@
         /// </returns>
         public MapPhenotype ConvertToPhenotype()
         {
+            // ITODO: Melnyk - Add big method for creating complete map
             var map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, this.MapSearchOptions);
 
             this.ConvertedPhenotype = map.CreateCompleteMap(Enums.Half.Top, this.MapSearchOptions.MapCompletion);

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Threading;
 
     using OPMGFS.Evolution;
@@ -30,11 +31,7 @@
             ////TestMapNoveltySearch();
             ////TestFitness();
             ////TestPathfinding();
-
-            var map = new MapPhenotype(64, 64);
-            map.DestructibleRocks[32, 32] = true;
-            map.SaveMapToPngFile();
-
+            
             var maps = GetBaseMaps();
             RunEvolution(maps, new Random(), new MapSearchOptions(null));
             Console.WriteLine("Evolution Done");
@@ -651,8 +648,9 @@
                     {
                         ////new MapPoint(0.9, 135, Enums.MapPointType.StartBase, Enums.WasPlaced.Yes),
                         ////new MapPoint(0.2, 160, Enums.MapPointType.Base, Enums.WasPlaced.Yes),
-                        ////new MapPoint(0.6, 90, Enums.MapPointType.GoldBase, Enums.WasPlaced.Yes),
-                        ////new MapPoint(0.4, 150, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.Yes),
+                        new MapPoint(0.6, 90, Enums.MapPointType.GoldBase, Enums.WasPlaced.Yes),
+                        new MapPoint(0.6, 90, Enums.MapPointType.DestructibleRocks, Enums.WasPlaced.Yes),
+                        new MapPoint(0.4, 150, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.Yes),
                         new MapPoint(0.2, 11, Enums.MapPointType.DestructibleRocks, Enums.WasPlaced.Yes),
                         ////new MapPoint(0.2, 90, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
                         ////new MapPoint(1, 180, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 

@@ -663,10 +663,15 @@
             for (var i = 0; i < 10; i++)
             {
                 // If not within the map, don't bother.
-                if (
-                    !MapHelper.WithinMapBounds(
+                if (!MapHelper.WithinMapBounds(
                         pos.Item1 + (i * directionChange.Item1),
                         pos.Item2 + (i * directionChange.Item2),
+                        this.xSize,
+                        this.ySize)) continue;
+
+                if (!MapHelper.WithinMapBounds(
+                        pos.Item1 - (i * directionChange.Item1),
+                        pos.Item2 - (i * directionChange.Item2),
                         this.xSize,
                         this.ySize)) continue;
 
