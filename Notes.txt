@@ -1,19 +1,13 @@
 TODO:
 	Grooss
-		Set up visual studio task list priorities
-		Set up constructor for map fitness significance settings
-		(done) Consider destructible rocks in jump point search
-		(done, but not sure how slow yet) Distance to ALL expansions considered
+		Set up constructor for map fitness settings (seperate class)
+		(not done, should be seperate option) Consider destructible rocks in jump point search
+		Consider xel'naga towers in jps (maybe other stuff?)
 		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search		
-		(done) Consider both direct (flight) and ground path between points in fitness function
-		Better Smoothing
-		Upper limit on pathfinding (not done, but probably not needed due to JPS' speed)
-		(done) Fix bug in choke point search
+		Better Smoothing (cliffs)
 		
 	Melnyk
 		Set up novelty search to use random initialised solutions (both infeasible and feasible)
-		Discuss feasibility function
-		Figure out what makes advancing generation slow
 		Make circle instead of square when flattening for bases
 		Implement FI2NS
 	
@@ -38,6 +32,9 @@ TODO:
 		(done) Random add/remove of map elements (done)
 		(done) Destructible rocks in seperate array
 		(done) Set up evolution for testing
+		(done) Distance to ALL expansions considered
+		(done) Consider both direct (flight) and ground path between points in fitness function
+		(done) Fix bug in choke point search
 		(ground/flight done) Calculate both ground and flight distances
 		(done) Impement other version of ramp placement
 		

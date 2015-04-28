@@ -9,4 +9,5 @@
 \contentsline {section}{\numberline {4}Cellular Automata}{3}{section.4}
 \contentsline {subsection}{\numberline {4.1}What it is}{3}{subsection.4.1}
 \contentsline {subsection}{\numberline {4.2}Rules}{3}{subsection.4.2}
+\contentsline {section}{\numberline {5}Map Fitness}{3}{section.5}
 \contentsfinish 

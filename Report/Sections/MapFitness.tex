@@ -1,0 +1,18 @@
+\section{Map Fitness}
+\label{MapFitness}
+
+For both our algorithms, we needed some way to determine whether a map was good or not. The novelty search needs some way of evaluating the maps it finds, in order to actually chose a map at the end of a search. The evolutionary algorithm needs some way (often called a fitness function) to work properly in the first place. Without one, there is no way for the evolution to select candidates from (and for) any generation.
+
+The evolutionary algorithm was the algorithm that we considered most when figuring out what was important for the fitness function. During evolution a lot of maps are generated and evaluated, so we needed the fitness function to be fast. Spending even one whole second on evaluating a map would drastically reduce the number of iterations our evolution could run without being too slow (ref to part about speed).
+
+While speed was important, a poor fitness function would be at least as bad as a slow one, as our evolution would create poor maps in order to satisfy the fitness function. Our goal was therefore to create a fitness evaluation that was relatively fast but also covered what we felt was important in a StarCraft map.
+
+There are three main ways of creating a fitness function (Togelius2010Multiobjective): \textit{interactive, simulation-based} and \textit{direct}. An interactive fitness function requires humans to give feedback, which is then used to determine whether a map is good or not. A simulation-based fitness function runs one or more simulations of the game on the map and the result of these simulations are used to judge the map. A direct fitness function purely looks at the phenotype and runs calculations on various parameters in order to determine the fitness.
+
+In order to create an interactive fitness function, we would not only need humans willing to look at maps, we would also go against the intention of the project. So that was not an option. For a simulation-based fitness function, we would need to write an AI to play the game. Writing the AI itself would take a long time, it would most likely not be very good and even if we managed to create a good AI, each simulation would be slow due to the nature of the game.
+
+We chose a direct fitness function as it was the only one possible. Even had the others been possible, we would still have chosen a direct one due to the speed compared to the others. 
+
+In the fitness function, we used two main techniques to calculate fitness: Counting of features and pathfinding between points. For the pathfinding we used Jump Point Search (\textbf{reference https://harablog.wordpress.com/2011/09/07/jump-point-search/ + http://gamedevelopment.tutsplus.com/tutorials/how-to-speed-up-a-pathfinding-with-the-jump-point-search-algorithm--gamedev-5818}) over A* (\textbf{discuss both}).
+
+\textbf{Discuss different parts of fitness function here}

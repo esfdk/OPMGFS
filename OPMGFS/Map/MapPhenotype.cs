@@ -13,6 +13,7 @@ namespace OPMGFS.Map
     using System.Collections.Generic;
     using System.Drawing;
     using System.IO;
+    using System.Linq;
     using System.Text;
 
     using OPMGFS.Map.CellularAutomata;
@@ -160,6 +161,37 @@ namespace OPMGFS.Map
             return !(x < 0 || y < (this.YSize / 2.0) || x >= this.XSize || y >= this.YSize);
         }
 
+        public void SmoothCliffs()
+        {
+            for (var tempY = this.YSize - 1; tempY >= 0; tempY--)
+            {
+                for (var tempX = 0; tempX < this.XSize; tempX++)
+                {
+                    if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff) 
+                        continue;
+
+                    var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels);
+
+                    // Count number of different height levels that are around the tile.
+                    var differentHeights = neighbours.Where(neighbour => neighbour.Key != HeightLevel.Cliff).Count(neighbour => neighbour.Value > 0);
+                    if (differentHeights >= 2) 
+                        continue;
+
+                    var convertTo = HeightLevel.Cliff;
+                    foreach (var neighbour in neighbours)
+                    {
+                        if (neighbour.Key == HeightLevel.Cliff) continue;
+                        if (neighbour.Value == 0) continue;
+
+                        convertTo = neighbour.Key;
+                        break;
+                    }
+
+                    this.HeightLevels[tempX, tempY] = convertTo;
+                }
+            }
+        }
+
         /// <summary>
         /// Smooth the terrain of the map.
         /// </summary>
@@ -229,18 +261,10 @@ namespace OPMGFS.Map
         /// <summary>
         /// Saves the map to a PNG file.
         /// </summary>
-        /// <param name="fileNameAddition">
-        /// An extra part to add to the file name, when generating maps during testing. 
-        /// </param>
-        /// <param name="folder">
-        /// Save the map to a special folder in Images/Finished Maps. NOTE: Just give the name of the folder to create/save in, no extra characters such as \. 
-        /// </param>
-        /// <param name="heightMap">
-        /// Whether the height map should be printed.
-        /// </param>
-        /// <param name="itemMap">
-        /// Whether the item map should be printed.
-        /// </param>
+        /// <param name="fileNameAddition"> An extra part to add to the file name, when generating maps during testing.  </param>
+        /// <param name="folder"> Save the map to a special folder in Images/Finished Maps. NOTE: Just give the name of the folder to create/save in, no extra characters such as \.  </param>
+        /// <param name="heightMap"> Whether the height map should be printed. </param>
+        /// <param name="itemMap"> Whether the item map should be printed. </param>
         public void SaveMapToPngFile(string fileNameAddition = "", string folder = "", bool heightMap = true, bool itemMap = true)
         {
             // The dictionaries and bitmap.
@@ -411,6 +435,7 @@ namespace OPMGFS.Map
         /// <returns> A list of the rules that are used for smoothing. </returns>
         private List<Rule> GetSmoothingRules(int smoothingNormalNeighbourhood, int smoothingExtNeighbourhood)
         {
+            // TODO: May want to use the ruleset from Program.cs. This one seems shit.
             var list = new List<Rule>();
 
             // Smooth down height 2
@@ -418,15 +443,15 @@ namespace OPMGFS.Map
             ruleH2ToH1.AddCondition(smoothingNormalNeighbourhood, HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
 
             var ruleH2ToH1Ext = new RuleDeterministic(HeightLevel.Height1, HeightLevel.Height2)
-            {
-                Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
-            };
+                {
+                    Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
+                };
             ruleH2ToH1Ext.AddCondition(smoothingExtNeighbourhood, HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
 
             var ruleH2ToH0 = new RuleDeterministic(HeightLevel.Height0, HeightLevel.Height2)
-            {
-                Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
-            };
+                {
+                    Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
+                };
             ruleH2ToH0.AddCondition(12, HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
             ruleH2ToH0.AddCondition(0, HeightLevel.Height1, RuleEnums.Comparison.LessThanEqualTo);
 
@@ -439,9 +464,9 @@ namespace OPMGFS.Map
             ruleH1ToH0.AddCondition(smoothingNormalNeighbourhood, HeightLevel.Height1, RuleEnums.Comparison.LessThanEqualTo);
 
             var ruleH1ToH0Ext = new RuleDeterministic(HeightLevel.Height0, HeightLevel.Height1)
-            {
-                Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
-            };
+                {
+                    Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
+                };
             ruleH1ToH0Ext.AddCondition(smoothingExtNeighbourhood, HeightLevel.Height1, RuleEnums.Comparison.LessThanEqualTo);
 
             list.Add(ruleH1ToH0);
@@ -452,9 +477,9 @@ namespace OPMGFS.Map
             ruleH0ToH1.AddCondition(smoothingNormalNeighbourhood, HeightLevel.Height0, RuleEnums.Comparison.LessThanEqualTo);
 
             var ruleH0ToH1Ext = new RuleDeterministic(HeightLevel.Height1, HeightLevel.Height0)
-            {
-                Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
-            };
+                {
+                    Neighbourhood = RuleEnums.Neighbourhood.MooreExtended
+                };
             ruleH0ToH1Ext.AddCondition(smoothingExtNeighbourhood, HeightLevel.Height0, RuleEnums.Comparison.LessThanEqualTo);
 
             list.Add(ruleH0ToH1);
