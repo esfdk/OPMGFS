@@ -5,7 +5,6 @@ TODO:
 		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search		
 		
 	Melnyk
-		Set up novelty search to use random initialised solutions (both infeasible and feasible)
 		Make circle instead of square when flattening for bases
 		Implement FI2NS
 	
