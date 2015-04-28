@@ -937,6 +937,7 @@
                     mp.DestructibleRocks[x + 1, y] = true;
                     mp.DestructibleRocks[x, y + 1] = true;
                     mp.DestructibleRocks[x + 1, y + 1] = true;
+                    return true;
                 }
             }
             else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y + 1) && mp.InsideTopHalf(x - 1, y + 1))
@@ -951,6 +952,7 @@
                     mp.DestructibleRocks[x - 1, y] = true;
                     mp.DestructibleRocks[x, y + 1] = true;
                     mp.DestructibleRocks[x - 1, y + 1] = true;
+                    return true;
                 }
             }
             else if (mp.InsideTopHalf(x + 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x + 1, y - 1))
@@ -965,6 +967,7 @@
                     mp.DestructibleRocks[x + 1, y] = true;
                     mp.DestructibleRocks[x, y - 1] = true;
                     mp.DestructibleRocks[x + 1, y - 1] = true;
+                    return true;
                 }
             }
             else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x - 1, y - 1))
@@ -979,10 +982,11 @@
                     mp.DestructibleRocks[x - 1, y] = true;
                     mp.DestructibleRocks[x, y - 1] = true;
                     mp.DestructibleRocks[x - 1, y - 1] = true;
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
 
         /// <summary>
