@@ -31,13 +31,37 @@
             ////TestMapNoveltySearch();
             ////TestFitness();
             ////TestPathfinding();
-            
-            var maps = GetBaseMaps();
-            RunEvolution(maps, new Random(), new MapSearchOptions(null));
-            Console.WriteLine("Evolution Done");
 
-            maps = GetBaseMaps();
-            RunNoveltysearch(maps, new Random(), new MapSearchOptions(null));
+            var sw = new Stopwatch();
+            sw.Start();
+
+            var list = new List<int>();
+            for (var i = 0; i < 20; i++)
+            {
+                list.Add(i);
+            }
+
+            Console.WriteLine("Generating base maps.");
+            var maps = GetBaseMaps(caRandomSeeds: list);
+            Console.WriteLine("It took {0} milliseconds to generate base maps.", sw.ElapsedMilliseconds);
+            Console.WriteLine("------");
+            sw.Restart();
+
+            Console.WriteLine("Starting evolution");
+            RunEvolution(maps, new Random(0), numberOfGenerations: 1, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
+            Console.WriteLine("Evolution done. It took  {0} milliseconds to perform evolution.", sw.ElapsedMilliseconds);
+            Console.WriteLine("------");
+            sw.Restart();
+
+            Console.WriteLine("Starting novelty search.");
+            var nso = new NoveltySearchOptions(
+                addToArchive: 5,
+                feasiblePopulationSize: 50,
+                infeasiblePopulationSize: 50);
+            RunNoveltysearch(maps, new Random(0), numberOfGenerations: 2, noveltySearchOptions: nso);
+            Console.WriteLine("Novelty search done. It took {0} milliseconds to perform novelty search.", sw.ElapsedMilliseconds);
+            Console.WriteLine("------");
+            sw.Restart();
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -677,8 +701,8 @@
             MapFitnessOptions mapFitnessOptions = null,
             int numberOfGenerations = 10,
             int populationSize = 10,
-            int numberOfParents = 5,
-            int numberOfChildren = 5,
+            int numberOfParents = 3,
+            int numberOfChildren = 8,
             double mutationChance = 0.3,
             Enums.SelectionStrategy selectionStrategy = Enums.SelectionStrategy.HighestFitness,
             Enums.SelectionStrategy parentSelectionStrategy = Enums.SelectionStrategy.HighestFitness,

@@ -114,24 +114,10 @@ namespace OPMGFS.Map
 
         public MapPhenotype CreateFinishedMap(Half half, Enums.MapFunction function)
         {
-            var sw = new Stopwatch();
-            sw.Start();
             var tempMap = this.CreateCompleteMap(half, function);
-            Console.WriteLine("Creating half took {0}", sw.ElapsedMilliseconds);
-            sw.Restart();
-
             tempMap.PlaceCliffs();
-            Console.WriteLine("Placing cliffs took {0}", sw.ElapsedMilliseconds);
-            sw.Restart();
-
             tempMap = tempMap.CreateCompleteMap(half, function);
-            Console.WriteLine("Creating half took {0}", sw.ElapsedMilliseconds);
-            sw.Restart();
-
             tempMap.SmoothCliffs();
-            Console.WriteLine("Smoothing cliffs took {0}", sw.ElapsedMilliseconds);
-            sw.Restart();
-
             return tempMap;
         }
 

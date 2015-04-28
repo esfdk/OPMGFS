@@ -5,7 +5,9 @@ TODO:
 		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search		
 		
 	Melnyk
+		Implement different destructible rock sizes (2x2, 2x4, 2x6, 4x4, 6x6)
 		Make circle instead of square when flattening for bases
+		Implement offspring boost (as option?)
 		Implement FI2NS
 	
 	Uassigned TODOs
@@ -41,7 +43,7 @@ Notes:
 	Openness of Bases is largest fault with fitness algorithm
 	Post-smoothing is rather slow, so less pretty maps vs speed tradeoff
 	We do not consider blink/reaper movement in fitness calculation
-	
+	Novelty search: one parent - one child
 	
 Old Notes:
 	1-1 representation

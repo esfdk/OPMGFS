@@ -31,15 +31,7 @@
         /// <returns> The list of solutions in the next generation. </returns>
         public override List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r)
         {
-            //Console.WriteLine("---");
-            //Console.WriteLine("Advancing {0} generation", this.IsFeasiblePopulation ? "feasible" : "infeasible");
-            
-            //var sw = new Stopwatch();
-            //sw.Start();
-            
             var children = this.CurrentGeneration.Select(individual => (MapSolution)individual.Mutate(r)).ToList();
-            //Console.WriteLine("It took {0} milliseconds to mutate children.", sw.ElapsedMilliseconds);
-            //sw.Restart();
 
             var allIndividuals = this.CurrentGeneration.ToList();
             allIndividuals.AddRange(children);
@@ -68,7 +60,6 @@
                 }
             }
 
-            //Console.WriteLine("It took {0} milliseconds to calculate novelty of children.", sw.ElapsedMilliseconds);
             allIndividuals.RemoveAll(returnedPopulation.Contains);
 
             if (this.IsFeasiblePopulation && allIndividuals.Count > 0)

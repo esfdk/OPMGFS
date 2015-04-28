@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
 
     using Position = System.Tuple<int, int>;
@@ -130,46 +129,26 @@
 
             if (this.startBasePosition1 == null || this.startBasePosition2 == null) return -200000;
 
-            ////var sw = new Stopwatch();
-            ////sw.Start();
             this.pathBetweenStartBases = this.mapPathfinding.FindPathFromTo(
                 this.startBasePosition1,
                 this.startBasePosition2,
                 this.mfo.PathfindingIgnoreDestructibleRocks);
-            ////Console.WriteLine("Path Between Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
-            ////sw.Restart();
 
             fitness += this.BaseSpace();
-            ////Console.WriteLine("Base Space: " + sw.ElapsedMilliseconds + " - " + fitness);
-            ////sw.Restart();
 
             fitness += this.BaseHeightLevel();
-            ////Console.WriteLine("Base Height Level: " + sw.ElapsedMilliseconds + " - " + fitness);
-            ////sw.Restart();
 
             fitness += this.PathBetweenStartBases();
-            ////Console.WriteLine("Path Between Start Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
-            ////sw.Restart();
 
             fitness += this.NewHeightReached();
-            ////Console.WriteLine("New Height Reached: " + sw.ElapsedMilliseconds + " - " + fitness);
-            ////sw.Restart();
 
             fitness += this.DistanceToNaturalExpansion();
-            ////Console.WriteLine("Distance To Natural Expansion: " + sw.ElapsedMilliseconds + " - " + fitness);
-            ////sw.Restart();
 
             fitness += this.DistanceToNonNaturalExpansions();
-            ////Console.WriteLine("Distance To Nearest Expansion: " + sw.ElapsedMilliseconds + " - " + fitness);
-            ////sw.Restart();
 
             fitness += this.ExpansionsAvailable();
-            ////Console.WriteLine("Expansions Available: " + sw.ElapsedMilliseconds + " - " + fitness);
-            ////sw.Restart();
 
             fitness += this.ChokePoints();
-            ////Console.WriteLine("Choke Points: " + sw.ElapsedMilliseconds + " - " + fitness);
-            ////sw.Restart();
 
             // ITODO: (DONE) Remember natrual expansion
 
@@ -214,7 +193,7 @@
             //// TODO: (DONE) Consider destructible rocks
 
             var max = (((Radius * 2) + 1) * ((Radius * 2) + 1)) - Math.Pow(5, 2);
-            var min = 0;
+            var min = 0d;
             var actual = reachable.Count - Math.Pow(5, 2);
 
             // Normalizes the value to between 0.0 and 1.0
@@ -356,9 +335,14 @@
             }
 
             // Removes the natural expansion from the list.
+            if (closestExpansions.Count <= 1)
+            {
+                return 0;
+            }
+
             closestExpansions = closestExpansions.OrderBy(x => x.Item2).ToList();
             closestExpansions.RemoveAt(0);
-
+            
             // Calculate total normalized value for paths to the nearest expansions.
             var totalNormalized = 0.0d;
             for (var i = 0; i < closestExpansions.Count; i++)

@@ -929,6 +929,7 @@
         /// <returns>True if the rocks were placed, false if not</returns>
         private static bool PlaceDestructibleRocks(int x, int y, MapPhenotype mp)
         {
+            // ITODO: Melnyk - add different sizes of destructible rocks
             if (!mp.InsideTopHalf(x, y))
             {
                 return false;
