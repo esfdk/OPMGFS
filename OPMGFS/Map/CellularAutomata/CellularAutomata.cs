@@ -254,6 +254,61 @@ namespace OPMGFS.Map.CellularAutomata
         /// </summary>
         private void LoadBasicRuleset()
         {
+            // ITODO: (DONE) May want to use ruleset from Program.cs. Thsi one seems shit.
+            var ruleExtBasicHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2)
+            {
+                Neighbourhood =
+                    RuleEnums.Neighbourhood
+                    .MooreExtended
+            };
+            ruleExtBasicHeight2.AddCondition(18, Enums.HeightLevel.Height1);
+
+            var ruleExtBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1, Enums.HeightLevel.Height0)
+            {
+                Neighbourhood =
+                    RuleEnums.Neighbourhood
+                    .MooreExtended
+            };
+            ruleExtBasicHeight1.AddCondition(18, Enums.HeightLevel.Height1);
+
+            var ruleExtAdvHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2)
+            {
+                Neighbourhood =
+                    RuleEnums.Neighbourhood
+                    .MooreExtended
+            };
+            ruleExtAdvHeight2.AddCondition(18, Enums.HeightLevel.Height2);
+
+            var ruleBasicHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2);
+            ruleBasicHeight2.AddCondition(5, Enums.HeightLevel.Height2);
+
+            var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
+            ruleBasicHeight1.AddCondition(5, Enums.HeightLevel.Height1);
+
+            var ruleAdvHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1, Enums.HeightLevel.Height0);
+            ruleAdvHeight1.AddCondition(3, Enums.HeightLevel.Height1);
+            ruleAdvHeight1.AddCondition(3, Enums.HeightLevel.Height2);
+
+            var ruleAdvHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2, Enums.HeightLevel.Height1);
+            ruleAdvHeight2.AddCondition(3, Enums.HeightLevel.Height1);
+            ruleAdvHeight2.AddCondition(3, Enums.HeightLevel.Height2);
+
+            var ruleRemoveHeight0 = new RuleDeterministic(Enums.HeightLevel.Height1, Enums.HeightLevel.Height0);
+            ruleRemoveHeight0.AddCondition(2, Enums.HeightLevel.Height0, RuleEnums.Comparison.LessThanEqualTo);
+
+            var ruleList = new List<Rule>
+                   {
+                       ruleExtBasicHeight2, ruleExtBasicHeight1, ruleExtAdvHeight2, ruleBasicHeight2, ruleBasicHeight1, ruleAdvHeight1, ruleRemoveHeight0
+                   };
+
+            this.ruleSet = new Ruleset(ruleList);
+        }
+
+        /// <summary>
+        /// Loads the old rulesets.
+        /// </summary>
+        private void LoadOldRuleset()
+        {
             var ruleList = new List<Rule>();
             var ruleNoInterestingNeighbours = new RuleDeterministic(Enums.HeightLevel.Height0);
             ruleNoInterestingNeighbours.AddCondition(8, Enums.HeightLevel.Height0);

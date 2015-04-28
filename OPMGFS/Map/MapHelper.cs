@@ -104,12 +104,14 @@ namespace OPMGFS.Map
         /// <param name="y"> The y-coordinate of the start position. </param>
         /// <param name="map"> The map to work on. </param>
         /// <param name="radius"> The radius to find tiles within.</param>
+        /// <param name="destructibleRocks"> The destructible rocks of the map. </param>
         /// <returns> A list of the positions. </returns>
         public static List<Position> GetReachableTilesFrom(
             int x,
             int y,
             Enums.HeightLevel[,] map,
-            int radius = 5)
+            int radius = 5,
+            bool[,] destructibleRocks = null)
         {
             var tileList = new List<Enums.HeightLevel>();
             var visitedPositions = new List<Position>();
@@ -137,6 +139,7 @@ namespace OPMGFS.Map
                     if (Math.Abs(neighbour.Item1 - x) > radius || Math.Abs(neighbour.Item2 - y) > radius) continue;
                     if (map[neighbour.Item1, neighbour.Item2] == Enums.HeightLevel.Cliff) continue;
                     if (map[neighbour.Item1, neighbour.Item2] == Enums.HeightLevel.Impassable) continue;
+                    if (destructibleRocks != null && destructibleRocks[neighbour.Item1, neighbour.Item2]) continue;
 
                     openPositions.Add(neighbour);
                 }

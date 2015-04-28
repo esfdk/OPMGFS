@@ -11,6 +11,7 @@ namespace OPMGFS.Map
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Drawing;
     using System.IO;
     using System.Linq;
@@ -110,6 +111,30 @@ namespace OPMGFS.Map
         #endregion
 
         #region Public Methods
+
+        public MapPhenotype CreateFinishedMap(Half half, Enums.MapFunction function)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            var tempMap = this.CreateCompleteMap(half, function);
+            Console.WriteLine("Creating half took {0}", sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            tempMap.PlaceCliffs();
+            Console.WriteLine("Placing cliffs took {0}", sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            tempMap = tempMap.CreateCompleteMap(half, function);
+            Console.WriteLine("Creating half took {0}", sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            tempMap.SmoothCliffs();
+            Console.WriteLine("Smoothing cliffs took {0}", sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            return tempMap;
+        }
+
         /// <summary>
         /// Creates a map where one part has been turned onto the other part of the map.
         /// </summary>
@@ -232,12 +257,17 @@ namespace OPMGFS.Map
         /// </summary>
         public void PlaceCliffs()
         {
-            // ITODO: Grooss - Allow for defining how much of the map should be "cliffed"
+            // ITODO: (DONE) Grooss - Allow for defining how much of the map should be "cliffed"
             var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
 
-            for (var y = 0; y < this.YSize; y++)
+            var xStart = (this.mapHalf == Half.Right) ? (this.XSize / 2) - (int)(this.XSize * 0.1) : 0;
+            var xEnd = (this.mapHalf == Half.Left) ? (this.XSize / 2) + (int)(this.XSize * 0.1) : this.XSize;
+            var yStart = (this.mapHalf == Half.Top) ? (this.YSize / 2) - (int)(this.YSize * 0.1) : 0;
+            var yEnd = (this.mapHalf == Half.Bottom) ? (this.YSize / 2) + (int)(this.YSize * 0.1) : this.YSize;
+
+            for (var y = yStart; y < yEnd; y++)
             {
-                for (var x = 0; x < this.XSize; x++)
+                for (var x = xStart; x < xEnd; x++)
                 {
                     foreach (var neighbourPosition in MapHelper.GetNeighbourPositions(x, y, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumann))
                     {
@@ -250,7 +280,7 @@ namespace OPMGFS.Map
                             || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Ramp12) continue;
 
                         // If there are no items on the position being checked, place a cliff.
-                        if (this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] == Item.None 
+                        if (this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] == Item.None
                             && (int)this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] < (int)this.HeightLevels[x, y])
                             tempMap[neighbourPosition.Item1, neighbourPosition.Item2] = HeightLevel.Cliff;
                         else if (this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] != Item.None
@@ -449,7 +479,6 @@ namespace OPMGFS.Map
         /// <returns> A list of the rules that are used for smoothing. </returns>
         private List<Rule> GetSmoothingRules(int smoothingNormalNeighbourhood, int smoothingExtNeighbourhood)
         {
-            // ITODO: May want to use the ruleset from Program.cs. This one seems shit.
             var list = new List<Rule>();
 
             // Smooth down height 2

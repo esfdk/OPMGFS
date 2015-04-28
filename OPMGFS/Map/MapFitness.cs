@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
 
     using Position = System.Tuple<int, int>;
 
@@ -129,43 +130,48 @@
 
             if (this.startBasePosition1 == null || this.startBasePosition2 == null) return -200000;
 
-            var sw = new Stopwatch();
-            sw.Start();
+            ////var sw = new Stopwatch();
+            ////sw.Start();
             this.pathBetweenStartBases = this.mapPathfinding.FindPathFromTo(
                 this.startBasePosition1,
-                this.startBasePosition2);
-            //Console.WriteLine("Path Between Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
-            sw.Restart();
+                this.startBasePosition2,
+                this.mfo.PathfindingIgnoreDestructibleRocks);
+            ////Console.WriteLine("Path Between Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
+            ////sw.Restart();
 
             fitness += this.BaseSpace();
-            //Console.WriteLine("Base Space: " + sw.ElapsedMilliseconds + " - " + fitness);
-            sw.Restart();
+            ////Console.WriteLine("Base Space: " + sw.ElapsedMilliseconds + " - " + fitness);
+            ////sw.Restart();
 
             fitness += this.BaseHeightLevel();
-            //Console.WriteLine("Base Height Level: " + sw.ElapsedMilliseconds + " - " + fitness);
-            sw.Restart();
+            ////Console.WriteLine("Base Height Level: " + sw.ElapsedMilliseconds + " - " + fitness);
+            ////sw.Restart();
 
             fitness += this.PathBetweenStartBases();
-            //Console.WriteLine("Path Between Start Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
-            sw.Restart();
+            ////Console.WriteLine("Path Between Start Bases: " + sw.ElapsedMilliseconds + " - " + fitness);
+            ////sw.Restart();
 
             fitness += this.NewHeightReached();
-            //Console.WriteLine("New Height Reached: " + sw.ElapsedMilliseconds + " - " + fitness);
-            sw.Restart();
+            ////Console.WriteLine("New Height Reached: " + sw.ElapsedMilliseconds + " - " + fitness);
+            ////sw.Restart();
 
-            fitness += this.DistanceToAllExpansions();
-            //Console.WriteLine("Distance To Nearest Expansion: " + sw.ElapsedMilliseconds + " - " + fitness);
-            sw.Restart();
+            fitness += this.DistanceToNaturalExpansion();
+            ////Console.WriteLine("Distance To Natural Expansion: " + sw.ElapsedMilliseconds + " - " + fitness);
+            ////sw.Restart();
+
+            fitness += this.DistanceToNonNaturalExpansions();
+            ////Console.WriteLine("Distance To Nearest Expansion: " + sw.ElapsedMilliseconds + " - " + fitness);
+            ////sw.Restart();
 
             fitness += this.ExpansionsAvailable();
-            //Console.WriteLine("Expansions Available: " + sw.ElapsedMilliseconds + " - " + fitness);
-            sw.Restart();
+            ////Console.WriteLine("Expansions Available: " + sw.ElapsedMilliseconds + " - " + fitness);
+            ////sw.Restart();
 
             fitness += this.ChokePoints();
-            //Console.WriteLine("Choke Points: " + sw.ElapsedMilliseconds + " - " + fitness);
-            sw.Restart();
+            ////Console.WriteLine("Choke Points: " + sw.ElapsedMilliseconds + " - " + fitness);
+            ////sw.Restart();
 
-            // ITODO: Remember natrual expansion
+            // ITODO: (DONE) Remember natrual expansion
 
             //// Fitness:
             ////  X Base space (amount of tiles around the base that are passable)
@@ -189,11 +195,23 @@
             const int Radius = 10;
 
             // Finds the reachable tiles.
-            var reachable = MapHelper.GetReachableTilesFrom(
-                this.startBasePosition1.Item1,
-                this.startBasePosition1.Item2,
-                this.map.HeightLevels,
-                Radius);
+            List<Position> reachable;
+            
+            if (this.mfo.BaseSpaceIgnoreDestructibleRocks)
+                reachable = MapHelper.GetReachableTilesFrom(
+                    this.startBasePosition1.Item1,
+                    this.startBasePosition1.Item2,
+                    this.map.HeightLevels,
+                    Radius);
+            else
+                reachable = MapHelper.GetReachableTilesFrom(
+                    this.startBasePosition1.Item1,
+                    this.startBasePosition1.Item2,
+                    this.map.HeightLevels,
+                    Radius,
+                    this.map.DestructibleRocks);
+
+            //// TODO: (DONE) Consider destructible rocks
 
             var max = (((Radius * 2) + 1) * ((Radius * 2) + 1)) - Math.Pow(5, 2);
             var min = 0;
@@ -299,10 +317,10 @@
         }
 
         /// <summary>
-        /// Figures out how close the X closest expansions are to the start base, where X is half the expansions.
+        /// Figures out how close the the non-natural expansions are to the start base.
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 based on how far the X nearest expansion are from the start base. </returns>
-        private double DistanceToAllExpansions()
+        /// <returns> A number between 0.0 and 1.0 based on how far the non-natural expansions are from the start base. </returns>
+        private double DistanceToNonNaturalExpansions()
         {
             if (this.bases.Count <= 0) return 0d;
 
@@ -337,12 +355,16 @@
                     closestExpansions[tempClosest.Item1] = new Tuple<int, double>(i, distance);
             }
 
+            // Removes the natural expansion from the list.
+            closestExpansions = closestExpansions.OrderBy(x => x.Item2).ToList();
+            closestExpansions.RemoveAt(0);
+
             // Calculate total normalized value for paths to the nearest expansions.
             var totalNormalized = 0.0d;
             for (var i = 0; i < closestExpansions.Count; i++)
             {
                 var tempExpansion = this.bases[closestExpansions[i].Item1];
-                var pathToExpansion = this.mapPathfinding.FindPathFromTo(this.startBasePosition1, tempExpansion);
+                var pathToExpansion = this.mapPathfinding.FindPathFromTo(this.startBasePosition1, tempExpansion, this.mfo.PathfindingIgnoreDestructibleRocks);
 
                 // Ground distance
                 var minGround = this.mfo.PathExpMinGroundDistance;
@@ -423,7 +445,8 @@
             // Attempt to find a path to the expansion.
             var pathToNearest = this.mapPathfinding.FindPathFromTo(
                 this.startBasePosition1,
-                nearestExpansion);
+                nearestExpansion,
+                this.mfo.PathfindingIgnoreDestructibleRocks);
 
             if (pathToNearest.Count == 0)
                 return -100000d;

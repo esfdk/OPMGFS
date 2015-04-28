@@ -26,21 +26,21 @@
             ////TestEvolution();
             ////TestPhenotype();
             ////TestPhenotypeConversion();
-            ////TestCA();
+            TestCA();
             ////TestMapNoveltySearch();
             ////TestFitness();
             ////TestPathfinding();
 
-            var map = new MapPhenotype(64, 64);
-            map.DestructibleRocks[32, 32] = true;
-            map.SaveMapToPngFile();
+            //var map = new MapPhenotype(64, 64);
+            //map.DestructibleRocks[32, 32] = true;
+            //map.SaveMapToPngFile();
 
-            var maps = GetBaseMaps();
-            RunEvolution(maps, new Random(), new MapSearchOptions(null));
-            Console.WriteLine("Evolution Done");
+            //var maps = GetBaseMaps();
+            //RunEvolution(maps, new Random(), new MapSearchOptions(null));
+            //Console.WriteLine("Evolution Done");
 
-            maps = GetBaseMaps();
-            RunNoveltysearch(maps, new Random(), new MapSearchOptions(null));
+            //maps = GetBaseMaps();
+            //RunNoveltysearch(maps, new Random(), new MapSearchOptions(null));
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -168,31 +168,29 @@
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
 
             var ca = new CellularAutomata(Width, Height, Enums.Half.Top, randomSeed: 10000);
-            ca.SetRuleset(GetCARules());
-
-            ////ca.NextGeneration();
-            ////map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
-            ////map.GetMapStrings(out heights, out items);
-            ////Console.WriteLine(heights);
 
             var map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
-            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
             map.SaveMapToPngFile("1_original", Folder);
 
-            ca.RunGenerations(10);
+            ca.RunGenerations();
             map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
-            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
-            map.SaveMapToPngFile("2_CA", Folder);
-
             map.SmoothTerrain();
-            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
-            map.SaveMapToPngFile("3_smoothTerrain", Folder);
 
-            map.PlaceCliffs();
-            map.SaveMapToPngFile("4_cliffs", Folder);
+            map = map.CreateFinishedMap(Enums.Half.Top, Enums.MapFunction.Turn);
+            map.SaveMapToPngFile("Finished", Folder);
 
-            map.SmoothCliffs();
-            map.SaveMapToPngFile("5_smoothedCliffs", Folder);
+
+            ////map.SaveMapToPngFile("2_CA", Folder);
+
+            ////map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
+            ////map.SaveMapToPngFile("3_smoothTerrain", Folder);
+
+            ////map.PlaceCliffs();
+            ////map.SaveMapToPngFile("4_cliffs", Folder);
+
+            ////map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
+            ////map.SmoothCliffs();
+            ////map.SaveMapToPngFile("5_smoothedCliffs", Folder);
 
             ////map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
             ////map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);

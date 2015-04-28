@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
@@ -41,6 +40,11 @@
                             new Position(-1, 0)
                         };
 
+        /// <summary>
+        /// Determines if destructible rocks should be ignored when finding a path.
+        /// </summary>
+        private bool ignoresDestructibleRocks;
+
         #endregion
 
         #region Constructors
@@ -68,11 +72,14 @@
         /// </summary>
         /// <param name="startPosition"> The position to start at. </param>
         /// <param name="endPosition"> The position to end at. </param>
+        /// <param name="ignoreDestructibleRocks"> Determines if destructible rocks should be ignores when finding a path or not. </param>
         /// <returns> A list representing the path from the start position to the end position. </returns>
-        public List<Position> FindPathFromTo(Position startPosition, Position endPosition)
+        public List<Position> FindPathFromTo(Position startPosition, Position endPosition, bool ignoreDestructibleRocks = true)
         {
-            // ITODO: Seperate option for including/excluding destructible rocks in pathfinding
+            // ITODO: (DONE) - Seperate option for including/excluding destructible rocks in pathfinding
             if (startPosition == null || endPosition == null) return new List<Position>();
+
+            this.ignoresDestructibleRocks = ignoreDestructibleRocks;
 
             var openList = new List<Node>();
             var closedList = new List<Node>();
@@ -508,7 +515,10 @@
             if (Math.Abs((int)this.map[x, y] - (int)this.map[cameFrom.Item1, cameFrom.Item2]) >= 2) 
                 return true;
 
-            return this.destructibleRocks[x, y];
+            if (!this.ignoresDestructibleRocks) 
+                return this.destructibleRocks[x, y];
+
+            return false;
         }
 
         #endregion

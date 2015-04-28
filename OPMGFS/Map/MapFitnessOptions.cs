@@ -5,10 +5,14 @@
 
     public class MapFitnessOptions
     {
+        public readonly bool PathfindingIgnoreDestructibleRocks;
+
         /// <summary>
         /// The significance of the space around the start base.
         /// </summary>
         public readonly int BaseSpaceSignificance;
+
+        public readonly bool BaseSpaceIgnoreDestructibleRocks;
 
         /// <summary>
         /// The significance of the height of the start base.
@@ -93,7 +97,9 @@
         public readonly int ChokePointSearchStep;
 
         public MapFitnessOptions(
+            bool pathfindingIgnoreDestructibleRocks = true,
             int baseSpaceSignificance = 5, 
+            bool baseSpaceIgnoreDestructibleRocks = true,
             int baseHeightSignificance = 5,
             int pathBetweenStartBasesSignificance = 5, 
             int pathStartMaxGroundDistance = 90, 
@@ -124,7 +130,9 @@
             int chokePointsWidth = 2,
             int chokePointSearchStep = 3)
         {
+            this.PathfindingIgnoreDestructibleRocks = pathfindingIgnoreDestructibleRocks;
             this.BaseSpaceSignificance = baseSpaceSignificance;
+            this.BaseSpaceIgnoreDestructibleRocks = baseSpaceIgnoreDestructibleRocks;
             this.BaseHeightSignificance = baseHeightSignificance;
             this.PathBetweenStartBasesSignificance = pathBetweenStartBasesSignificance;
             this.PathStartMaxGroundDistance = pathStartMaxGroundDistance;
