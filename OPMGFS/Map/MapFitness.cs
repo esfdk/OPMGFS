@@ -488,7 +488,7 @@
         /// <summary>
         /// Figures out how many expansions that are available for each start base.
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 based on how many times a new height is reached. </returns>
+        /// <returns> A number between 0.0 and 1.0 based on how many expansions that are available for every start base. </returns>
         private double ExpansionsAvailable()
         {
             //// ReSharper disable RedundantCast
@@ -496,6 +496,7 @@
             var min = (double)(int)(this.ySize / 60);
             //// ReSharper restore RedundantCast
 
+            // ITODO: Fix for too few bases
             var actual = (this.bases.Count / 2d > max) 
                             ? max - ((this.bases.Count  / 2d) - max)
                             : this.bases.Count / 2d;
@@ -690,7 +691,6 @@
 
             // Check the actual width.
             var actualWidth = Math.Abs(firstPos.Item1 - secondPos.Item1) + Math.Abs(firstPos.Item2 - secondPos.Item2) - 1;
-            Console.WriteLine("Actual width of choke points: " + actualWidth);
             return actualWidth <= width;
         }
     }

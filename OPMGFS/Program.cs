@@ -162,47 +162,32 @@
             var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
 
-            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: false);
-            ca.SetRuleset(new List<Rule> { ruleBasicHeight1 });
-            ////ca.SetRuleset(GetCARules());
-
-            var map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
-            string heights, items;
-            map.GetMapStrings(out heights, out items);
-            Console.WriteLine(heights);
+            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, randomSeed: 10000);
+            ca.SetRuleset(GetCARules());
 
             ////ca.NextGeneration();
             ////map = new MapPhenotype(ca.Map, new Enums.Item[50, 50]);
             ////map.GetMapStrings(out heights, out items);
             ////Console.WriteLine(heights);
-            
+
+            var map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
+            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
+            map.SaveMapToPngFile("1_original", Folder);
+
+            ca.RunGenerations(10);
             map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
             map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
-            map.SaveMapToPngFile("1", Folder);
-            Thread.Sleep(1000);
-
-            ca.RunGenerations(generateHeight2ThroughRules: false);
-
-            map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
-            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
-            map.GetMapStrings(out heights, out items);
-            Console.WriteLine(heights);
-
-            map.SaveMapToPngFile("2", Folder);
-
-            Thread.Sleep(1000);
+            map.SaveMapToPngFile("2_CA", Folder);
 
             map.SmoothTerrain();
-            map.GetMapStrings(out heights, out items);
-            Console.WriteLine(heights);
-
-            map.SaveMapToPngFile("3", Folder);
+            map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn);
+            map.SaveMapToPngFile("3_smoothTerrain", Folder);
 
             map.PlaceCliffs();
+            map.SaveMapToPngFile("4_cliffs", Folder);
 
-            Thread.Sleep(1000);
-
-            map.SaveMapToPngFile("4", Folder);
+            map.SmoothCliffs();
+            map.SaveMapToPngFile("5_smoothedCliffs", Folder);
 
             ////map = new MapPhenotype(ca.Map, new Enums.Item[width, height]);
             ////map = map.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
