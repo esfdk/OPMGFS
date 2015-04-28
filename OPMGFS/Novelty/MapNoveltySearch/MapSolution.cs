@@ -150,7 +150,7 @@
                 {
                     continue;
                 }
-
+                
                 var distance = this.CalculateDistance(feasible.CurrentGeneration[i]);
 
                 var wasAdded = false;
@@ -254,26 +254,14 @@
         /// </returns>
         public MapPhenotype ConvertToPhenotype()
         {
-            var sw = new Stopwatch();
-            sw.Start();
-
             var map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, this.MapSearchOptions);
-            Console.WriteLine("Converting to phenotype took {0} milliseconds", sw.ElapsedMilliseconds);
-            sw.Restart();
 
             this.ConvertedPhenotype = map.CreateCompleteMap(Enums.Half.Top, this.MapSearchOptions.MapCompletion);
-            Console.WriteLine("Creating complete map took {0} milliseconds", sw.ElapsedMilliseconds);
-            sw.Restart();
             this.hasBeenConverted = true;
 
             this.ConvertedPhenotype.PlaceCliffs();
-            Console.WriteLine("Placing cliffs took {0} milliseconds", sw.ElapsedMilliseconds);
-            sw.Restart();
+            
 
-            // HACK: Currently not smoothing terrain after conversion
-            ////this.ConvertedPhenotype.SmoothTerrain(this.MapSearchOptions.SmoothingNormalNeighborhood, this.MapSearchOptions.SmoothingExtendedNeighborhood, this.MapSearchOptions.SmoothingGenerations, this.MapSearchOptions.SmoothingRuleset);
-            ////Console.WriteLine("Smoothing terrain took {0} milliseconds", sw.ElapsedMilliseconds);
-            ////sw.Restart();
             return this.ConvertedPhenotype;
         }
 
@@ -326,8 +314,10 @@
         protected override double CalculateDistanceToFeasibility()
         {
             this.ConvertToPhenotype();
+
             var distance = 0.0;
 
+            /* HACK: Removed calculation of how close not-placed map points are from feasibility
             // Calculate distances between map points
             foreach (var mp in this.MapPoints.Where(mp => mp.WasPlaced != Enums.WasPlaced.Yes))
             {
@@ -362,6 +352,7 @@
             }
 
             distance = distance / this.MapPoints.Count();
+             */
 
             // Too many / too few elements placed
             var elements = MapConversionHelper.CalculateNumberOfMapPointsOutsideTypeBounds(this.MapPoints, this.MapSearchOptions);
@@ -372,11 +363,7 @@
             var sb = this.MapPoints.FirstOrDefault(mp => mp.Type == Enums.MapPointType.StartBase);
             if (sb != null && sb.WasPlaced == Enums.WasPlaced.Yes)
             {
-                var startBaseTile = MapConversionHelper.FindNearestItemTileOfType(
-                    this.ConvertedPhenotype.XSize / 2,
-                    this.ConvertedPhenotype.YSize,
-                    this.ConvertedPhenotype,
-                    Enums.Item.StartBase);
+                var startBaseTile = MapConversionHelper.FindPositionBasedOnMapPoint(sb, this.ConvertedPhenotype);
                 var topBasePoint = new Tuple<int, int>(startBaseTile.Item1, startBaseTile.Item2);
                 Tuple<int, int> bottomBasePoint;
                 switch (this.MapSearchOptions.MapCompletion)

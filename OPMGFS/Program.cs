@@ -702,7 +702,11 @@
             var baseMapCounter = 0;
             foreach (var map in maps)
             {
-                map.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter));
+                var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
+                var items = map.MapItems.Clone() as Enums.Item[,];
+                var baseMap = new MapPhenotype(heightLevels, items);
+                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
+                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName);
 
                 var mso = new MapSearchOptions(map, mapSearchOptions);
                 var evolver = new Evolver<EvolvableMap>(
@@ -747,16 +751,20 @@
             var baseMapCounter = 0;
             foreach (var map in maps)
             {
-                map.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter));
+                var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
+                var items = map.MapItems.Clone() as Enums.Item[,];
+                var baseMap = new MapPhenotype(heightLevels, items);
+                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
+                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName);
+
                 var mso = mapSearchOptions == null ? new MapSearchOptions(map) : new MapSearchOptions(map, mapSearchOptions);
                 var nso = noveltySearchOptions ?? new NoveltySearchOptions();
                 var searcher = new MapSearcher(r, mso, nso);
-                Console.WriteLine("Created searcher");
 
                 searcher.RunGenerations(numberOfGenerations);
 
                 var variationValue = 0;
-                foreach (var solution in searcher.InfeasiblePopulation.CurrentGeneration)
+                foreach (var solution in searcher.Archive.Archive)
                 {
                     var individual = (MapSolution)solution;
                     variationValue++;

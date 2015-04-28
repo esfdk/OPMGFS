@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Globalization;
 
     using OPMGFS.Map;
     using OPMGFS.Map.MapObjects;
@@ -34,45 +36,7 @@
             // ITODO: Implement better "early filling" of feasible/infeasible populations
             for (var i = 0; i < noveltySearchOptions.FeasiblePopulationSize; i++)
             {
-                var list = new List<MapPoint>
-                               {
-                                   new MapPoint(
-                                       this.Random.NextDouble(),
-                                       this.Random.Next(181),
-                                       Enums.MapPointType.StartBase,
-                                       Enums.WasPlaced.NotAttempted)
-                               };
-
-                for (var j = 0; j < 15; j++)
-                {
-                    var dist = Random.NextDouble();
-                    var degree = Random.Next(181);
-                    Enums.MapPointType mpt;
-                    switch (j)
-                    {
-                        case 0:
-                            mpt = Enums.MapPointType.Base;
-                            break;
-                        case 1:
-                            mpt = Enums.MapPointType.Base;
-                            break;
-                        case 2:
-                            mpt = Enums.MapPointType.XelNagaTower;
-                            break;
-                        case 3:
-                            mpt = Enums.MapPointType.Ramp;
-                            break;
-                        case 4:
-                            mpt = Enums.MapPointType.Ramp;
-                            break;
-                        default:
-                            mpt = Enums.MapPointType.Ramp;
-                            break;
-                    }
-
-                    list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
-                }
-
+                var list = MapConversionHelper.GenerateInitialMapPoints(mapSearchOptions, r);
                 var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list);
                 FeasiblePopulation.CurrentGeneration.Add(ms);
             }
@@ -151,11 +115,6 @@
                 var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list);
                 InfeasiblePopulation.CurrentGeneration.Add(ms);
             }
-
-            foreach (var ms in this.FeasiblePopulation.CurrentGeneration)
-            {
-                ms.CalculateNovelty(this.FeasiblePopulation, this.Archive, this.NoveltySearchOptions.NumberOfNeighbours);
-            }
         }
 
         /// <summary>
@@ -198,6 +157,7 @@
 
             FeasiblePopulation.CurrentGeneration.AddRange(feasibleIndividuals);
             InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);
+            
         }
     }
 }

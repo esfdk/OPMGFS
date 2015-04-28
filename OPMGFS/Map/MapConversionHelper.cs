@@ -239,6 +239,46 @@
             return null;
         }
 
+        public static Tuple<int, int, int> FindPositionBasedOnMapPoint(MapPoint mapPoint, MapPhenotype mp)
+        {
+            var maxDistance = MaxDistanceAtDegree(mp.XSize / 2.0, mp.YSize / 2.0, mapPoint.Degree);
+            var point = CalculatePoint(mapPoint.Degree, maxDistance * mapPoint.Distance);
+            var xPos = (int)(point.Item1 + (mp.XSize / 2.0));
+            var yPos = (int)(point.Item2 + (mp.YSize / 2.0));
+
+            Enums.Item type;
+
+            switch (mapPoint.Type)
+            {
+                case Enums.MapPointType.Base:
+                    type = Enums.Item.Base;
+                    break;
+                case Enums.MapPointType.DestructibleRocks:
+                    type = Enums.Item.DestructibleRocks;
+                    break;
+                case Enums.MapPointType.GoldBase:
+                    type = Enums.Item.Base;
+                    break;
+                case Enums.MapPointType.StartBase:
+                    type = Enums.Item.StartBase;
+                    break;
+                case Enums.MapPointType.XelNagaTower:
+                    type = Enums.Item.XelNagaTower;
+                    break;
+                default:
+                    type = Enums.Item.StartBase;
+                    break;
+            }
+
+            var position = FindNearestItemTileOfType(
+                xPos,
+                yPos,
+                mp,
+                type);
+
+            return position;
+        }
+
         /// <summary>
         /// Fills in a map using the map points of this individual. Returns a filled in copy of the original map.
         /// </summary>
@@ -576,11 +616,6 @@
                         }
 
                         mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
-                        
-                        // Old technique for placing ramps
-                        ////var location = FindClosestCliff(xPos, yPos, newMap);
-                        ////if (location == null) break;
-                        ////mp.WasPlaced = PlaceRamp(location.Item1, location.Item2, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.DestructibleRocks:
                         mp.WasPlaced = PlaceDestructibleRocks(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
@@ -669,9 +704,9 @@
                 return;
             }
 
-            for (var i = startX; i < startX + lengthX; i++)
+            for (var i = startX; i <= startX + lengthX; i++)
             {
-                for (var j = startY; j < startY + lengthY; j++)
+                for (var j = startY; j <= startY + lengthY; j++)
                 {
                     if (mp.HeightLevels[i, j] == Enums.HeightLevel.Cliff && height != Enums.HeightLevel.Cliff)
                     {
@@ -704,9 +739,9 @@
                 return true;
             }
 
-            for (var i = startX; i < startX + lengthX; i++)
+            for (var i = startX; i <= startX + lengthX; i++)
             {
-                for (var j = startY; j < startY + lengthY; j++)
+                for (var j = startY; j <= startY + lengthY; j++)
                 {
                     if (mp.MapItems[i, j] != Enums.Item.None) return true;
                 }
@@ -730,9 +765,9 @@
                 return;
             }
 
-            for (var i = startX; i < startX + lengthX; i++)
+            for (var i = startX; i <= startX + lengthX; i++)
             {
-                for (var j = startY; j < startY + lengthY; j++)
+                for (var j = startY; j <= startY + lengthY; j++)
                 {
                     mp.MapItems[i, j] = Enums.Item.Occupied;
                 }
@@ -782,8 +817,8 @@
                                    : Enums.HeightLevel.Height0;
             }
 
-            FlattenArea(height, x - 11, y - 11, 24, 24, mp);
-            OccupyArea(x - 11, y - 11, 24, 24, mp);
+            FlattenArea(height, x - 11, y - 11, 23, 23, mp);
+            OccupyArea(x - 11, y - 11, 23, 23, mp);
 
             for (var sbx = x - 2; sbx < (x - 2 + 5); sbx++)
             {
@@ -831,7 +866,7 @@
                 return false;
             }
 
-            if (IsAreaOccupied(x - 7, y - 7, 16, 16, mp))
+            if (IsAreaOccupied(x - 7, y - 7, 15, 15, mp))
             {
                 return false;
             }
@@ -850,8 +885,8 @@
                                    : Enums.HeightLevel.Height0;
             }
 
-            FlattenArea(height, x - 7, y - 7, 16, 16, mp);
-            OccupyArea(x - 7, y - 7, 16, 16, mp);
+            FlattenArea(height, x - 7, y - 7, 15, 15, mp);
+            OccupyArea(x - 7, y - 7, 15, 15, mp);
 
             var rx = x - 1;
             var ry = y - 3;

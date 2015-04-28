@@ -652,7 +652,8 @@
 
             // Figure out what is hit first when going either right or up
             for (var i = 0; i < 10; i++)
-            {
+            {   
+                // ITODO: Grooss noob ffs abandon report; det kan vaere outside map CYKA BLYAT!!1!1!!! no wards
                 var right = this.map.HeightLevels[pos.Item1, pos.Item2 + i];
                 var up = this.map.HeightLevels[pos.Item1 + i, pos.Item2];
                 if (horizontalFirstEncounter == originalRampType

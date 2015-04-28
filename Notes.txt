@@ -11,17 +11,18 @@ TODO:
 		(done) Fix bug in choke point search
 		
 	Melnyk
-		(done? needs discussion) Impement other version of ramp placement
-		(done. Needs way to input map settings)Set up novelty search for testing
-		(maybe not necessary, )Eliminate unfeasible results from evolution?
-		Figure out how to make smoothing faster or simply cut it out completely ?0
+		Set up novelty search to use random initialised solutions (both infeasible and feasible)
+		Discuss feasibility function
 		Figure out what makes advancing generation slow
+		Make circle instead of square when flattening for bases
 		Implement FI2NS
 	
 	Uassigned TODOs
 		Figure out cost and/or how to consider "openness" of bases / impassable terrain around a base
 		Number of choke points seen by Xel'Naga towers
 		Time limit on evolution (maybe on novelty search, if it isn't already?)
+		Base openess (combine number of traversable points around occupied area & 8 directions from center of base)
+		Figure out best values for ground map distances and other fitness values
 	
 	Low prio TODOs
 		Figure out cost and/or how to consider siege tank ranges
@@ -38,6 +39,7 @@ TODO:
 		(done) Destructible rocks in seperate array
 		(done) Set up evolution for testing
 		(ground/flight done) Calculate both ground and flight distances
+		(done) Impement other version of ramp placement
 		
 Notes:
 	Quality = Novelty of map + mechanical quality
@@ -46,6 +48,7 @@ Notes:
 	Use an upper limit on path length (if path is too long, stop pathfinding)
 	Good Maps: Foxtrot Labs, Xel'Naga Caverns, Waystation
 	Openness of Bases is largest fault with fitness algorithm
+	Post-smoothing is rather slow, so less pretty maps vs speed tradeoff
 	
 	
 	

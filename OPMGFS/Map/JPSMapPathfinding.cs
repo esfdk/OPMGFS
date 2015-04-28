@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
@@ -70,7 +71,10 @@
         /// <returns> A list representing the path from the start position to the end position. </returns>
         public List<Position> FindPathFromTo(Position startPosition, Position endPosition)
         {
-            // TODO: Grooss - Upper limit on pathfinding (if necessary)
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            const int TimeLimit = 1500;
+
             if (startPosition == null || endPosition == null) return new List<Position>();
 
             var openList = new List<Node>();
@@ -85,6 +89,11 @@
             // While there are positions left to check in the open list, do stuff.
             while (openList.Count > 0)
             {
+                if (stopwatch.ElapsedMilliseconds >= TimeLimit)
+                {
+                    break;
+                }
+
                 var currentNode = openList[0];
                 openList.RemoveAt(0);
 
