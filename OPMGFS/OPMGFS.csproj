@@ -59,6 +59,7 @@
     <Compile Include="Map\Enums.cs" />
     <Compile Include="Map\JPSMapPathfinding.cs" />
     <Compile Include="Map\MapFitness.cs" />
+    <Compile Include="Map\MapFitnessOptions.cs" />
     <Compile Include="Map\MapHelper.cs" />
     <Compile Include="Map\MapObjects\MapPoint.cs" />
     <Compile Include="Map\MapPathfinding.cs" />
