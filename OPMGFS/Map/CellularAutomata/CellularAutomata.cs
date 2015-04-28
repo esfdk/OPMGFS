@@ -191,7 +191,7 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="radius"> The radius of each drop zone. </param>
         public void AddImpassableTerrain(int drops, int radius)
         {
-            // ITODO: Still needs work.
+            // TODO: Change from circle drop to more natural method.
             var tempMap = (Enums.HeightLevel[,])this.Map.Clone();
             var moves = new int[(radius * 2) + 1];
             var movesPosition = 1;

@@ -806,6 +806,7 @@
                 var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                 map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
                 map.PlaceCliffs();
+                map.UpdateCliffPositions(Enums.Half.Top);
                 baseMaps.Add(map);
             }
             else
@@ -827,6 +828,7 @@
                     var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                     map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
                     map.PlaceCliffs();
+                    map.UpdateCliffPositions(Enums.Half.Top);
                     baseMaps.Add(map);
                 }
             }

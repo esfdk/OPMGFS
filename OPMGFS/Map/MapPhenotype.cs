@@ -423,6 +423,15 @@ namespace OPMGFS.Map
             }
         }
 
+        public void UpdateCliffPositions(HashSet<Tuple<int, int>> cliffPositions)
+        {
+            this.CliffPositions.Clear();
+            foreach (var t in cliffPositions)
+            {
+                this.CliffPositions.Add(t);
+            }
+        }
+
         #endregion
 
         #region Private methods

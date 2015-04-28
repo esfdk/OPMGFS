@@ -116,7 +116,7 @@ namespace OPMGFS.Map
             /// <summary>
             /// The top half.
             /// </summary>
-            Top,
+            Top = 0,
 
             /// <summary>
             /// The bottom half.

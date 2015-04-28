@@ -260,7 +260,7 @@
             this.hasBeenConverted = true;
 
             this.ConvertedPhenotype.PlaceCliffs();
-            
+            this.ConvertedPhenotype.SmoothCliffs();
 
             return this.ConvertedPhenotype;
         }
