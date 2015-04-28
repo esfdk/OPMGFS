@@ -147,6 +147,7 @@ namespace OPMGFS.Map
 
             var newHeightLevels = (HeightLevel[,])this.HeightLevels.Clone();
             var newMapItems = (Item[,])this.MapItems.Clone();
+            var rocks = (bool[,])this.DestructibleRocks.Clone();
 
             // Figures out which part of the map that should be looked at.
             var xStart = (half == Half.Right) ? this.XSize / 2 : 0;
@@ -174,10 +175,11 @@ namespace OPMGFS.Map
 
                     newHeightLevels[otherX, otherY] = this.HeightLevels[x, y];
                     newMapItems[otherX, otherY] = this.MapItems[x, y];
+                    rocks[otherX, otherY] = this.DestructibleRocks[x, y];
                 }
             }
 
-            var newMap = new MapPhenotype(newHeightLevels, newMapItems);
+            var newMap = new MapPhenotype(newHeightLevels, newMapItems, rocks);
             return newMap;
         }
 

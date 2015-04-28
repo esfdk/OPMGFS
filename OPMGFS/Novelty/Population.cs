@@ -8,6 +8,8 @@
     /// </summary>
     public abstract class Population
     {
+        // ITODO: Melnyk - Implement FI2NS
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Population"/> class.
         /// </summary>

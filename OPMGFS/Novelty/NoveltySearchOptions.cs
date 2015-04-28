@@ -35,7 +35,7 @@
         /// <param name="infeasiblePopulationSize">
         /// The infeasible Population Size.
         /// </param>
-        public NoveltySearchOptions(bool mutate = true, bool recombine = false, double mutationChance = 0.3, bool twoPointCrossover = false, int numberOfNeighbours = 1, int addToArchive = 1, double minimumNovelty = 0, int feasiblePopulationSize = 10, int infeasiblePopulationSize = 10)
+        public NoveltySearchOptions(bool mutate = true, bool recombine = false, double mutationChance = 0.3, bool twoPointCrossover = false, int numberOfNeighbours = 5, int addToArchive = 1, double minimumNovelty = 0, int feasiblePopulationSize = 10, int infeasiblePopulationSize = 10)
         {
             this.InfeasiblePopulationSize = infeasiblePopulationSize;
             this.FeasiblePopulationSize = feasiblePopulationSize;

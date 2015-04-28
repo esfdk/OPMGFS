@@ -150,8 +150,6 @@ namespace OPMGFS.Evolution
         {
             for (var i = 0; i < this.PopulationSize; i++)
             {
-                Console.WriteLine("Generating initial individual: " + i);
-
                 var temp = (T)Activator.CreateInstance(typeof(T), this.InitialisationArguments);
                 temp.InitializeObject();
                 this.Population.Add(temp);

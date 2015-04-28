@@ -1,7 +1,6 @@
 ﻿namespace OPMGFS.Novelty.MapNoveltySearch
 {
     using System;
-    using System.Collections.Generic;
 
     using OPMGFS.Map;
     using OPMGFS.Map.MapObjects;
@@ -31,87 +30,53 @@
             this.InfeasiblePopulation = new MapPopulation(false, noveltySearchOptions.InfeasiblePopulationSize);
             this.Archive = new MapNovelArchive();
 
-            // ITODO: Implement better "early filling" of infeasible populations
-            for (var i = 0; i < noveltySearchOptions.FeasiblePopulationSize; i++)
+            // ITODO: Melnyk - Implement better "early filling" of infeasible populations
+            while (this.FeasiblePopulation.CurrentGeneration.Count < noveltySearchOptions.FeasiblePopulationSize)
             {
                 var list = MapConversionHelper.GenerateInitialMapPoints(mapSearchOptions, r);
                 var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list);
-                FeasiblePopulation.CurrentGeneration.Add(ms);
+
+                if (ms.IsFeasible)
+                {
+                    this.FeasiblePopulation.CurrentGeneration.Add(ms);
+                }
+                else if (InfeasiblePopulation.CurrentGeneration.Count < noveltySearchOptions.InfeasiblePopulationSize)
+                {
+                    this.InfeasiblePopulation.CurrentGeneration.Add(ms);
+                }
             }
 
-            for (var i = 0; i < noveltySearchOptions.InfeasiblePopulationSize; i++)
+            while (this.InfeasiblePopulation.CurrentGeneration.Count < noveltySearchOptions.InfeasiblePopulationSize)
             {
-                var list = new List<MapPoint>
-                               {
-                                   new MapPoint(
-                                       -this.Random.NextDouble(),
-                                       this.Random.Next(181, 360),
-                                       Enums.MapPointType.StartBase,
-                                       Enums.WasPlaced.NotAttempted)
-                               };
+                var list = MapConversionHelper.GenerateInitialMapPoints(mapSearchOptions, r);
 
-                for (var j = 0; j < 8; j++)
+                for (var j = 0; j < noveltySearchOptions.InfeasiblePopulationSize / 2.0; j++)
                 {
-                    var dist = -Random.NextDouble();
-                    var degree = Random.Next(181, 360);
-                    Enums.MapPointType mpt;
-                    switch (j)
-                    {
-                        case 0:
-                            mpt = Enums.MapPointType.Base;
-                            break;
-                        case 1:
-                            mpt = Enums.MapPointType.Base;
-                            break;
-                        case 2:
-                            mpt = Enums.MapPointType.XelNagaTower;
-                            break;
-                        case 3:
-                            mpt = Enums.MapPointType.Ramp;
-                            break;
-                        case 4:
-                            mpt = Enums.MapPointType.Ramp;
-                            break;
-                        default:
-                            mpt = Enums.MapPointType.Ramp;
-                            break;
-                    }
+                    var item = list[j];
 
-                    list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
-                }
+                    var distance = r.Next(2) == 1 ? (r.Next(2) == 1 ? (item.Distance + 1.0) : (item.Distance - 1.0)) : item.Distance;
+                    var degree = r.Next(2) == 1 ? (r.Next(2) == 1 ? (item.Degree + 180) : (item.Degree - 180)) : item.Degree;
 
-                for (var j = 1; j < 7; j++)
-                {
-                    var dist = Random.NextDouble() + 1.0;
-                    var degree = Random.Next(181, 360);
-                    Enums.MapPointType mpt;
-                    switch (j)
-                    {
-                        case 0:
-                            mpt = Enums.MapPointType.Base;
-                            break;
-                        case 1:
-                            mpt = Enums.MapPointType.Base;
-                            break;
-                        case 2:
-                            mpt = Enums.MapPointType.XelNagaTower;
-                            break;
-                        case 3:
-                            mpt = Enums.MapPointType.Ramp;
-                            break;
-                        case 4:
-                            mpt = Enums.MapPointType.Ramp;
-                            break;
-                        default:
-                            mpt = Enums.MapPointType.Ramp;
-                            break;
-                    }
+                    var mp = new MapPoint(distance, degree, item.Type, Enums.WasPlaced.NotAttempted);
 
-                    list.Add(new MapPoint(dist, degree, mpt, Enums.WasPlaced.NotAttempted));
+                    list[j] = mp;
                 }
 
                 var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list);
-                InfeasiblePopulation.CurrentGeneration.Add(ms);
+                this.InfeasiblePopulation.CurrentGeneration.Add(ms);
+            }
+
+            foreach (var ms in this.FeasiblePopulation.CurrentGeneration)
+            {
+                var novelty = ms.CalculateNovelty(
+                    this.FeasiblePopulation,
+                    this.Archive,
+                    noveltySearchOptions.NumberOfNeighbours);
+
+                if (novelty >= noveltySearchOptions.MinimumNovelty)
+                {
+                    this.Archive.Archive.Add(ms);
+                }
             }
         }
 

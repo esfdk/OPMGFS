@@ -22,7 +22,7 @@
         /// <returns>The mutated list of map points.</returns>
         public static List<MapPoint> MutateMapPoints(List<MapPoint> mapPoints, double mutationChance, MapSearchOptions mso, Random r)
         {
-            // ITODO: Make option to only mutate into "legal" map points
+            // ITODO: Melnyk - Make option to only mutate into "legal" map points
             var newPoints = mapPoints.Select(mp => r.NextDouble() < mutationChance ? mp.Mutate(r, mso) : mp).ToList();
 
             var randomNumber = r.NextDouble();
@@ -113,6 +113,15 @@
                 {
                     potentialMapPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.Ramp));
                 }
+
+                if (newPoints.Count(mp => mp.Type == Enums.MapPointType.DestructibleRocks) > mso.MinimumNumberOfDestructibleRocks)
+                {
+                    potentialMapPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.DestructibleRocks));
+                }
+
+                var index = r.Next(0, potentialMapPoints.Count);
+                var element = potentialMapPoints[index];
+                newPoints.Remove(element);
             }
 
             var finalNewPoints = new List<MapPoint>();
@@ -699,6 +708,7 @@
         /// <param name="mp">The map phenotype to flatten the area on.</param>
         private static void FlattenArea(Enums.HeightLevel height, int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
+            // ITODO: Melnyk - Try circle
             if (!mp.InsideTopHalf(startX, startY) || !mp.InsideTopHalf(startX + lengthX, startY + lengthY))
             {
                 return;
