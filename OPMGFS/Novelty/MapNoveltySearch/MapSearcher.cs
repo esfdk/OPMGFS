@@ -2,8 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
 
     using OPMGFS.Map;
     using OPMGFS.Map.MapObjects;
@@ -33,7 +31,7 @@
             this.InfeasiblePopulation = new MapPopulation(false, noveltySearchOptions.InfeasiblePopulationSize);
             this.Archive = new MapNovelArchive();
 
-            // ITODO: Implement better "early filling" of feasible/infeasible populations
+            // ITODO: Implement better "early filling" of infeasible populations
             for (var i = 0; i < noveltySearchOptions.FeasiblePopulationSize; i++)
             {
                 var list = MapConversionHelper.GenerateInitialMapPoints(mapSearchOptions, r);
@@ -156,8 +154,7 @@
                 Random);
 
             FeasiblePopulation.CurrentGeneration.AddRange(feasibleIndividuals);
-            InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);
-            
+            InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);    
         }
     }
 }

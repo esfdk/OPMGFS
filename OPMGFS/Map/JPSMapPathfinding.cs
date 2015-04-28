@@ -71,6 +71,7 @@
         /// <returns> A list representing the path from the start position to the end position. </returns>
         public List<Position> FindPathFromTo(Position startPosition, Position endPosition)
         {
+            // ITODO: Seperate option for including/excluding destructible rocks in pathfinding
             if (startPosition == null || endPosition == null) return new List<Position>();
 
             var openList = new List<Node>();

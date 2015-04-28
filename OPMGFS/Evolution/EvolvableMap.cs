@@ -21,16 +21,17 @@
         private bool hasBeenConverted;
         #endregion
 
-        public EvolvableMap(MapSearchOptions mso, double mutationChance, Random r) : base(mutationChance, r)
+        public EvolvableMap(MapSearchOptions mso, double mutationChance, Random r, MapFitnessOptions mapFitnessOptions) : base(mutationChance, r)
         {
+            this.MapFitnessOptions = mapFitnessOptions;
             this.MapSearchOptions = mso;
             this.convertedPhenotype = null;
             this.hasBeenConverted = false;
             this.MapPoints = new List<MapPoint>();
         }
 
-        public EvolvableMap(MapSearchOptions mso, double mutationChance, Random r, List<MapPoint> mapPoints)
-            : this(mso, mutationChance, r)
+        public EvolvableMap(MapSearchOptions mso, double mutationChance, Random r, List<MapPoint> mapPoints, MapFitnessOptions mapFitnessOptions)
+            : this(mso, mutationChance, r, mapFitnessOptions)
         {
             this.MapPoints = mapPoints;
         }
@@ -55,6 +56,8 @@
             }
         }
 
+        public MapFitnessOptions MapFitnessOptions { get; private set; }
+
         public override Evolvable SpawnMutation()
         {
             var newPoints = MapConversionHelper.MutateMapPoints(
@@ -63,7 +66,7 @@
                 this.MapSearchOptions,
                 this.Random);
 
-            return new EvolvableMap(this.MapSearchOptions, this.MutationChance, this.Random, newPoints);
+            return new EvolvableMap(this.MapSearchOptions, this.MutationChance, this.Random, newPoints, this.MapFitnessOptions);
         }
 
         public override Evolvable SpawnRecombination(Evolvable other)
@@ -73,7 +76,7 @@
 
         public override void CalculateFitness()
         {
-            var mapFitness = new MapFitness(this.ConvertedPhenotype);
+            var mapFitness = new MapFitness(this.ConvertedPhenotype, this.MapFitnessOptions);
 
             this.Fitness = mapFitness.CalculateFitness();
         }

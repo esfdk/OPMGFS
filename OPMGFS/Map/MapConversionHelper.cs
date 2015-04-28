@@ -295,8 +295,9 @@
         {
             var heightLevels = mso.Map.HeightLevels.Clone() as Enums.HeightLevel[,];
             var items = mso.Map.MapItems.Clone() as Enums.Item[,];
+            var rocks = mso.Map.DestructibleRocks.Clone() as bool[,];
 
-            var newMap = new MapPhenotype(heightLevels, items);
+            var newMap = new MapPhenotype(heightLevels, items, rocks);
             newMap.UpdateCliffPositions(mso.Map.CliffPositions);
 
             foreach (var mp in mapPoints)
@@ -604,7 +605,6 @@
                         mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.Ramp:
-                        // TODO: Should we attempt to displace ramps?
                         placed = PlaceRamp(xPos, yPos, newMap);
                         if (!placed)
                         {
@@ -1161,10 +1161,9 @@
                 }
             }
 
+            // TODO: Diagonal ramps
             // Northwest-Southeast diagonal
-            // TODO: Diagonal ramps
             // Northeast-Southwest diagonal
-            // TODO: Diagonal ramps
             return false;
         }
         

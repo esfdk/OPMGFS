@@ -69,6 +69,12 @@ namespace OPMGFS.Map
             this.DestructibleRocks = new bool[this.XSize, this.YSize];
             this.CliffPositions = new HashSet<Tuple<int, int>>();
         }
+
+        public MapPhenotype(HeightLevel[,] heightLevels, Item[,] mapItems, bool[,] destructibleRocks)
+            : this(heightLevels, mapItems)
+        {
+            this.DestructibleRocks = destructibleRocks;
+        }
         #endregion
 
         #region Properties
@@ -207,7 +213,6 @@ namespace OPMGFS.Map
                 this.mapHalf,
                 this.HeightLevels);
 
-            // ITODO: Grooss - Cliff smoothing
             if (newRuleset == null)
             {
                 smoothCA.SetRuleset(this.GetSmoothingRules(smoothingNormalNeighbourhood, smoothingExtNeighbourhood));
@@ -227,7 +232,7 @@ namespace OPMGFS.Map
         /// </summary>
         public void PlaceCliffs()
         {
-            // TODO: Grooss - Allow for defining how much of the map should be "cliffed"
+            // ITODO: Grooss - Allow for defining how much of the map should be "cliffed"
             var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
 
             for (var y = 0; y < this.YSize; y++)
@@ -444,7 +449,7 @@ namespace OPMGFS.Map
         /// <returns> A list of the rules that are used for smoothing. </returns>
         private List<Rule> GetSmoothingRules(int smoothingNormalNeighbourhood, int smoothingExtNeighbourhood)
         {
-            // TODO: May want to use the ruleset from Program.cs. This one seems shit.
+            // ITODO: May want to use the ruleset from Program.cs. This one seems shit.
             var list = new List<Rule>();
 
             // Smooth down height 2

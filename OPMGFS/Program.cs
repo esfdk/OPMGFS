@@ -149,7 +149,7 @@
             ////map.SaveMapToPngFile();
 
 
-            var mapFitness = new MapFitness(map);
+            var mapFitness = new MapFitness(map, new MapFitnessOptions());
             var sw = new Stopwatch();
             sw.Start();
             var fitness = mapFitness.CalculateFitness();
@@ -677,7 +677,8 @@
         public static void RunEvolution(
             List<MapPhenotype> maps,
             Random r,
-            MapSearchOptions mapSearchOptions,
+            MapSearchOptions mapSearchOptions = null,
+            MapFitnessOptions mapFitnessOptions = null,
             int numberOfGenerations = 10,
             int populationSize = 10,
             int numberOfParents = 5,
@@ -689,6 +690,8 @@
             string folderName = "MapEvolution",
             double lowestFitnessLevelForPrint = double.MinValue)
         {
+            var mso = mapSearchOptions ?? new MapSearchOptions(null);
+            var mfo = mapFitnessOptions ?? new MapFitnessOptions();
             var baseMapCounter = 0;
             foreach (var map in maps)
             {
@@ -698,7 +701,7 @@
                 baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
                 baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
 
-                var mso = new MapSearchOptions(map, mapSearchOptions);
+                mso = new MapSearchOptions(map, mso);
                 var evolver = new Evolver<EvolvableMap>(
                     numberOfGenerations,
                     populationSize,
@@ -706,7 +709,7 @@
                     numberOfChildren,
                     mutationChance,
                     r,
-                    new object[] { mso, mutationChance, r })
+                    new object[] { mso, mutationChance, r, mfo })
                                   {
                                       PopulationSelectionStrategy = selectionStrategy,
                                       ParentSelectionStrategy = parentSelectionStrategy,
@@ -734,10 +737,14 @@
             Random r,
             MapSearchOptions mapSearchOptions = null,
             NoveltySearchOptions noveltySearchOptions = null,
+            MapFitnessOptions mapFitnessOptions = null,
             int numberOfGenerations = 10,
             double lowestFitnessLevelForPrint = double.MinValue,
             string folderName = "MapNovelty")
         {
+            var mso = mapSearchOptions ?? new MapSearchOptions(null);
+            var mfo = mapFitnessOptions ?? new MapFitnessOptions();
+            var nso = noveltySearchOptions ?? new NoveltySearchOptions();
             var baseMapCounter = 0;
             foreach (var map in maps)
             {
@@ -747,8 +754,7 @@
                 baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
                 baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
 
-                var mso = mapSearchOptions == null ? new MapSearchOptions(map) : new MapSearchOptions(map, mapSearchOptions);
-                var nso = noveltySearchOptions ?? new NoveltySearchOptions();
+                mso = new MapSearchOptions(map, mso);
                 var searcher = new MapSearcher(r, mso, nso);
 
                 searcher.RunGenerations(numberOfGenerations);
@@ -758,7 +764,7 @@
                 {
                     var individual = (MapSolution)solution;
                     variationValue++;
-                    var fitness = new MapFitness(individual.ConvertedPhenotype).CalculateFitness();
+                    var fitness = new MapFitness(individual.ConvertedPhenotype, mfo).CalculateFitness();
                     if (fitness >= lowestFitnessLevelForPrint)
                     {
                         individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Base Map {0}_Map {1}_Fitness {2}", baseMapCounter, variationValue, fitness), folderName, false);

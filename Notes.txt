@@ -1,20 +1,17 @@
 TODO:
 	Grooss
-		Set up constructor for map fitness settings (seperate class)
 		(not done, should be seperate option) Consider destructible rocks in jump point search
 		Consider xel'naga towers in jps (maybe other stuff?)
 		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search		
-		Better Smoothing (cliffs)
 		
 	Melnyk
+		Destructible rock bug
 		Set up novelty search to use random initialised solutions (both infeasible and feasible)
 		Make circle instead of square when flattening for bases
 		Implement FI2NS
 	
 	Uassigned TODOs
-		Figure out cost and/or how to consider "openness" of bases / impassable terrain around a base
-		Number of choke points seen by Xel'Naga towers
-		Time limit on evolution (maybe on novelty search, if it isn't already?)
+		Time limit on evolution/novelty search
 		Base openess (combine number of traversable points around occupied area & 8 directions from center of base)
 		Figure out best values for ground map distances and other fitness values
 	
@@ -22,7 +19,6 @@ TODO:
 		Figure out cost and/or how to consider siege tank ranges
 		Number of choke points seen by Xel'Naga towers
 		Impassable terrain around edge of map (possibly in base map generation)
-		Blink/reaper pathing calculation
 		
 	Finished TODOs
 		(done) Cellular Automata after placing map points
@@ -46,7 +42,7 @@ Notes:
 	Good Maps: Foxtrot Labs, Xel'Naga Caverns, Waystation
 	Openness of Bases is largest fault with fitness algorithm
 	Post-smoothing is rather slow, so less pretty maps vs speed tradeoff
-	
+	We do not consider blink/reaper movement in fitness calculation
 	
 	
 Old Notes:
