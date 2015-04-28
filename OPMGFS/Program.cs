@@ -31,10 +31,15 @@
             ////TestFitness();
             ////TestPathfinding();
 
+            var map = new MapPhenotype(64, 64);
+            map.DestructibleRocks[32, 32] = true;
+            map.SaveMapToPngFile();
+
             var maps = GetBaseMaps();
-            //RunEvolution(maps, new Random(), new MapSearchOptions(null));
-            //Console.WriteLine("Evolution Done");
-            //maps = GetBaseMaps();
+            RunEvolution(maps, new Random(), new MapSearchOptions(null));
+            Console.WriteLine("Evolution Done");
+
+            maps = GetBaseMaps();
             RunNoveltysearch(maps, new Random(), new MapSearchOptions(null));
 
             Console.WriteLine("Everything is done running");
@@ -691,7 +696,7 @@
                 var items = map.MapItems.Clone() as Enums.Item[,];
                 var baseMap = new MapPhenotype(heightLevels, items);
                 baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
-                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName);
+                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
 
                 var mso = new MapSearchOptions(map, mapSearchOptions);
                 var evolver = new Evolver<EvolvableMap>(
@@ -740,7 +745,7 @@
                 var items = map.MapItems.Clone() as Enums.Item[,];
                 var baseMap = new MapPhenotype(heightLevels, items);
                 baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
-                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName);
+                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
 
                 var mso = mapSearchOptions == null ? new MapSearchOptions(map) : new MapSearchOptions(map, mapSearchOptions);
                 var nso = noveltySearchOptions ?? new NoveltySearchOptions();
