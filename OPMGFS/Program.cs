@@ -4,8 +4,6 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using System.Threading;
 
     using OPMGFS.Evolution;
     using OPMGFS.Map;
@@ -36,9 +34,9 @@
             sw.Start();
 
             var list = new List<int>();
-            for (var i = 0; i < 20; i++)
+            for (var i = 0; i < 2; i++)
             {
-                list.Add(i);
+                list.Add(0);
             }
 
             Console.WriteLine("Generating base maps.");
@@ -46,6 +44,8 @@
             Console.WriteLine("It took {0} milliseconds to generate base maps.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
+            foreach(var m in maps) m.SaveMapToPngFile();
+            return
 
             Console.WriteLine("Starting evolution");
             RunEvolution(maps, new Random(0), numberOfGenerations: 1, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
@@ -139,7 +139,7 @@
             var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
 
-            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: false, randomSeed: 100000);
+            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: false, r: new Random(100000));
             ca.SetRuleset(new List<Rule> { ruleBasicHeight1 });
             ca.RunGenerations(generateHeight2ThroughRules: false);
 
@@ -188,7 +188,7 @@
             var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
 
-            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, randomSeed: 10000);
+            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, r: new Random(100000));
 
             var map = new MapPhenotype(ca.Map, new Enums.Item[Width, Height]);
             map.SaveMapToPngFile("1_original", Folder);
@@ -844,7 +844,7 @@
             {
                 foreach (var seed in caRandomSeeds)
                 {
-                    ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, groupPoints, generateHeight2, seed);
+                    ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, groupPoints, generateHeight2, new Random(seed));
                     if (caRuleset != null)
                     {
                         ca.SetRuleset(caRuleset);

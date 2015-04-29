@@ -65,12 +65,12 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="oddsOfHeight2"> The odds of a tile being changed to height 2. </param>
         /// <param name="groupPoints"> The number of points where terrain should be group during the initial seeding. </param>
         /// <param name="generateHeight2"> Determines if the cellular automata should generate height2 or not. </param>
-        /// <param name="randomSeed"> The seed for the random generator. If null, will use the MapHelper Random. </param>
-        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25, int groupPoints = 0, bool generateHeight2 = true, int? randomSeed = null)
+        /// <param name="r"> The random to use. If null, will use the MapHelper Random. </param>
+        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25, int groupPoints = 0, bool generateHeight2 = true, Random r = null)
         {
             this.Map = new Enums.HeightLevel[xSize, ySize];
 
-            this.random = (randomSeed == null) ? MapHelper.Random : new Random((int)randomSeed);
+            this.random = r ?? MapHelper.Random;
 
             this.XSize = xSize;
             this.YSize = ySize;
@@ -114,9 +114,11 @@ namespace OPMGFS.Map.CellularAutomata
             this.LoadBasicRuleset();
         }
 
-        public CellularAutomata(int xSize, int ySize, Enums.Half half, Enums.HeightLevel[,] map)
+        public CellularAutomata(int xSize, int ySize, Enums.Half half, Enums.HeightLevel[,] map, Random r = null)
         {
             this.Map = (Enums.HeightLevel[,])map.Clone();
+
+            this.random = r ?? MapHelper.Random;
 
             this.XSize = xSize;
             this.YSize = ySize;
