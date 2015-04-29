@@ -119,9 +119,12 @@
                     potentialMapPoints.AddRange(newPoints.Where(mp => mp.Type == Enums.MapPointType.DestructibleRocks));
                 }
 
-                var index = r.Next(0, potentialMapPoints.Count);
-                var element = potentialMapPoints[index];
-                newPoints.Remove(element);
+                if (potentialMapPoints.Count > 0)
+                {
+                    var index = r.Next(0, potentialMapPoints.Count);
+                    var element = potentialMapPoints[index];
+                    newPoints.Remove(element);
+                }
             }
 
             var finalNewPoints = new List<MapPoint>();
