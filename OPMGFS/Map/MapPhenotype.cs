@@ -269,7 +269,8 @@ namespace OPMGFS.Map
                             || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Ramp12) continue;
 
                         // If there are no items on the position being checked, place a cliff.
-                        if (this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] == Item.None
+                        if ((this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] == Item.None
+                            || this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] == Item.Occupied)
                             && (int)this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] < (int)this.HeightLevels[x, y])
                             tempMap[neighbourPosition.Item1, neighbourPosition.Item2] = HeightLevel.Cliff;
                         else if (this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] != Item.None
