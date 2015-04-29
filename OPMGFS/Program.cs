@@ -45,7 +45,7 @@
             Console.WriteLine("------");
             sw.Restart();
             foreach(var m in maps) m.SaveMapToPngFile();
-            return
+            return;
 
             Console.WriteLine("Starting evolution");
             RunEvolution(maps, new Random(0), numberOfGenerations: 1, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
