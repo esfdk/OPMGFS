@@ -44,7 +44,7 @@
             Console.WriteLine("It took {0} milliseconds to generate base maps.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
-            foreach(var m in maps) m.SaveMapToPngFile();
+            for(var i = 0; i < maps.Count; i++) maps[i].SaveMapToPngFile(string.Format("{0}", i));
             return;
 
             Console.WriteLine("Starting evolution");
@@ -844,7 +844,8 @@
             {
                 foreach (var seed in caRandomSeeds)
                 {
-                    ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, groupPoints, generateHeight2, new Random(seed));
+                    var random = new Random(seed);
+                    ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, groupPoints, generateHeight2, random);
                     if (caRuleset != null)
                     {
                         ca.SetRuleset(caRuleset);
@@ -857,7 +858,7 @@
 
                     ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
                     var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
-                    map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
+                    map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet, random);
                     map.PlaceCliffs();
                     map.UpdateCliffPositions(Enums.Half.Top);
                     baseMaps.Add(map);

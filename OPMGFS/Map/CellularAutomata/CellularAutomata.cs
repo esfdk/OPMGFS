@@ -173,7 +173,7 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="generateHeight2ThroughRules"> Determines if height2 should be generated through rules or not. </param>
         public void NextGeneration(bool generateHeight2ThroughRules = true)
         {
-            this.Map = this.ruleSet.NextGeneration(this.Map, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd, generateHeight2ThroughRules);
+            this.Map = this.ruleSet.NextGeneration(this.Map, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd, generateHeight2ThroughRules, this.random);
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace OPMGFS.Map.CellularAutomata
 
             for (int g = 0; g < 10; g++)
             {
-                tempMap = tempRuleSet.NextGeneration(tempMap, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd, false);
+                tempMap = tempRuleSet.NextGeneration(tempMap, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd, false, this.random);
             }
 
             this.Map = tempMap;

@@ -218,13 +218,15 @@ namespace OPMGFS.Map
         /// <param name="smoothingExtNeighbourhood"> If the number of neighbours in the extended Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
         /// <param name="smoothingGenerations"> The number of "generations" to run. </param>
         /// <param name="newRuleset"> The ruleset to use for smoothing. If null, default ruleset is used. </param>
-        public void SmoothTerrain(int smoothingNormalNeighbourhood = 2, int smoothingExtNeighbourhood = 6, int smoothingGenerations = 10, List<Rule> newRuleset = null)
+        /// <param name="random"> The random to use during smoothing.</param>
+        public void SmoothTerrain(int smoothingNormalNeighbourhood = 2, int smoothingExtNeighbourhood = 6, int smoothingGenerations = 10, List<Rule> newRuleset = null, Random random = null)
         {
             var smoothCA = new CellularAutomata.CellularAutomata(
                 this.XSize,
                 this.YSize,
                 this.mapHalf,
-                this.HeightLevels);
+                this.HeightLevels,
+                random);
 
             if (newRuleset == null)
             {
