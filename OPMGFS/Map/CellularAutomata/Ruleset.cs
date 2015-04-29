@@ -9,6 +9,7 @@
 
 namespace OPMGFS.Map.CellularAutomata
 {
+    using System;
     using System.Collections.Generic;
 
     using Position = System.Tuple<int, int>;
@@ -50,6 +51,7 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="caYStart"> The y start position of the cellular automata. </param>
         /// <param name="caYEnd"> The y end position of the cellular automata. </param>
         /// <param name="generateHeight2"> Determines if height2 should be created through rules or not. </param>
+        /// <param name="newRandom"> The new random generator to use. If null, uses MapHelper's random. </param>
         /// <returns> A map representing the next generation. </returns>
         public Enums.HeightLevel[,] NextGeneration(
             Enums.HeightLevel[,] map,
@@ -57,9 +59,11 @@ namespace OPMGFS.Map.CellularAutomata
             int caXEnd,
             int caYStart,
             int caYEnd,
-            bool generateHeight2)
+            bool generateHeight2,
+            Random newRandom = null)
         {
             var tempMap = (Enums.HeightLevel[,])map.Clone();
+            var random = newRandom ?? MapHelper.Random;
 
             // Iterate over every row and column
             for (var y = caYStart; y < caYEnd; y++)
@@ -148,13 +152,13 @@ namespace OPMGFS.Map.CellularAutomata
                             else 
                                 probability = condition.Item2[neighbours[condition.Item1]];
 
-                            if (MapHelper.Random.NextDouble() <= probability) 
+                            if (random.NextDouble() <= probability) 
                                 tempMap[x, y] = rule.TransformTo;
 
                             ruleApplied = true;
                         }
 
-                        if (tempMap[x, y] == Enums.HeightLevel.Height0 && MapHelper.Random.NextDouble() < 0.01) 
+                        if (tempMap[x, y] == Enums.HeightLevel.Height0 && random.NextDouble() < 0.01) 
                             tempMap[x, y] = Enums.HeightLevel.Height1;
                     }
                 }

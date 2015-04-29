@@ -365,6 +365,8 @@ namespace OPMGFS.Map
                 // Saving map
                 bm.Save(Path.Combine(mapDir, mapItemFile));
             }
+
+            bm.Dispose();
         }
 
         /// <summary>
