@@ -150,7 +150,7 @@
 
             fitness += this.ChokePoints();
 
-            // ITODO: (DONE) Remember natrual expansion
+            // ITODO: Grooss - Take a look at why maps get a specific fitness
 
             //// Fitness:
             ////  X Base space (amount of tiles around the base that are passable)
@@ -189,8 +189,6 @@
                     this.map.HeightLevels,
                     Radius,
                     this.map.DestructibleRocks);
-
-            //// TODO: (DONE) Consider destructible rocks
 
             var max = (((Radius * 2) + 1) * ((Radius * 2) + 1)) - Math.Pow(5, 2);
             var min = 0d;

@@ -22,7 +22,6 @@
         /// <returns>The mutated list of map points.</returns>
         public static List<MapPoint> MutateMapPoints(List<MapPoint> mapPoints, double mutationChance, MapSearchOptions mso, Random r)
         {
-            // ITODO: Melnyk - Make option to only mutate into "legal" map points
             var newPoints = mapPoints.Select(mp => r.NextDouble() < mutationChance ? mp.Mutate(r, mso) : mp).ToList();
 
             var randomNumber = r.NextDouble();

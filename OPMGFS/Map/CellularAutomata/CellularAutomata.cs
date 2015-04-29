@@ -256,7 +256,7 @@ namespace OPMGFS.Map.CellularAutomata
         /// </summary>
         private void LoadBasicRuleset()
         {
-            // ITODO: (DONE) May want to use ruleset from Program.cs. Thsi one seems shit.
+            // TODO: Grooss - Take a look at the rules
             var ruleExtBasicHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2)
             {
                 Neighbourhood =

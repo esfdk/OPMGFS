@@ -247,7 +247,6 @@ namespace OPMGFS.Map
         /// </summary>
         public void PlaceCliffs()
         {
-            // ITODO: (DONE) Grooss - Allow for defining how much of the map should be "cliffed"
             var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
 
             var xStart = (this.mapHalf == Half.Right) ? (this.XSize / 2) - (int)(this.XSize * 0.1) : 0;
