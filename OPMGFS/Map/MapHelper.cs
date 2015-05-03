@@ -243,7 +243,7 @@ namespace OPMGFS.Map
         /// <returns> True if the position is close to any of the positions in the list; false otherwise. </returns>
         public static bool CloseToAny(Position pos, IEnumerable<Position> positions, int range = 3)
         {
-            return positions.Any(position => Math.Abs(pos.Item1 - position.Item1) <= range || Math.Abs(pos.Item2 - position.Item2) <= range);
+            return positions.Any(position => (Math.Abs(pos.Item1 - position.Item1) + Math.Abs(pos.Item2 - position.Item2)) <= range);
         }
 
         /// <summary>

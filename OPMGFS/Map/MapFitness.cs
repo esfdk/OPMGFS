@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     using Position = System.Tuple<int, int>;
@@ -49,7 +50,7 @@
         /// <summary>
         /// The path between bases.
         /// </summary>
-        private List<Position> pathBetweenStartBases;
+        public List<Position> pathBetweenStartBases;
 
         /// <summary>
         /// The positions of the normal bases found.
@@ -120,7 +121,7 @@
 
                     // Check if the area is a base
                     if (this.map.MapItems[tempX, tempY] == Enums.Item.Base
-                        && !MapHelper.CloseToAny(new Position(tempX, tempY), this.bases))
+                        && !MapHelper.CloseToAny(new Position(tempX, tempY), this.bases, 5))
                     {
                         this.bases.Add(new Position(tempX + 2, tempY - 2));
                     }
@@ -135,20 +136,38 @@
                 this.mfo.PathfindingIgnoreDestructibleRocks);
 
             fitness += this.BaseSpace();
+            Console.WriteLine("Base Space:                         " + fitness);
+            var prevFitness = fitness;
 
             fitness += this.BaseHeightLevel();
+            Console.WriteLine("Base Height Level:                  " + (fitness - prevFitness));
+            prevFitness = fitness;
 
             fitness += this.PathBetweenStartBases();
+            Console.WriteLine("Path Between Start Bases:           " + (fitness - prevFitness));
+            prevFitness = fitness;
 
             fitness += this.NewHeightReached();
+            Console.WriteLine("New Height Reached:                 " + (fitness - prevFitness));
+            prevFitness = fitness;
 
             fitness += this.DistanceToNaturalExpansion();
+            Console.WriteLine("Distance to Natural Expansions:     " + (fitness - prevFitness));
+            prevFitness = fitness;
 
             fitness += this.DistanceToNonNaturalExpansions();
+            Console.WriteLine("Distance To Non Natural Expansions: " + (fitness - prevFitness));
+            prevFitness = fitness;
 
             fitness += this.ExpansionsAvailable();
+            Console.WriteLine("Expansions Available:               " + (fitness - prevFitness));
+            prevFitness = fitness;
 
+            var sw = new Stopwatch();
+            sw.Start();
             fitness += this.ChokePoints();
+            Console.WriteLine("Choke Points:                       " + (fitness - prevFitness) + " with time " + sw.ElapsedMilliseconds + " millis");
+            sw.Stop();
 
             // ITODO: Grooss - Take a look at why maps get a specific fitness
 
@@ -381,8 +400,29 @@
 
                 var normalizedGround = (actualDistance - minGround) / (maxGround - minGround);
 
-                // Direct (flight) distance
-                var maxDirect = Math.Sqrt(Math.Pow(this.xSize * 0.7, 2) + Math.Pow(this.ySize * 0.7, 2));
+                // Direct (flight) distanc
+                double maxDirect;
+
+                switch (i)
+                {
+                    case 0:
+                        maxDirect = this.mfo.PathExpDirectDistances[0].Item2;
+                        break;
+
+                    case 1:
+                        maxDirect = this.mfo.PathExpDirectDistances[1].Item2;
+                        break;
+
+                    case 2:
+                        maxDirect = this.mfo.PathExpDirectDistances[2].Item2;
+                        break;
+
+                    default:
+                        maxDirect = this.mfo.PathExpDirectDistances[3].Item2;
+                        break;
+                }
+
+                maxDirect = Math.Sqrt(Math.Pow(this.xSize * maxDirect, 2) + Math.Pow(this.ySize * maxDirect, 2));
                 if (maxDirect > this.mfo.PathExpMaxDirectDistance) maxDirect = this.mfo.PathExpMaxDirectDistance;
 
                 var minDirect = Math.Sqrt(Math.Pow(this.xSize * 0.1, 2) + Math.Pow(this.ySize * 0.1, 2));
@@ -473,17 +513,17 @@
             var max = this.mfo.ExpansionsAvailableMax;
             var min = this.mfo.ExpansionsAvailableMin;
 
-            var actual = this.bases.Count;
+            var actual = this.bases.Count / 2d;
 
             // If there are less bases than minimum, set number of bases to minimum.
             if (actual < min) actual = min;
 
-            actual = (actual / 2d > max)
-                        ? (int)(max - ((actual / 2d) - max))
-                        : (int)(actual / 2d);
+            actual = (actual > max)
+                        ? (int)(max - (actual - max))
+                        : (int)actual;
             if (actual < min) actual = min;
 
-            var normalized = ((actual / 2d) - min) / (max - min);
+            var normalized = (actual - min) / (max - min);
             return normalized * this.mfo.ExpansionsAvailableSignificance;
         }
 
@@ -493,14 +533,17 @@
         /// <returns> A number between 0.0 and 1.0 based on how many choke points that are found. </returns>
         private double ChokePoints()
         {
-            var chokePoints = 0;
+            var chokePoints = 0d;
+            var chokePointList = new List<Position>();
 
             var previousHeightLevel =
                 this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
 
+            // HACK: Bug: Finds points that are not actually choke points.
             for (var nodeIndex = 0; nodeIndex < this.pathBetweenStartBases.Count; nodeIndex++)
             {
                 var node = this.pathBetweenStartBases[nodeIndex];
+                if (MapHelper.CloseToAny(node, chokePointList)) continue;
 
                 if (this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp01
                      || this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp12)
@@ -511,25 +554,27 @@
                     if (!this.IsRampChokePoint(this.pathBetweenStartBases[nodeIndex + 1], this.mfo.ChokePointsWidth)) continue;
 
                     chokePoints++;
+                    chokePointList.Add(node);
                 }
                 else if (nodeIndex % this.mfo.ChokePointSearchStep == 0)
                 {
                     //// Otherwise, only perform a choke point check every x steps.
 
-                    if (!this.IsPositionChokePoint(this.pathBetweenStartBases[nodeIndex], this.mfo.ChokePointsWidth)) continue;
+                    if (!this.IsPositionChokePoint(node, this.mfo.ChokePointsWidth)) continue;
 
                     chokePoints++;
+                    chokePointList.Add(node);
                 }
             }
 
-            var max = this.mfo.ChokePointsMax;
-            var min = this.mfo.ChokePointsMin;
+            double max = this.mfo.ChokePointsMax;
+            double min = this.mfo.ChokePointsMin;
             var actual = (chokePoints > max) 
-                            ? max - (chokePoints - max) 
+                            ? max - (chokePoints - max)
                             : chokePoints;
             if (actual < min) actual = min;
 
-            var normalized = (actual - max) / (max - min);
+            var normalized = (actual - min) / (max - min);
             return normalized * this.mfo.ChokePointsSignificance;
         }
 

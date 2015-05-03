@@ -30,6 +30,7 @@
             ////TestFitness();
             ////TestPathfinding();
 
+            /*
             var sw = new Stopwatch();
             sw.Start();
 
@@ -62,6 +63,7 @@
             Console.WriteLine("Novelty search done. It took {0} milliseconds to perform novelty search.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
+             * */
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -147,14 +149,20 @@
 
             map.SmoothTerrain();
             map.PlaceCliffs();
+            map.SmoothCliffs();
+            map.UpdateCliffPositions(Enums.Half.Top);
+
+            //map.SaveMapToPngFile("0", heightMap: false);
 
             var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions());
-            mapSolution.MapPoints.Add(new MapPoint(0.5, 45, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
-            mapSolution.MapPoints.Add(new MapPoint(0.75, 90, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
+            mapSolution.MapPoints.Add(new MapPoint(0.7, 25, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
+            mapSolution.MapPoints.Add(new MapPoint(0.75, 50, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
+            mapSolution.MapPoints.Add(new MapPoint(0.25, 50, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
+            mapSolution.MapPoints.Add(new MapPoint(0.5, 90, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.5, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.No));
             map = mapSolution.ConvertedPhenotype;
 
-            map.SaveMapToPngFile();
+            //map.SaveMapToPngFile("1", heightMap: false);
 
             ////var start = new Position(32, 32);
             ////var end = new Position(96, 96);
@@ -176,6 +184,13 @@
             var fitness = mapFitness.CalculateFitness();
             sw.Stop();
             Console.WriteLine(fitness + " - " + sw.ElapsedMilliseconds);
+
+            foreach (var pos in mapFitness.pathBetweenStartBases)
+            {
+                map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Impassable;
+            }
+
+            //map.SaveMapToPngFile("1", heightMap: false);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
