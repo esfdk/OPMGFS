@@ -204,6 +204,30 @@
 
         #endregion
 
+        #region Xel'Naga Placement
+
+        /// <summary>
+        /// The significance of how much of the path between start bases the Xel'Naga tower's can see.
+        /// </summary>
+        public readonly int XelNagaPlacementSignificance;
+
+        /// <summary>
+        /// The range before a point is considered within range of the Xel'Naga tower.
+        /// </summary>
+        public readonly int DistanceToXelNaga;
+
+        /// <summary>
+        /// The maximum number of tiles on the path between start bases the Xel'Naga tower should give vision of.
+        /// </summary>
+        public readonly int StepsInXelNagaRangeMax;
+
+        /// <summary>
+        /// The minimum number of tiles on the path between start bases the Xel'Naga tower should give vision of.
+        /// </summary>
+        public readonly int StepsInXelNagaRangeMin;
+
+        #endregion
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MapFitnessOptions"/> class.
         /// </summary>
@@ -239,6 +263,10 @@
         /// <param name="chokePointsMin"> The minimum number of choke points. </param>
         /// <param name="chokePointsWidth"> The maximum width of an area that is considered a choke point. </param>
         /// <param name="chokePointSearchStep"> Every x (the value) will be checked for a choke point. </param>
+        /// <param name="xelNagaPlacementSignificance"> The significance of how much of the path between start bases the Xel'Naga tower's can see. </param>
+        /// <param name="distanceToXelNaga"> The range before a point is considered within range of the Xel'Naga tower. </param>
+        /// <param name="stepsInXelNagaRangeMax"> The maximum number of tiles on the path between start bases the Xel'Naga tower should give vision of. </param>
+        /// <param name="stepsInXelNagaRangeMin"> The minimum number of tiles on the path between start bases the Xel'Naga tower should give vision of. </param>
         public MapFitnessOptions(
             bool pathfindingIgnoreDestructibleRocks = true,
             int baseSpaceSignificance = 5, 
@@ -271,7 +299,11 @@
             int chokePointsMax = 5, 
             int chokePointsMin = 0, 
             int chokePointsWidth = 2,
-            int chokePointSearchStep = 1)
+            int chokePointSearchStep = 1, 
+            int xelNagaPlacementSignificance = 5, 
+            int distanceToXelNaga = 22, 
+            int stepsInXelNagaRangeMax = 30, 
+            int stepsInXelNagaRangeMin = 0)
         {
             this.PathfindingIgnoreDestructibleRocks = pathfindingIgnoreDestructibleRocks;
             this.BaseSpaceSignificance = baseSpaceSignificance;
@@ -303,6 +335,10 @@
             this.ChokePointsMin = chokePointsMin;
             this.ChokePointsWidth = chokePointsWidth;
             this.ChokePointSearchStep = chokePointSearchStep;
+            this.XelNagaPlacementSignificance = xelNagaPlacementSignificance;
+            this.DistanceToXelNaga = distanceToXelNaga;
+            this.StepsInXelNagaRangeMax = stepsInXelNagaRangeMax;
+            this.StepsInXelNagaRangeMin = stepsInXelNagaRangeMin;
             this.PathExpDirectDistances = pathExpDirectDistances;
 
             if (pathExpMaxDistances == null)

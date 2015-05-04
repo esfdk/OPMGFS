@@ -100,7 +100,7 @@ namespace OPMGFS.Map.CellularAutomata
 
                     if (groupList.Count > 0)
                     {
-                        // TODO: How do we want "closest to" to work? Look in a square or look in a circle?
+                        // TODO: Change to make points close to groupList become height2 instead of height1, then scrap height2 from normal generation?
                         var closest = (double)MapHelper.ClosestTo(new Position(x, y), groupList, 8);
                         if (closest <= 8) odds = odds - ((8d - closest) / 20d);
                     }

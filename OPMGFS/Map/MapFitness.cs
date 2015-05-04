@@ -38,19 +38,29 @@
         private readonly MapPhenotype map;
 
         /// <summary>
-        /// The position of the first start base.
+        /// The position of the top-most start base.
         /// </summary>
         private Position startBasePosition1;
 
         /// <summary>
-        /// The position of the first second base.
+        /// The position of the bottom-most start base.
         /// </summary>
         private Position startBasePosition2;
 
         /// <summary>
+        /// The position of the top-most Xel'Naga tower.
+        /// </summary>
+        private Position xelNagaPosition1;
+
+        /// <summary>
+        /// The position of the bottom-most Xel'Naga tower.
+        /// </summary>
+        private Position xelNagaPosition2;
+
+        /// <summary>
         /// The path between bases.
         /// </summary>
-        public List<Position> pathBetweenStartBases;
+        private List<Position> pathBetweenStartBases;
 
         /// <summary>
         /// The positions of the normal bases found.
@@ -119,15 +129,34 @@
                         this.heighestLevel = this.map.HeightLevels[tempX, tempY];
                     }
 
+                    var tempPos = new Position(tempX, tempY);
+
                     // Check if the area is a base
                     if (this.map.MapItems[tempX, tempY] == Enums.Item.Base
-                        && !MapHelper.CloseToAny(new Position(tempX, tempY), this.bases, 5))
+                        && !MapHelper.CloseToAny(tempPos, this.bases, 5))
                     {
                         this.bases.Add(new Position(tempX + 2, tempY - 2));
+                    }
+
+                    // Save the first XelNaga tower found
+                    if (this.map.MapItems[tempX, tempY] == Enums.Item.XelNagaTower 
+                        && this.xelNagaPosition2 == null)
+                    {
+                        this.xelNagaPosition2 = tempPos;
+                    }
+
+                    // Save the second XelNaga tower found
+                    if (this.map.MapItems[tempX, tempY] == Enums.Item.XelNagaTower
+                        && this.xelNagaPosition2 != null
+                        && this.xelNagaPosition1 == null
+                        && !MapHelper.CloseTo(tempPos, this.xelNagaPosition2, 4))
+                    {
+                        this.xelNagaPosition1 = tempPos;
                     }
                 }
             }
 
+            // If no start bases are found, the map is not feasible and running fitness calculations is not worth it.
             if (this.startBasePosition1 == null || this.startBasePosition2 == null) return -200000;
 
             this.pathBetweenStartBases = this.mapPathfinding.FindPathFromTo(
@@ -136,50 +165,58 @@
                 this.mfo.PathfindingIgnoreDestructibleRocks);
 
             fitness += this.BaseSpace();
-            Console.WriteLine("Base Space:                         " + fitness);
+            Console.WriteLine("Base Space:                         {0}", fitness);
             var prevFitness = fitness;
 
             fitness += this.BaseHeightLevel();
-            Console.WriteLine("Base Height Level:                  " + (fitness - prevFitness));
+            Console.WriteLine("Base Height Level:                  {0}", fitness - prevFitness);
             prevFitness = fitness;
 
             fitness += this.PathBetweenStartBases();
-            Console.WriteLine("Path Between Start Bases:           " + (fitness - prevFitness));
+            Console.WriteLine("Path Between Start Bases:           {0}", fitness - prevFitness);
             prevFitness = fitness;
 
             fitness += this.NewHeightReached();
-            Console.WriteLine("New Height Reached:                 " + (fitness - prevFitness));
+            Console.WriteLine("New Height Reached:                 {0}", fitness - prevFitness);
             prevFitness = fitness;
 
             fitness += this.DistanceToNaturalExpansion();
-            Console.WriteLine("Distance to Natural Expansions:     " + (fitness - prevFitness));
+            Console.WriteLine("Distance to Natural Expansions:     {0}", fitness - prevFitness);
             prevFitness = fitness;
 
             fitness += this.DistanceToNonNaturalExpansions();
-            Console.WriteLine("Distance To Non Natural Expansions: " + (fitness - prevFitness));
+            Console.WriteLine("Distance To Non Natural Expansions: {0}", fitness - prevFitness);
             prevFitness = fitness;
 
             fitness += this.ExpansionsAvailable();
-            Console.WriteLine("Expansions Available:               " + (fitness - prevFitness));
+            Console.WriteLine("Expansions Available:               {0}", fitness - prevFitness);
             prevFitness = fitness;
 
             var sw = new Stopwatch();
             sw.Start();
             fitness += this.ChokePoints();
-            Console.WriteLine("Choke Points:                       " + (fitness - prevFitness) + " with time " + sw.ElapsedMilliseconds + " millis");
+            Console.WriteLine("Choke Points:                       {0}, with time {1} millis", fitness - prevFitness, sw.ElapsedMilliseconds);
+            prevFitness = fitness;
             sw.Stop();
+
+            fitness += this.XelNagaPlacement();
+            Console.WriteLine("Xel'Naga Placement:                 {0}", fitness - prevFitness);
+
+            // ITODO: (DONE) Grooss - Add Xel'Naga tower to fitness
 
             // ITODO: Grooss - Take a look at why maps get a specific fitness
 
-            //// Fitness:
-            ////  X Base space (amount of tiles around the base that are passable)
-            ////  X Base height (is the start base on heigh ground)
-            ////  X Distance between start bases
-            ////  X How many times is a new height reached?
-            ////  X Distance to nearest expansion
-            ////  X Expansions available
-            ////  X Choke points (find route between bases and look for ramps, then find their width)
-            
+            //// Used to check Xel'Naga vision
+            ////for (var tempY = this.ySize - 1; tempY >= 0; tempY--)
+            ////{
+            ////    for (var tempX = 0; tempX < this.xSize; tempX++)
+            ////    {
+            ////        if (MapHelper.CloseTo(new Position(tempX, tempY), this.xelNagaPosition1, this.mfo.DistanceToXelNaga)
+            ////            || MapHelper.CloseTo(new Position(tempX, tempY), this.xelNagaPosition2, this.mfo.DistanceToXelNaga))
+            ////            this.map.MapItems[tempX, tempY] = Enums.Item.GoldMinerals;
+            ////    }
+            ////}
+
             return fitness;
         }
 
@@ -187,7 +224,7 @@
         /// Checks that there is space for building around the base. All spaces within 5 range of the main base (7 from middle of the base)
         /// should be traversable. Does not account for items (gas/minerals, etc.)
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 describing how large a percentage of the tiles that are open. </returns>
+        /// <returns> A number between 0.0 and 1.0 multiplied by significance describing how large a percentage of the tiles that are open. </returns>
         private double BaseSpace()
         {
             const int Radius = 10;
@@ -210,6 +247,7 @@
                     this.map.DestructibleRocks);
 
             var max = (((Radius * 2) + 1) * ((Radius * 2) + 1)) - Math.Pow(5, 2);
+            // ReSharper disable once ConvertToConstant.Local
             var min = 0d;
             var actual = reachable.Count - Math.Pow(5, 2);
 
@@ -225,6 +263,7 @@
         private double BaseHeightLevel()
         {
             var max = (double)(int)this.heighestLevel;
+            // ReSharper disable once ConvertToConstant.Local
             var min = 0d;
             var actual = (double)(int)this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
 
@@ -235,7 +274,7 @@
         /// <summary>
         /// Finds a value for the distance between the start bases.
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 based on how far the bases are from each other. </returns>
+        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how far the bases are from each other. </returns>
         private double PathBetweenStartBases()
         {
             if (this.pathBetweenStartBases.Count <= 0) 
@@ -278,7 +317,7 @@
         /// <summary>
         /// Figures out how many times a new height is reached during the path between the bases.
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 based on how many times a new height is reached. </returns>
+        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how many times a new height is reached. </returns>
         private double NewHeightReached()
         {
             if (this.pathBetweenStartBases.Count <= 0) 
@@ -315,7 +354,7 @@
         /// <summary>
         /// Figures out how close the the non-natural expansions are to the start base.
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 based on how far the non-natural expansions are from the start base. </returns>
+        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how far the non-natural expansions are from the start base. </returns>
         private double DistanceToNonNaturalExpansions()
         {
             if (this.bases.Count <= 0) return 0d;
@@ -447,7 +486,7 @@
         /// <summary>
         /// Figures out how close the closest expansion is to the start base.
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 based on how far the nearest expansion is from the start base. </returns>
+        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how far the nearest expansion is from the start base. </returns>
         private double DistanceToNaturalExpansion()
         {
             // Find the nearest expansion (if any)
@@ -507,7 +546,7 @@
         /// <summary>
         /// Figures out how many expansions that are available for each start base.
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 based on how many expansions that are available for every start base. </returns>
+        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how many expansions that are available for every start base. </returns>
         private double ExpansionsAvailable()
         {
             var max = this.mfo.ExpansionsAvailableMax;
@@ -530,7 +569,7 @@
         /// <summary>
         /// Figures out how many choke points that are available on the road between the two start bases.
         /// </summary>
-        /// <returns> A number between 0.0 and 1.0 based on how many choke points that are found. </returns>
+        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how many choke points that are found. </returns>
         private double ChokePoints()
         {
             var chokePoints = 0d;
@@ -576,6 +615,48 @@
 
             var normalized = (actual - min) / (max - min);
             return normalized * this.mfo.ChokePointsSignificance;
+        }
+
+        /// <summary>
+        /// Figures out how many steps of the path between the start bases the two Xel'Naga towers cover.
+        /// </summary>
+        /// <returns> A value between 0.0 and 1.0 multiplied by significance based on how many steps that are covered. </returns>
+        private double XelNagaPlacement()
+        {
+            // If no Xel'Naga tower are found, return 0.
+            if (this.xelNagaPosition2 == null) return 0d;
+
+            double stepsCovered2 =
+                this.pathBetweenStartBases.Count(
+                    step => MapHelper.CloseTo(step, this.xelNagaPosition2, this.mfo.DistanceToXelNaga));
+
+            double max2 = this.mfo.StepsInXelNagaRangeMax;
+            double min2 = this.mfo.StepsInXelNagaRangeMin;
+            var actual2 = (stepsCovered2 > max2) 
+                            ? max2 - (stepsCovered2 - max2) 
+                            : stepsCovered2;
+            if (actual2 < min2) actual2 = min2;
+
+            var normalized2 = (actual2 - min2) / (max2 - min2);
+
+            // If only one Xel'Naga tower is found, return the significance for just that one, but halved.
+            if (this.xelNagaPosition1 == null) 
+                return (normalized2 * this.mfo.XelNagaPlacementSignificance) / 2d;
+
+            double stepsCovered1 =
+                this.pathBetweenStartBases.Count(
+                    step => MapHelper.CloseTo(step, this.xelNagaPosition1, this.mfo.DistanceToXelNaga));
+
+            double max1 = this.mfo.StepsInXelNagaRangeMax;
+            double min1 = this.mfo.StepsInXelNagaRangeMin;
+            var actual1 = (stepsCovered1 > max1)
+                            ? max1 - (stepsCovered1 - max1)
+                            : stepsCovered1;
+            if (actual1 < min1) actual1 = min1;
+
+            var normalized1 = (actual1 - min1) / (max1 - min1);
+
+            return ((normalized1 + normalized2) / 2d) * this.mfo.XelNagaPlacementSignificance;
         }
 
         /// <summary>

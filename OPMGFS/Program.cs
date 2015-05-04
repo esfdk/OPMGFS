@@ -27,7 +27,7 @@
             ////TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            ////TestFitness();
+            TestFitness();
             ////TestPathfinding();
 
             /*
@@ -159,6 +159,7 @@
             mapSolution.MapPoints.Add(new MapPoint(0.75, 50, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.25, 50, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.5, 90, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
+            mapSolution.MapPoints.Add(new MapPoint(0.2, 90, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.5, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.No));
             map = mapSolution.ConvertedPhenotype;
 
@@ -183,12 +184,13 @@
             sw.Start();
             var fitness = mapFitness.CalculateFitness();
             sw.Stop();
-            Console.WriteLine(fitness + " - " + sw.ElapsedMilliseconds);
+            Console.WriteLine("Total fitness: {0}", fitness);
+            Console.WriteLine("Took {0} millis to calculate.", sw.ElapsedMilliseconds);
 
-            foreach (var pos in mapFitness.pathBetweenStartBases)
-            {
-                map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Impassable;
-            }
+            //foreach (var pos in mapFitness.pathBetweenStartBases)
+            //{
+            //    map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Impassable;
+            //}
 
             //map.SaveMapToPngFile("1", heightMap: false);
         }
