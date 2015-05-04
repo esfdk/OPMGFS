@@ -59,11 +59,13 @@
                 addToArchive: 5,
                 feasiblePopulationSize: 50,
                 infeasiblePopulationSize: 50);
-            RunNoveltysearch(maps, new Random(0), numberOfGenerations: 2, noveltySearchOptions: nso);
+            RunNoveltySearch(maps, new Random(0), numberOfGenerations: 2, noveltySearchOptions: nso);
             Console.WriteLine("Novelty search done. It took {0} milliseconds to perform novelty search.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
              * */
+
+            RunEvolutionWithNoveltyAsBase(GetBaseMaps(), new Random());
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -753,6 +755,7 @@
                                       PopulationStrategy = populationStrategy
                                   };
 
+                evolver.Initialize();
                 evolver.Evolve();
                 var variationValue = 0;
 
@@ -769,7 +772,7 @@
             }
         }
 
-        public static void RunNoveltysearch(
+        public static void RunNoveltySearch(
             List<MapPhenotype> maps,
             Random r,
             MapSearchOptions mapSearchOptions = null,
@@ -809,6 +812,105 @@
                     else
                     {
                         Console.WriteLine("fitness too low: " + fitness);
+                    }
+                }
+
+                baseMapCounter++;
+            }
+        }
+
+        public static void RunEvolutionWithNoveltyAsBase(
+            List<MapPhenotype> maps,
+            Random r,
+            MapSearchOptions mapSearchOptions = null,
+            NoveltySearchOptions noveltySearchOptions = null,
+            MapFitnessOptions mapFitnessOptions = null,
+            int numberOfNoveltyGenerations = 10,
+            int numberOfEvolutionGenerations = 10,
+            int populationSize = 10,
+            int numberOfParents = 3,
+            int numberOfChildren = 8,
+            double mutationChance = 0.3,
+            Enums.SelectionStrategy selectionStrategy = Enums.SelectionStrategy.HighestFitness,
+            Enums.SelectionStrategy parentSelectionStrategy = Enums.SelectionStrategy.HighestFitness,
+            Enums.PopulationStrategy populationStrategy = Enums.PopulationStrategy.Mutation,
+            string folderName = "MapNoveltyEvolution",
+            double lowestFitnessLevelForPrint = double.MinValue)
+        {
+            var mso = mapSearchOptions ?? new MapSearchOptions(null);
+            var mfo = mapFitnessOptions ?? new MapFitnessOptions();
+            var nso = noveltySearchOptions ?? new NoveltySearchOptions();
+            var listOfArchives = new List<List<Solution>>();
+            var baseMapCounter = 0;
+            foreach (var map in maps)
+            {
+                var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
+                var items = map.MapItems.Clone() as Enums.Item[,];
+                var baseMap = new MapPhenotype(heightLevels, items);
+                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
+                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
+
+                mso = new MapSearchOptions(map, mso);
+                var searcher = new MapSearcher(r, mso, nso);
+
+                searcher.RunGenerations(numberOfNoveltyGenerations);
+
+                listOfArchives.Add(searcher.Archive.Archive);
+
+                baseMapCounter++;
+            }
+
+            baseMapCounter = 0;
+
+            foreach (var map in maps)
+            {
+                mso = new MapSearchOptions(map, mso);
+                var evolver = new Evolver<EvolvableMap>(
+                    numberOfEvolutionGenerations,
+                    populationSize,
+                    numberOfParents,
+                    numberOfChildren,
+                    mutationChance,
+                    r,
+                    new object[] { mso, mutationChance, r, mfo })
+                                  {
+                                        PopulationSelectionStrategy = selectionStrategy,
+                                        ParentSelectionStrategy = parentSelectionStrategy,
+                                        PopulationStrategy = populationStrategy
+                };
+
+                var solutions = new List<EvolvableMap>();
+                while (solutions.Count < populationSize)
+                {
+                    var highestFitness = double.MinValue;
+                    var index = -1;
+                    var archive = listOfArchives[baseMapCounter];
+                    for (var i = 0; i < archive.Count; i++)
+                    {
+                        var ms = (MapSolution)archive[i];
+                        var fitness = new MapFitness(ms.ConvertedPhenotype, mfo).CalculateFitness();
+                        if (fitness > highestFitness)
+                        {
+                            highestFitness = fitness;
+                            index = i;
+                        }
+                    }
+
+                    solutions.Add(
+                        new EvolvableMap(mso, mutationChance, r, mfo, ((MapSolution)archive[index]).MapPoints));
+                    archive.RemoveAt(index);
+                }
+
+                evolver.Initialize(solutions);
+                evolver.Evolve();
+                var variationValue = 0;
+
+                foreach (var individual in evolver.Population)
+                {
+                    variationValue++;
+                    if (individual.Fitness >= lowestFitnessLevelForPrint)
+                    {
+                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Base Map {0}_Map {1}_Fitness {2}", baseMapCounter, variationValue, individual.Fitness), folderName, false);
                     }
                 }
 

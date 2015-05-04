@@ -14,6 +14,8 @@ namespace OPMGFS.Evolution
     using System.Linq;
 
     using OPMGFS.Map;
+    using OPMGFS.Map.MapObjects;
+    using OPMGFS.Novelty.MapNoveltySearch;
 
     /// <summary>
     /// The evolver.
@@ -112,9 +114,6 @@ namespace OPMGFS.Evolution
         /// <returns>The best individual at the end of the evolution.</returns>
         public Evolvable Evolve()
         {
-            this.GenerateInitialPopulation();
-            this.EvaluatePopulation();
-
             for (var i = 0; i < this.NumberOfGenerations; i++)
             {
                 var candidates = this.SelectParents();
@@ -141,6 +140,18 @@ namespace OPMGFS.Evolution
             //     c. Evaluate children
             //     d. Select individuals for next generation
             // 4. Return the best result
+        }
+
+        public void Initialize()
+        {
+            this.GenerateInitialPopulation();
+            this.EvaluatePopulation();
+        }
+
+        public void Initialize(IEnumerable<T> initialPopulation)
+        {
+            this.Population.AddRange(initialPopulation);
+            this.EvaluatePopulation();
         }
 
         /// <summary>

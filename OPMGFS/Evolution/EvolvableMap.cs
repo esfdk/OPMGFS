@@ -30,7 +30,7 @@
             this.MapPoints = new List<MapPoint>();
         }
 
-        public EvolvableMap(MapSearchOptions mso, double mutationChance, Random r, List<MapPoint> mapPoints, MapFitnessOptions mapFitnessOptions)
+        public EvolvableMap(MapSearchOptions mso, double mutationChance, Random r, MapFitnessOptions mapFitnessOptions, List<MapPoint> mapPoints)
             : this(mso, mutationChance, r, mapFitnessOptions)
         {
             this.MapPoints = mapPoints;
@@ -66,7 +66,7 @@
                 this.MapSearchOptions,
                 this.Random);
 
-            return new EvolvableMap(this.MapSearchOptions, this.MutationChance, this.Random, newPoints, this.MapFitnessOptions);
+            return new EvolvableMap(this.MapSearchOptions, this.MutationChance, this.Random, this.MapFitnessOptions, newPoints);
         }
 
         public override Evolvable SpawnRecombination(Evolvable other)
