@@ -204,7 +204,7 @@
 
             // ITODO: (DONE) Grooss - Add Xel'Naga tower to fitness
 
-            // ITODO: Grooss - Take a look at why maps get a specific fitness
+            // ITODO: (DONE) Grooss - Take a look at why maps get a specific fitness
 
             //// Used to check Xel'Naga vision
             ////for (var tempY = this.ySize - 1; tempY >= 0; tempY--)
@@ -390,12 +390,11 @@
                     closestExpansions[tempClosest.Item1] = new Tuple<int, double>(i, distance);
             }
 
-            // Removes the natural expansion from the list.
+            // If there are not enough expansions, return 0 as fitness.
             if (closestExpansions.Count <= 1)
-            {
                 return 0;
-            }
 
+            // Removes the natural expansion from the list.
             closestExpansions = closestExpansions.OrderBy(x => x.Item2).ToList();
             closestExpansions.RemoveAt(0);
             
@@ -578,7 +577,6 @@
             var previousHeightLevel =
                 this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
 
-            // HACK: Bug: Finds points that are not actually choke points.
             for (var nodeIndex = 0; nodeIndex < this.pathBetweenStartBases.Count; nodeIndex++)
             {
                 var node = this.pathBetweenStartBases[nodeIndex];

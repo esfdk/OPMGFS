@@ -20,6 +20,9 @@
         /// </summary>
         private readonly Enums.HeightLevel[,] map;
 
+        /// <summary>
+        /// The map items in the map (used for collision detection).
+        /// </summary>
         private readonly Enums.Item[,] mapItems;
 
         /// <summary>
@@ -204,7 +207,7 @@
         /// <param name="current"> The current node. </param>
         /// <param name="end"> The end node. </param>
         /// <returns> A list of the successors to the current node. </returns>
-        private List<Node> IdentifySuccessors(Node current, Node end)
+        private IEnumerable<Node> IdentifySuccessors(Node current, Node end)
         {
             var successors = new List<Node>();
             var neighbours = this.NodeNeighbours(current);
@@ -360,7 +363,7 @@
         /// </summary>
         /// <param name="current"> The node to find neighbours for. </param>
         /// <returns> A list of the neighbour nodes. </returns>
-        private List<Node> NodeNeighbours(Node current)
+        private IEnumerable<Node> NodeNeighbours(Node current)
         {
             var neighbours = new List<Node>();
 

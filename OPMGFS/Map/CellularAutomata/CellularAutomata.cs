@@ -220,7 +220,7 @@ namespace OPMGFS.Map.CellularAutomata
 
             // Get the moves to make to reach the entire area around the drop zone.
             moves[0] = 0;
-            for (int r = 1; r <= radius; r++)
+            for (var r = 1; r <= radius; r++)
             {
                 moves[movesPosition] = r;
                 moves[movesPosition + 1] = -r;
@@ -229,7 +229,7 @@ namespace OPMGFS.Map.CellularAutomata
             }
 
             // Randomly choses an area and drops impassable terrain in it.
-            for (int drop = 0; drop < drops; drop++)
+            for (var drop = 0; drop < drops; drop++)
             {
                 var startX = this.random.Next(this.caXStart, this.caXEnd);
                 var startY = this.random.Next(this.caYStart, this.caYEnd);
@@ -259,7 +259,7 @@ namespace OPMGFS.Map.CellularAutomata
 
             var tempRuleSet = new Ruleset(ruleList);
 
-            for (int g = 0; g < 10; g++)
+            for (var g = 0; g < 10; g++)
             {
                 tempMap = tempRuleSet.NextGeneration(tempMap, this.caXStart, this.caXEnd, this.caYStart, this.caYEnd, false, this.random);
             }
