@@ -11,7 +11,6 @@ namespace OPMGFS.Map
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Drawing;
     using System.IO;
     using System.Linq;
@@ -71,6 +70,12 @@ namespace OPMGFS.Map
             this.CliffPositions = new HashSet<Tuple<int, int>>();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapPhenotype"/> class. 
+        /// </summary>
+        /// <param name="heightLevels"> The height levels of the map. </param>
+        /// <param name="mapItems"> The items contained in the map. </param>
+        /// <param name="destructibleRocks"> The array of destructible rocks. </param>
         public MapPhenotype(HeightLevel[,] heightLevels, Item[,] mapItems, bool[,] destructibleRocks)
             : this(heightLevels, mapItems)
         {
@@ -112,6 +117,12 @@ namespace OPMGFS.Map
 
         #region Public Methods
 
+        /// <summary>
+        /// Creates a finished map (placing cliffs, smoothing them, turning/mirroring the map, etc.)
+        /// </summary>
+        /// <param name="half"> The half to work on. </param>
+        /// <param name="function"> The way to create the complete map. </param>
+        /// <returns> The finished map. </returns>
         public MapPhenotype CreateFinishedMap(Half half, Enums.MapFunction function)
         {
             var tempMap = this.CreateCompleteMap(half, function);
@@ -124,7 +135,7 @@ namespace OPMGFS.Map
         /// <summary>
         /// Creates a map where one part has been turned onto the other part of the map.
         /// </summary>
-        /// <param name="half"> The half to turn. </param>
+        /// <param name="half"> The half to work on. </param>
         /// <param name="function"> The way to create the complete map. </param>
         /// <returns> The complete map. </returns>
         public MapPhenotype CreateCompleteMap(Half half, Enums.MapFunction function)
@@ -180,6 +191,9 @@ namespace OPMGFS.Map
             return !(x < 0 || y < (this.YSize / 2.0) || x >= this.XSize || y >= this.YSize);
         }
 
+        /// <summary>
+        /// Removes cliffs that are not placed between two different height levels.
+        /// </summary>
         public void SmoothCliffs()
         {
             for (var tempY = this.YSize - 1; tempY >= 0; tempY--)
@@ -249,6 +263,7 @@ namespace OPMGFS.Map
         {
             var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
 
+            // TODO: No diagonal cliffs
             var xStart = (this.mapHalf == Half.Right) ? (this.XSize / 2) - (int)(this.XSize * 0.1) : 0;
             var xEnd = (this.mapHalf == Half.Left) ? (this.XSize / 2) + (int)(this.XSize * 0.1) : this.XSize;
             var yStart = (this.mapHalf == Half.Top) ? (this.YSize / 2) - (int)(this.YSize * 0.1) : 0;
@@ -450,6 +465,10 @@ namespace OPMGFS.Map
             }
         }
 
+        /// <summary>
+        /// Updates the cliff positions.
+        /// </summary>
+        /// <param name="cliffPositions"> The new list of cliff positions. </param>
         public void UpdateCliffPositions(HashSet<Tuple<int, int>> cliffPositions)
         {
             this.CliffPositions.Clear();

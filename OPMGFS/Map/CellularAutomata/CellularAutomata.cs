@@ -63,10 +63,20 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="half"> The half of the map to work on. </param>
         /// <param name="oddsOfHeight1"> The odds of a tile being changed to height 1. </param>
         /// <param name="oddsOfHeight2"> The odds of a tile being changed to height 2. </param>
-        /// <param name="groupPoints"> The number of points where terrain should be group during the initial seeding. </param>
+        /// <param name="maxRangeToGroupPoint"> The max range to the group points. </param>
+        /// <param name="groupPoints"> The number of points where terrain should be grouped during the initial seeding. </param>
         /// <param name="generateHeight2"> Determines if the cellular automata should generate height2 or not. </param>
         /// <param name="r"> The random to use. If null, will use the MapHelper Random. </param>
-        public CellularAutomata(int xSize, int ySize, Enums.Half half, double oddsOfHeight1 = 0.50, double oddsOfHeight2 = 0.25, int groupPoints = 0, bool generateHeight2 = true, Random r = null)
+        public CellularAutomata(
+            int xSize,
+            int ySize,
+            Enums.Half half,
+            double oddsOfHeight1 = 0.50,
+            double oddsOfHeight2 = 0.25,
+            int maxRangeToGroupPoint = 15,
+            int groupPoints = 0,
+            bool generateHeight2 = true,
+            Random r = null)
         {
             this.Map = new Enums.HeightLevel[xSize, ySize];
 
@@ -100,9 +110,11 @@ namespace OPMGFS.Map.CellularAutomata
 
                     if (groupList.Count > 0)
                     {
-                        // TODO: Change to make points close to groupList become height2 instead of height1, then scrap height2 from normal generation?
-                        var closest = (double)MapHelper.ClosestTo(new Position(x, y), groupList, 8);
-                        if (closest <= 8) odds = odds - ((8d - closest) / 20d);
+                        // TODO: Play around with values
+                        var closest = (double)MapHelper.ClosestTo(new Position(x, y), groupList, maxRangeToGroupPoint);
+                        if (closest <= maxRangeToGroupPoint) odds = odds - ((maxRangeToGroupPoint - closest) / (maxRangeToGroupPoint * 3));
+                        // ReSharper disable once RedundantCast
+                        if (closest < (int)(maxRangeToGroupPoint / 2)) odds = odds / 2;
                     }
 
                     if (generateHeight2 && odds < oddsOfHeight2) this.Map[x, y] = Enums.HeightLevel.Height2;
@@ -114,6 +126,14 @@ namespace OPMGFS.Map.CellularAutomata
             this.LoadBasicRuleset();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CellularAutomata"/> class that takes an existing height map instead of creating and seeding a new one.
+        /// </summary>
+        /// <param name="xSize"> The x size of the map. </param>
+        /// <param name="ySize"> The y size of the map. </param>
+        /// <param name="half"> The half of the map to work on. </param>
+        /// <param name="map"> The existing height map. </param>
+        /// <param name="r"> The random object. </param>
         public CellularAutomata(int xSize, int ySize, Enums.Half half, Enums.HeightLevel[,] map, Random r = null)
         {
             this.Map = (Enums.HeightLevel[,])map.Clone();
@@ -300,7 +320,13 @@ namespace OPMGFS.Map.CellularAutomata
 
             var ruleList = new List<Rule>
                    {
-                       ruleExtBasicHeight2, ruleExtBasicHeight1, ruleExtAdvHeight2, ruleBasicHeight2, ruleBasicHeight1, ruleAdvHeight1, ruleRemoveHeight0
+                       ruleExtBasicHeight2, 
+                       ruleExtBasicHeight1, 
+                       ruleExtAdvHeight2, 
+                       ruleBasicHeight2, 
+                       ruleBasicHeight1, 
+                       ruleAdvHeight1, 
+                       ruleRemoveHeight0
                    };
 
             this.ruleSet = new Ruleset(ruleList);

@@ -20,6 +20,8 @@
         /// </summary>
         private readonly Enums.HeightLevel[,] map;
 
+        private readonly Enums.Item[,] mapItems;
+
         /// <summary>
         /// The destructible rocks of the map.
         /// </summary>
@@ -53,10 +55,13 @@
         /// Initializes a new instance of the <see cref="JPSMapPathfinding"/> class.
         /// </summary>
         /// <param name="mapHeightLevels"> The map height levels. </param>
+        /// <param name="mapItems"> The map items. </param>
         /// <param name="destructibleRocks"> The destructible rocks in the map. </param>
-        public JPSMapPathfinding(Enums.HeightLevel[,] mapHeightLevels, bool[,] destructibleRocks)
+        public JPSMapPathfinding(Enums.HeightLevel[,] mapHeightLevels, Enums.Item[,] mapItems, bool[,] destructibleRocks)
         {
+            // ITODO: (DONE) Grooss - Consider xel'naga towers in jps
             this.map = mapHeightLevels;
+            this.mapItems = mapItems;
             this.destructibleRocks = destructibleRocks;
         }
 
@@ -512,6 +517,12 @@
                 return true;
 
             if (Math.Abs((int)this.map[x, y] - (int)this.map[cameFrom.Item1, cameFrom.Item2]) >= 2) 
+                return true;
+
+            if (this.mapItems[x, y] == Enums.Item.XelNagaTower
+                || this.mapItems[x, y] == Enums.Item.BlueMinerals
+                || this.mapItems[x, y] == Enums.Item.GoldMinerals
+                || this.mapItems[x, y] == Enums.Item.Gas) 
                 return true;
 
             if (!this.ignoresDestructibleRocks) 

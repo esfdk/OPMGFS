@@ -65,8 +65,10 @@
             sw.Restart();
              * */
 
-            RunEvolutionWithNoveltyAsBase(GetBaseMaps(), new Random());
-            
+            ////var baseMaps = GetBaseMaps(groupPoints: 4, caGenerations: 0, smoothingGenerations: 0, caRandomSeeds: new List<int> { 100001 });
+            ////baseMaps[0].SaveMapToPngFile("baseMap1", "bm", itemMap: false);
+
+            ////RunEvolutionWithNoveltyAsBase(GetBaseMaps(), new Random());
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
         }
@@ -109,7 +111,7 @@
             sw.Stop();
             Console.WriteLine("AStar route length: " + aStar.Count + " took " + sw.ElapsedMilliseconds + " milliseconds");
             sw.Restart();
-            var jps = new JPSMapPathfinding(map.HeightLevels, map.DestructibleRocks);
+            var jps = new JPSMapPathfinding(map.HeightLevels, map.MapItems, map.DestructibleRocks);
             var jpsPath = jps.FindPathFromTo(start, end);
             sw.Stop();
             Console.WriteLine("JPS route length: " + jpsPath.Count + " took " + sw.ElapsedMilliseconds + " milliseconds");
@@ -143,18 +145,18 @@
             var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
 
-            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: false, r: new Random(100000));
+            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: false, r: new Random(100000), groupPoints: 4);
             ca.SetRuleset(new List<Rule> { ruleBasicHeight1 });
             ca.RunGenerations(generateHeight2ThroughRules: false);
 
             var map = new MapPhenotype((Enums.HeightLevel[,])ca.Map.Clone(), new Enums.Item[Width, Height]);
 
-            map.SmoothTerrain();
+            map.SmoothTerrain(random: new Random(100000));
             map.PlaceCliffs();
             map.SmoothCliffs();
             map.UpdateCliffPositions(Enums.Half.Top);
 
-            //map.SaveMapToPngFile("0", heightMap: false);
+            ////map.SaveMapToPngFile("0", heightMap: false);
 
             var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions(), new Random(100000));
             mapSolution.MapPoints.Add(new MapPoint(0.7, 25, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
@@ -165,7 +167,7 @@
             mapSolution.MapPoints.Add(new MapPoint(0.5, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.No));
             map = mapSolution.ConvertedPhenotype;
 
-            //map.SaveMapToPngFile("1", heightMap: false);
+            ////map.SaveMapToPngFile("1", heightMap: false);
 
             ////var start = new Position(32, 32);
             ////var end = new Position(96, 96);
@@ -189,12 +191,12 @@
             Console.WriteLine("Total fitness: {0}", fitness);
             Console.WriteLine("Took {0} millis to calculate.", sw.ElapsedMilliseconds);
 
-            //foreach (var pos in mapFitness.pathBetweenStartBases)
-            //{
-            //    map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Impassable;
-            //}
+            ////foreach (var pos in mapFitness.pathBetweenStartBases)
+            ////{
+            ////    map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Impassable;
+            ////}
 
-            //map.SaveMapToPngFile("1", heightMap: false);
+            map.SaveMapToPngFile("1", heightMap: false);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
@@ -935,6 +937,7 @@
             int mapSize = 128,
             double oddsOfHeight = 0.5,
             double oddsOfHeight2 = 0.25,
+            int maxRangeToGroupPoints = 15,
             int groupPoints = 0,
             bool generateHeight2 = true,
             List<int> caRandomSeeds = null,
@@ -954,7 +957,7 @@
 
             if (caRandomSeeds == null || caRandomSeeds.Count == 0)
             {
-                ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, groupPoints, generateHeight2);
+                ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, maxRangeToGroupPoints, groupPoints, generateHeight2);
                 if (caRuleset != null)
                 {
                     ca.SetRuleset(caRuleset);
@@ -977,7 +980,7 @@
                 foreach (var seed in caRandomSeeds)
                 {
                     var random = new Random(seed);
-                    ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, groupPoints, generateHeight2, random);
+                    ca = new CellularAutomata(mapSize, mapSize, Enums.Half.Top, oddsOfHeight, oddsOfHeight2, maxRangeToGroupPoints, groupPoints, generateHeight2, random);
                     if (caRuleset != null)
                     {
                         ca.SetRuleset(caRuleset);

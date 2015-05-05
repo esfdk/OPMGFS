@@ -296,7 +296,7 @@
             int expansionsAvailableMax = 4, 
             int expansionsAvailableMin = 1,
             int chokePointsSignificance = 5, 
-            int chokePointsMax = 5, 
+            int chokePointsMax = 18, 
             int chokePointsMin = 0, 
             int chokePointsWidth = 2,
             int chokePointSearchStep = 1, 

@@ -84,7 +84,7 @@
             this.ySize = map.YSize;
             this.xSize = map.XSize;
             this.map = map;
-            this.mapPathfinding = new JPSMapPathfinding(map.HeightLevels, map.DestructibleRocks);
+            this.mapPathfinding = new JPSMapPathfinding(map.HeightLevels, map.MapItems, map.DestructibleRocks);
             this.mfo = mfo;
         }
 
@@ -582,7 +582,6 @@
             for (var nodeIndex = 0; nodeIndex < this.pathBetweenStartBases.Count; nodeIndex++)
             {
                 var node = this.pathBetweenStartBases[nodeIndex];
-                if (MapHelper.CloseToAny(node, chokePointList)) continue;
 
                 if (this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp01
                      || this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp12)
@@ -594,6 +593,7 @@
 
                     chokePoints++;
                     chokePointList.Add(node);
+                    this.map.MapItems[node.Item1, node.Item2] = Enums.Item.XelNagaTower;
                 }
                 else if (nodeIndex % this.mfo.ChokePointSearchStep == 0)
                 {
@@ -603,6 +603,7 @@
 
                     chokePoints++;
                     chokePointList.Add(node);
+                    this.map.MapItems[node.Item1, node.Item2] = Enums.Item.XelNagaTower;
                 }
             }
 
@@ -619,6 +620,7 @@
 
         /// <summary>
         /// Figures out how many steps of the path between the start bases the two Xel'Naga towers cover.
+        /// If the towers cover more than one base, their worth is halved. If they cover a start base, their worth is cut in four (these two stack).
         /// </summary>
         /// <returns> A value between 0.0 and 1.0 multiplied by significance based on how many steps that are covered. </returns>
         private double XelNagaPlacement()
@@ -638,6 +640,12 @@
             if (actual2 < min2) actual2 = min2;
 
             var normalized2 = (actual2 - min2) / (max2 - min2);
+            var basesInVision2 = this.bases.Count(@base => MapHelper.CloseTo(this.xelNagaPosition2, @base));
+            var startBaseInVision2 = MapHelper.CloseTo(this.xelNagaPosition2, this.startBasePosition1)
+                                      || MapHelper.CloseTo(this.xelNagaPosition2, this.startBasePosition2);
+
+            if (basesInVision2 >= 2) normalized2 /= 2;
+            if (startBaseInVision2) normalized2 /= 4;
 
             // If only one Xel'Naga tower is found, return the significance for just that one, but halved.
             if (this.xelNagaPosition1 == null) 
@@ -655,6 +663,12 @@
             if (actual1 < min1) actual1 = min1;
 
             var normalized1 = (actual1 - min1) / (max1 - min1);
+            var basesInVision1 = this.bases.Count(@base => MapHelper.CloseTo(this.xelNagaPosition1, @base));
+            var startBaseInVision1 = MapHelper.CloseTo(this.xelNagaPosition1, this.startBasePosition1)
+                                      || MapHelper.CloseTo(this.xelNagaPosition1, this.startBasePosition2);
+
+            if (basesInVision1 >= 2) normalized1 /= 2;
+            if (startBaseInVision1) normalized1 /= 4;
 
             return ((normalized1 + normalized2) / 2d) * this.mfo.XelNagaPlacementSignificance;
         }

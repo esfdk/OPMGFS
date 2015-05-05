@@ -1,7 +1,7 @@
 TODO:
 	Grooss
 		Xel naga tower in fitness
-		(not done, should be seperate option) Consider destructible rocks in jump point search
+		(done) Consider destructible rocks in jump point search
 		Consider xel'naga towers in jps (maybe other stuff?)
 		No diagonal cliffs
 		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search		
