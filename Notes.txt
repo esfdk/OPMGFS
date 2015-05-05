@@ -3,22 +3,20 @@ TODO:
 		Xel naga tower in fitness
 		(not done, should be seperate option) Consider destructible rocks in jump point search
 		Consider xel'naga towers in jps (maybe other stuff?)
+		No diagonal cliffs
 		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search		
 		
 	Melnyk
-		Check how much flattening/occupy actually does
-		Destructible rocks can be placed on gas
-		Implement different destructible rock sizes (2x2, 2x4, 2x6, 4x4, 6x6)
-		Make circle instead of square when flattening for bases
-		Implement offspring boost (as option?)
-		Implement FI2NS
-	
+		Fix ramps
+		
 	Uassigned TODOs
 		Time limit on evolution/novelty search
 		Base openess (combine number of traversable points around occupied area & 8 directions from center of base)
 		Figure out best values for ground map distances and other fitness values
 	
 	Low prio TODOs
+		Implement offspring boost (as option?)
+		Implement FI2NS
 		Figure out cost and/or how to consider siege tank ranges
 		Number of choke points seen by Xel'Naga towers
 		Impassable terrain around edge of map (possibly in base map generation)

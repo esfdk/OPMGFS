@@ -33,7 +33,7 @@
             while (this.FeasiblePopulation.CurrentGeneration.Count < noveltySearchOptions.FeasiblePopulationSize)
             {
                 var list = MapConversionHelper.GenerateInitialMapPoints(mapSearchOptions, r);
-                var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list);
+                var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list, r);
 
                 if (ms.IsFeasible)
                 {
@@ -61,7 +61,7 @@
                     list[j] = mp;
                 }
 
-                var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list);
+                var ms = new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, list, r);
                 this.InfeasiblePopulation.CurrentGeneration.Add(ms);
             }
 

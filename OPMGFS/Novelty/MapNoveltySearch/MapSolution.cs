@@ -26,6 +26,7 @@
         #endregion
 
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MapSolution"/> class.
         /// </summary>
@@ -35,13 +36,15 @@
         /// <param name="noveltySearchOptions">
         /// The novelty search options.
         /// </param>
-        public MapSolution(MapSearchOptions mso, NoveltySearchOptions noveltySearchOptions)
+        /// <param name="random">The random to use.</param>
+        public MapSolution(MapSearchOptions mso, NoveltySearchOptions noveltySearchOptions, Random random)
         {
             this.MapSearchOptions = mso;
             this.NoveltySearchOptions = noveltySearchOptions;
             this.MapPoints = new List<MapPoint>();
             this.convertedPhenotype = null;
             this.hasBeenConverted = false;
+            this.Random = random;
         }
 
         /// <summary>
@@ -56,8 +59,9 @@
         /// <param name="mapPoints">
         /// The map points to start with.
         /// </param>
-        public MapSolution(MapSearchOptions mso, NoveltySearchOptions nso, List<MapPoint> mapPoints)
-            : this(mso, nso)
+        /// <param name="r">The random to use.</param>
+        public MapSolution(MapSearchOptions mso, NoveltySearchOptions nso, List<MapPoint> mapPoints, Random r)
+            : this(mso, nso, r)
         {
             this.MapPoints = mapPoints;
         }
@@ -78,6 +82,11 @@
         /// Gets the novelty search options for this solution.
         /// </summary>
         public NoveltySearchOptions NoveltySearchOptions { get; private set; }
+
+        /// <summary>
+        /// Gets the random object connected to this solution.
+        /// </summary>
+        public Random Random { get; private set; }
 
         /// <summary>
         /// Gets the phenotype corresponding to this genotype.
@@ -114,7 +123,7 @@
                 this.MapSearchOptions,
                 r);
 
-            return new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, newPoints);
+            return new MapSolution(this.MapSearchOptions, this.NoveltySearchOptions, newPoints, this.Random);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
@@ -224,7 +233,7 @@
         {
             var map = new MapPhenotype(ySize, xSize);
 
-            map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, new MapSearchOptions(map, MapSearchOptions));
+            map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, new MapSearchOptions(map, MapSearchOptions), this.Random);
 
             return map;
         }
@@ -240,7 +249,7 @@
         /// </returns>
         public MapPhenotype ConvertToPhenotype(MapPhenotype map)
         {
-            map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, new MapSearchOptions(map, this.MapSearchOptions));
+            map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, new MapSearchOptions(map, this.MapSearchOptions), this.Random);
 
             return map;
         }
@@ -253,7 +262,7 @@
         /// </returns>
         public MapPhenotype ConvertToPhenotype()
         {
-            var map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, this.MapSearchOptions);
+            var map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, this.MapSearchOptions, this.Random);
             this.ConvertedPhenotype = map.CreateFinishedMap(Enums.Half.Top, this.MapSearchOptions.MapCompletion);
             this.hasBeenConverted = true;
             return this.ConvertedPhenotype;

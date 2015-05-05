@@ -27,7 +27,7 @@
             ////TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            TestFitness();
+            ////TestFitness();
             ////TestPathfinding();
 
             /*
@@ -66,7 +66,7 @@
              * */
 
             RunEvolutionWithNoveltyAsBase(GetBaseMaps(), new Random());
-
+            
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
         }
@@ -88,7 +88,7 @@
 
             map.PlaceCliffs();
 
-            var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions());
+            var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions(), new Random());
             mapSolution.MapPoints.Add(new MapPoint(0.5, 45, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
             ////mapSolution.MapPoints.Add(new MapPoint(0.4, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.NotAttempted));
             map = mapSolution.ConvertedPhenotype;
@@ -156,7 +156,7 @@
 
             //map.SaveMapToPngFile("0", heightMap: false);
 
-            var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions());
+            var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions(), new Random(100000));
             mapSolution.MapPoints.Add(new MapPoint(0.7, 25, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.75, 50, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.25, 50, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
@@ -682,6 +682,7 @@
             ////var ms = new MapSearcher(new Random(), 5, 5, mnso);
 
             ////var solution = (MapSolution)ms.FeasiblePopulation.CurrentGeneration[0];
+            var random = new Random();
             var solution = new MapSolution(
                 mso,
                 nso,
@@ -700,7 +701,8 @@
                         ////new MapPoint(0.2, 270, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
                         ////new MapPoint(1, 225, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes), 
                         ////new MapPoint(0.8, 315, Enums.MapPointType.Ramp, Enums.WasPlaced.Yes)
-                    });
+                    },
+                random);
 
             var newMap = solution.ConvertToPhenotype(map);
             newMap.SaveMapToPngFile();
@@ -879,26 +881,37 @@
                                         PopulationStrategy = populationStrategy
                 };
 
+                var evolvableMaps = new List<EvolvableMap>();
+
+                var archive = listOfArchives[baseMapCounter];
+
+                foreach (var solution in archive)
+                {
+                    var ms = (MapSolution)solution;
+                    var evolvableMap = new EvolvableMap(mso, mutationChance, r, mfo, ms.MapPoints);
+                    evolvableMap.CalculateFitness();
+                    evolvableMaps.Add(evolvableMap);
+                }
+
                 var solutions = new List<EvolvableMap>();
+
                 while (solutions.Count < populationSize)
                 {
                     var highestFitness = double.MinValue;
                     var index = -1;
-                    var archive = listOfArchives[baseMapCounter];
-                    for (var i = 0; i < archive.Count; i++)
+                    
+                    for (var i = 0; i < evolvableMaps.Count; i++)
                     {
-                        var ms = (MapSolution)archive[i];
-                        var fitness = new MapFitness(ms.ConvertedPhenotype, mfo).CalculateFitness();
-                        if (fitness > highestFitness)
+                        if (evolvableMaps[i].Fitness > highestFitness)
                         {
-                            highestFitness = fitness;
+                            highestFitness = evolvableMaps[i].Fitness;
                             index = i;
                         }
                     }
 
-                    solutions.Add(
-                        new EvolvableMap(mso, mutationChance, r, mfo, ((MapSolution)archive[index]).MapPoints));
-                    archive.RemoveAt(index);
+                    solutions.Add(evolvableMaps[index]);
+                        
+                    evolvableMaps.RemoveAt(index);
                 }
 
                 evolver.Initialize(solutions);

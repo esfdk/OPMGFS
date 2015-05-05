@@ -102,7 +102,7 @@
         {
             var map = new MapPhenotype(ySize, xSize);
 
-            map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, new MapSearchOptions(map, MapSearchOptions));
+            map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, new MapSearchOptions(map, MapSearchOptions), this.Random);
 
             return map;
         }
@@ -118,7 +118,7 @@
         /// </returns>
         public MapPhenotype ConvertToPhenotype(MapPhenotype map)
         {
-            map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, new MapSearchOptions(map, this.MapSearchOptions));
+            map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, new MapSearchOptions(map, this.MapSearchOptions), this.Random);
 
             return map;
         }
@@ -131,7 +131,7 @@
         /// </returns>
         public MapPhenotype ConvertToPhenotype()
         {
-            var map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, this.MapSearchOptions);
+            var map = MapConversionHelper.ConvertToPhenotype(this.MapPoints, this.MapSearchOptions, this.Random);
             this.ConvertedPhenotype = map.CreateFinishedMap(Enums.Half.Top, this.MapSearchOptions.MapCompletion);
             this.hasBeenConverted = true;
             return this.ConvertedPhenotype;

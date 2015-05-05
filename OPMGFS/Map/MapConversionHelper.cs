@@ -293,16 +293,11 @@
         /// <summary>
         /// Fills in a map using the map points of this individual. Returns a filled in copy of the original map.
         /// </summary>
-        /// <param name="mapPoints">
-        /// The map Points.
-        /// </param>
-        /// <param name="mso">
-        /// The map search options.
-        /// </param>
-        /// <returns>
-        /// The newly filled in map.
-        /// </returns>
-        public static MapPhenotype ConvertToPhenotype(List<MapPoint> mapPoints, MapSearchOptions mso)
+        /// <param name="mapPoints"> The map points to place. </param>
+        /// <param name="mso"> The map search options. </param>
+        /// <param name="random">The random object to use in conversion.</param>
+        /// <returns> The newly filled in map. </returns>
+        public static MapPhenotype ConvertToPhenotype(List<MapPoint> mapPoints, MapSearchOptions mso, Random random)
         {
             var heightLevels = mso.Map.HeightLevels.Clone() as Enums.HeightLevel[,];
             var items = mso.Map.MapItems.Clone() as Enums.Item[,];
@@ -629,7 +624,7 @@
                         mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     case Enums.MapPointType.DestructibleRocks:
-                        mp.WasPlaced = PlaceDestructibleRocks(xPos, yPos, newMap) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
+                        mp.WasPlaced = PlaceDestructibleRocks(xPos, yPos, newMap, random) ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
                     default:
                         newMap.MapItems[yPos, xPos] = Enums.Item.None;
@@ -663,14 +658,14 @@
                     gold ? Enums.MapPointType.GoldBase : Enums.MapPointType.Base,
                     Enums.WasPlaced.NotAttempted));
             }
-            
+
             var numberOfXelNaga = r.Next(mso.MinimumNumberOfXelNagaTowers, mso.MaximumNumberOfXelNagaTowers + 1);
             for (var i = 0; i < numberOfXelNaga; i++)
             {
                 mapPoints.Add(new MapPoint(
                     (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
                     (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
-                    Enums.MapPointType.XelNagaTower, 
+                    Enums.MapPointType.XelNagaTower,
                     Enums.WasPlaced.NotAttempted));
             }
 
@@ -710,7 +705,32 @@
         /// <param name="mp">The map phenotype to flatten the area on.</param>
         private static void FlattenArea(Enums.HeightLevel height, int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
-            // ITODO: Melnyk - Try circle
+            // TODO: Implement variations of flattening
+            ////var centreY = startY + (lengthY / 2);
+            ////for (var y = startY; y <= startY + lengthY; y++)
+            ////{
+            ////    var distanceToCentreY = y - centreY;
+            ////    var xStartMod = distanceToCentreY > 0 ? distanceToCentreY - 1 : Math.Abs(distanceToCentreY);
+
+            ////    var xStart = startX + xStartMod;
+            ////    var xEnd = startX + lengthX - xStartMod;
+
+            ////    for (var x = xStart; x <= xEnd; x++)
+            ////    {
+            ////        if (mp.HeightLevels[x, y] == Enums.HeightLevel.Cliff && height != Enums.HeightLevel.Cliff)
+            ////        {
+            ////            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
+            ////        }
+
+            ////        mp.HeightLevels[x, y] = height;
+
+            ////        if (height == Enums.HeightLevel.Cliff)
+            ////        {
+            ////            mp.CliffPositions.Add(new Tuple<int, int>(x, y));
+            ////        }
+            ////    }
+            ////}
+
             if (!mp.InsideTopHalf(startX, startY) || !mp.InsideTopHalf(startX + lengthX, startY + lengthY))
             {
                 return;
@@ -922,79 +942,108 @@
             return true;
         }
 
+        private static bool DestructibleRocksPlacableInArea(int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
+        {
+            for (var x = startX; x <= startX + lengthX; x++)
+            {
+                for (var y = startY; y <= startY + lengthY; y++)
+                {
+                    if (mp.HeightLevels[x, y] == Enums.HeightLevel.Cliff || mp.HeightLevels[x, y] == Enums.HeightLevel.Impassable
+                        || mp.MapItems[x, y] == Enums.Item.StartBase || mp.MapItems[x, y] == Enums.Item.XelNagaTower
+                        || mp.MapItems[x, y] == Enums.Item.BlueMinerals || mp.MapItems[x, y] == Enums.Item.GoldMinerals
+                        || mp.MapItems[x, y] == Enums.Item.Gas)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private static void PlaceDestructibleRocks(int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
+        {
+            for (var x = startX; x <= startX + lengthX; x++)
+            {
+                for (var y = startY; y <= startY + lengthY; y++)
+                {
+                    mp.DestructibleRocks[x, y] = true;
+                }
+            }
+        }
+
         /// <summary>
         /// Places destructible debris taking up 2x2 spaces on the given map. The debris will not be placed if it is put outside bounds. It will also not overwrite any bases/minerals.
         /// </summary>
         /// <param name="x"> The x-location to attempt to place the debris. </param>
         /// <param name="y"> The y-location to attempt to place the debris. </param>
         /// <param name="mp"> The map phenotype to place the debris on. </param>
+        /// <param name="random">The random object to use.</param>
         /// <returns>True if the rocks were placed, false if not</returns>
-        private static bool PlaceDestructibleRocks(int x, int y, MapPhenotype mp)
+        private static bool PlaceDestructibleRocks(int x, int y, MapPhenotype mp, Random random)
         {
-            // ITODO: Melnyk - add different sizes of destructible rocks
             if (!mp.InsideTopHalf(x, y))
             {
                 return false;
             }
 
+            int xMod;
+            int yMod;
+
+            switch (random.Next(3))
+            {
+                case 0:
+                    xMod = 1;
+                    yMod = 1;
+                    break;
+                case 1:
+                    xMod = 3;
+                    yMod = 3;
+                    break;
+                case 2:
+                    xMod = 5;
+                    yMod = 5;
+                    break;
+                default:
+                    xMod = 1;
+                    yMod = 1;
+                    break;
+            }
+
             // HACK: Removed check for occupied tiles (risks being placed on inside a starting position)
-            if (mp.InsideTopHalf(x + 1, y) && mp.InsideTopHalf(x, y + 1) && mp.InsideTopHalf(x + 1, y + 1))
+            if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x + xMod, y + yMod))
             {
                 // Bottom-left
-                if (mp.HeightLevels[x, y] != Enums.HeightLevel.Cliff && mp.HeightLevels[x, y] != Enums.HeightLevel.Impassable
-                    && mp.MapItems[x, y] != Enums.Item.StartBase && mp.MapItems[x, y] != Enums.Item.XelNagaTower
-                    && mp.MapItems[x, y] != Enums.Item.BlueMinerals && mp.MapItems[x, y] != Enums.Item.GoldMinerals
-                    && mp.MapItems[x, y] != Enums.Item.Gas)
+                if (DestructibleRocksPlacableInArea(x, y, xMod, yMod, mp))
                 {
-                    mp.DestructibleRocks[x, y] = true;
-                    mp.DestructibleRocks[x + 1, y] = true;
-                    mp.DestructibleRocks[x, y + 1] = true;
-                    mp.DestructibleRocks[x + 1, y + 1] = true;
+                    PlaceDestructibleRocks(x, y, xMod, yMod, mp);
                     return true;
                 }
             }
-            else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y + 1) && mp.InsideTopHalf(x - 1, y + 1))
+            else if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x - xMod, y + yMod))
             {
                 // Bottom-right
-                if (mp.HeightLevels[x - 1, y] != Enums.HeightLevel.Cliff && mp.HeightLevels[x - 1, y] != Enums.HeightLevel.Impassable
-                    && mp.MapItems[x - 1, y] != Enums.Item.StartBase && mp.MapItems[x - 1, y] != Enums.Item.XelNagaTower
-                    && mp.MapItems[x - 1, y] != Enums.Item.BlueMinerals && mp.MapItems[x - 1, y] != Enums.Item.GoldMinerals
-                    && mp.MapItems[x - 1, y] != Enums.Item.Gas)
+                if (DestructibleRocksPlacableInArea(x - xMod, y, xMod, yMod, mp))
                 {
-                    mp.DestructibleRocks[x, y] = true;
-                    mp.DestructibleRocks[x - 1, y] = true;
-                    mp.DestructibleRocks[x, y + 1] = true;
-                    mp.DestructibleRocks[x - 1, y + 1] = true;
+                    PlaceDestructibleRocks(x - xMod, y, xMod, yMod, mp);
                     return true;
                 }
             }
-            else if (mp.InsideTopHalf(x + 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x + 1, y - 1))
+            else if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x + xMod, y - yMod))
             {
                 // Top-left
-                if (mp.HeightLevels[x, y - 1] != Enums.HeightLevel.Cliff && mp.HeightLevels[x, y - 1] != Enums.HeightLevel.Impassable
-                    && mp.MapItems[x, y - 1] != Enums.Item.StartBase && mp.MapItems[x, y - 1] != Enums.Item.XelNagaTower
-                    && mp.MapItems[x, y - 1] != Enums.Item.BlueMinerals && mp.MapItems[x, y - 1] != Enums.Item.GoldMinerals
-                    && mp.MapItems[x, y - 1] != Enums.Item.Gas)
+                if (DestructibleRocksPlacableInArea(x, y - yMod, xMod, yMod, mp))
                 {
-                    mp.DestructibleRocks[x, y] = true;
-                    mp.DestructibleRocks[x + 1, y] = true;
-                    mp.DestructibleRocks[x, y - 1] = true;
-                    mp.DestructibleRocks[x + 1, y - 1] = true;
+                    PlaceDestructibleRocks(x, y - yMod, xMod, yMod, mp);
                     return true;
                 }
             }
-            else if (mp.InsideTopHalf(x - 1, y) && mp.InsideTopHalf(x, y - 1) && mp.InsideTopHalf(x - 1, y - 1))
+            else if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x - xMod, y - yMod))
             {
                 // Top-right
-                if (mp.HeightLevels[x - 1, y - 1] != Enums.HeightLevel.Cliff && mp.HeightLevels[x - 1, y - 1] != Enums.HeightLevel.Impassable
-                    && mp.MapItems[x - 1, y - 1] != Enums.Item.StartBase && mp.MapItems[x - 1, y - 1] != Enums.Item.XelNagaTower
-                    && mp.MapItems[x - 1, y - 1] != Enums.Item.BlueMinerals && mp.MapItems[x - 1, y - 1] != Enums.Item.GoldMinerals
-                    && mp.MapItems[x - 1, y - 1] != Enums.Item.Gas)
+                if (DestructibleRocksPlacableInArea(x - xMod, y - yMod, xMod, yMod, mp))
                 {
-                    mp.DestructibleRocks[x, y] = true;
-                    mp.DestructibleRocks[x - 1, y] = true;
-                    mp.DestructibleRocks[x, y - 1] = true;
-                    mp.DestructibleRocks[x - 1, y - 1] = true;
+                    PlaceDestructibleRocks(x - xMod, y - yMod, xMod, yMod, mp);
                     return true;
                 }
             }
@@ -1179,7 +1228,7 @@
             // Northeast-Southwest diagonal
             return false;
         }
-        
+
         /// <summary>
         /// Attempts to place a ramp over a vertical patch of cliff.
         /// </summary>
@@ -1197,6 +1246,8 @@
             {
                 return false;
             }
+
+            // ITODO: Fix ramp so that ground level has extra space
 
             if (mp.HeightLevels[x - 1, y] == west && mp.HeightLevels[x - 1, y + 1] == west
                 && mp.HeightLevels[x + 1, y] == east && mp.HeightLevels[x + 1, y + 1] == east)
