@@ -269,7 +269,7 @@ namespace OPMGFS.Map
         public static int ClosestTo(Position pos, IEnumerable<Position> positions, int range = 3)
         {
             var closestRange = 100000;
-            foreach (var position in positions.Where(position => Math.Abs(pos.Item1 - position.Item1) <= range || Math.Abs(pos.Item2 - position.Item2) <= range))
+            foreach (var position in positions.Where(position => CloseTo(pos, position)))
             {
                 if (Math.Abs(pos.Item1 - position.Item1) < closestRange) closestRange = Math.Abs(pos.Item1 - position.Item1);
                 if (Math.Abs(pos.Item2 - position.Item2) < closestRange) closestRange = Math.Abs(pos.Item2 - position.Item2);
@@ -353,7 +353,8 @@ namespace OPMGFS.Map
         public static Dictionary<Enums.HeightLevel, Image> GetHeightmapImageDictionary()
         {
             var imgDir = Path.Combine(GetImageDirectory(), @"Tiles");
-            var tileDic = new Dictionary<Enums.HeightLevel, Image> {
+            var tileDic = new Dictionary<Enums.HeightLevel, Image> 
+                                {
                                   { Enums.HeightLevel.Height0, Image.FromFile(Path.Combine(imgDir, @"Height0.png")) },
                                   { Enums.HeightLevel.Height1, Image.FromFile(Path.Combine(imgDir, @"Height1.png")) },
                                   { Enums.HeightLevel.Height2, Image.FromFile(Path.Combine(imgDir, @"Height2.png")) },
@@ -361,7 +362,7 @@ namespace OPMGFS.Map
                                   { Enums.HeightLevel.Ramp12, Image.FromFile(Path.Combine(imgDir, @"Ramp12.png")) },
                                   { Enums.HeightLevel.Cliff, Image.FromFile(Path.Combine(imgDir, @"Cliff.png")) },
                                   { Enums.HeightLevel.Impassable, Image.FromFile(Path.Combine(imgDir, @"Impassable.png")) }
-                              };
+                                };
 
             return tileDic;
         }
@@ -373,7 +374,8 @@ namespace OPMGFS.Map
         public static Dictionary<Enums.Item, Image> GetItemImageDictionary()
         {
             var imgDir = Path.Combine(GetImageDirectory(), @"Tiles");
-            var tileDic = new Dictionary<Enums.Item, Image> {
+            var tileDic = new Dictionary<Enums.Item, Image> 
+                                {
                                   { Enums.Item.None, Image.FromFile(Path.Combine(imgDir, @"Transparent.png")) },
                                   { Enums.Item.Base, Image.FromFile(Path.Combine(imgDir, @"Base.png")) },
                                   { Enums.Item.StartBase, Image.FromFile(Path.Combine(imgDir, @"StartBase.png")) },
@@ -383,7 +385,7 @@ namespace OPMGFS.Map
                                   { Enums.Item.XelNagaTower, Image.FromFile(Path.Combine(imgDir, @"XelNaga.png")) },
                                   { Enums.Item.Occupied, Image.FromFile(Path.Combine(imgDir, @"Transparent.png")) },
                                   { Enums.Item.DestructibleRocks, Image.FromFile(Path.Combine(imgDir, @"DestructibleRocks.png")) },
-                              };
+                                };
 
             return tileDic;
         }
