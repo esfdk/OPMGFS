@@ -27,7 +27,7 @@
             ////TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            ////TestFitness();
+            TestFitness();
             ////TestPathfinding();
 
             /*
@@ -145,9 +145,9 @@
             var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
 
-            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: false, r: new Random(100000), groupPoints: 4);
-            ca.SetRuleset(new List<Rule> { ruleBasicHeight1 });
-            ca.RunGenerations(generateHeight2ThroughRules: false);
+            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: true, r: new Random(100000), groupPoints: 4);
+            //ca.SetRuleset(new List<Rule> { ruleBasicHeight1 });
+            ca.RunGenerations(generateHeight2ThroughRules: true);
 
             var map = new MapPhenotype((Enums.HeightLevel[,])ca.Map.Clone(), new Enums.Item[Width, Height]);
 
@@ -166,6 +166,11 @@
             mapSolution.MapPoints.Add(new MapPoint(0.2, 90, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.5, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.No));
             map = mapSolution.ConvertedPhenotype;
+
+            //for (var y = 0; y < 125; y++)
+            //{
+            //    map.HeightLevels[35, y] = Enums.HeightLevel.Impassable;
+            //}
 
             ////map.SaveMapToPngFile("1", heightMap: false);
 
@@ -191,12 +196,12 @@
             Console.WriteLine("Total fitness: {0}", fitness);
             Console.WriteLine("Took {0} millis to calculate.", sw.ElapsedMilliseconds);
 
-            ////foreach (var pos in mapFitness.pathBetweenStartBases)
-            ////{
-            ////    map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Impassable;
-            ////}
+            foreach (var pos in mapFitness.pathBetweenStartBases)
+            {
+                map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Marker;
+            }
 
-            map.SaveMapToPngFile("1", heightMap: false);
+            map.SaveMapToPngFile("2", heightMap: false);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]

@@ -305,6 +305,7 @@
             int stepsInXelNagaRangeMax = 30, 
             int stepsInXelNagaRangeMin = 0)
         {
+            // TODO: Figure out good default values for this thing.
             this.PathfindingIgnoreDestructibleRocks = pathfindingIgnoreDestructibleRocks;
             this.BaseSpaceSignificance = baseSpaceSignificance;
             this.BaseSpaceIgnoreDestructibleRocks = baseSpaceIgnoreDestructibleRocks;

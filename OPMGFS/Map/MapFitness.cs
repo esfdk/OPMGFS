@@ -202,10 +202,6 @@
             fitness += this.XelNagaPlacement();
             Console.WriteLine("Xel'Naga Placement:                 {0}", fitness - prevFitness);
 
-            // ITODO: (DONE) Grooss - Add Xel'Naga tower to fitness
-
-            // ITODO: (DONE) Grooss - Take a look at why maps get a specific fitness
-
             //// Used to check Xel'Naga vision
             ////for (var tempY = this.ySize - 1; tempY >= 0; tempY--)
             ////{

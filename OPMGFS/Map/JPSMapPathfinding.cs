@@ -62,7 +62,6 @@
         /// <param name="destructibleRocks"> The destructible rocks in the map. </param>
         public JPSMapPathfinding(Enums.HeightLevel[,] mapHeightLevels, Enums.Item[,] mapItems, bool[,] destructibleRocks)
         {
-            // ITODO: (DONE) Grooss - Consider xel'naga towers in jps
             this.map = mapHeightLevels;
             this.mapItems = mapItems;
             this.destructibleRocks = destructibleRocks;
@@ -106,6 +105,7 @@
                 // If the end node has been found, return the path.
                 if (currentNode.Equals(endNode))
                 {
+                    ////return closedList.Select(n => n.Position).ToList();
                     return this.ReconstructPath(currentNode);
                 }
 
@@ -151,6 +151,7 @@
                     openList = openList.OrderBy(x => x.FScore).ToList();
             }
 
+            ////return closedList.Select(n => n.Position).ToList();
             return new List<Position>();
         }
 
@@ -211,6 +212,11 @@
         {
             var successors = new List<Node>();
             var neighbours = this.NodeNeighbours(current);
+
+            if (current.Position.Item1 == 92 && current.Position.Item2 == 94)
+            {
+                Console.WriteLine(neighbours.Count);
+            }
 
             foreach (var neighbour in neighbours)
             {
@@ -363,7 +369,7 @@
         /// </summary>
         /// <param name="current"> The node to find neighbours for. </param>
         /// <returns> A list of the neighbour nodes. </returns>
-        private IEnumerable<Node> NodeNeighbours(Node current)
+        private List<Node> NodeNeighbours(Node current)
         {
             var neighbours = new List<Node>();
 
@@ -389,6 +395,11 @@
             var dirX = Math.Min(Math.Max(-1, current.Position.Item1 - current.Parent.Position.Item1), 1);
             var dirY = Math.Min(Math.Max(-1, current.Position.Item2 - current.Parent.Position.Item2), 1);
 
+            if (current.Position.Item1 == 92 && current.Position.Item2 == 94)
+            {
+                Console.WriteLine(dirX + " - " + dirY);
+            }
+
             if (dirX != 0 && dirY != 0)
             {
                 //// Diagonal movement
@@ -413,13 +424,13 @@
 
                 // 4
                 if (this.PositionIsBlocked(curX - dirX, curY, curPos)
-                    && !this.PositionIsBlocked(curX, curY + dirY, curPos))
+                    && !this.PositionIsBlocked(curX - dirX, curY + dirY, curPos))
                     neighbours.Add(new Node(curX - dirX, curY + dirY));
 
                 // 5
                 if (this.PositionIsBlocked(curX, curY - dirY, curPos)
-                    && !this.PositionIsBlocked(curX + dirX, curY, curPos))
-                    neighbours.Add(new Node(curX - dirX, curY - dirY));
+                    && !this.PositionIsBlocked(curX + dirX, curY - dirY, curPos))
+                    neighbours.Add(new Node(curX + dirX, curY - dirY));
             }
             else
             {
@@ -433,27 +444,17 @@
                     ////    --------
                     ////     0 1 2 3
 
+                    // 1
                     if (!this.PositionIsBlocked(curX, curY + dirY, curPos))
-                    {
-                        // 1
                         neighbours.Add(new Node(curX, curY + dirY));
 
-                        // 2
-                        if (this.PositionIsBlocked(curX + 1, curY, curPos))
-                            neighbours.Add(new Node(curX + 1, curY + dirY));
+                    // 2
+                    if (!this.PositionIsBlocked(curX + 1, curY + dirY, curPos))
+                        neighbours.Add(new Node(curX + 1, curY + dirY));
 
-                        // 3
-                        if (this.PositionIsBlocked(curX - 1, curY, curPos))
-                            neighbours.Add(new Node(curX - 1, curY + dirY));
-                    }
-                    else
-                    {
-                        if (!this.PositionIsBlocked(curX + 1, curY + dirY, curPos))
-                            neighbours.Add(new Node(curX + 1, curY + dirY));
-
-                        if (!this.PositionIsBlocked(curX - 1, curY + dirY, curPos))
-                            neighbours.Add(new Node(curX - 1, curY + dirY));
-                    }
+                    // 3
+                    if (!this.PositionIsBlocked(curX - 1, curY + dirY, curPos))
+                        neighbours.Add(new Node(curX - 1, curY + dirY));
                 }
                 else
                 {
@@ -465,27 +466,17 @@
                     ////    --------
                     ////     0 1 2 3
 
+                    // 1
                     if (!this.PositionIsBlocked(curX + dirX, curY, curPos))
-                    {
-                        // 1
                         neighbours.Add(new Node(curX + dirX, curY));
 
-                        // 2
-                        if (this.PositionIsBlocked(curX, curY + 1, curPos))
-                            neighbours.Add(new Node(curX + dirX, curY + 1));
+                    // 2
+                    if (!this.PositionIsBlocked(curX + dirX, curY + 1, curPos))
+                        neighbours.Add(new Node(curX + dirX, curY + 1));
 
-                        // 3
-                        if (this.PositionIsBlocked(curX, curY - 1, curPos))
-                            neighbours.Add(new Node(curX + dirX, curY - 1));
-                    }
-                    else
-                    {
-                        if (!this.PositionIsBlocked(curX + dirX, curY + 1, curPos))
-                            neighbours.Add(new Node(curX + dirX, curY + 1));
-
-                        if (!this.PositionIsBlocked(curX + dirX, curY - 1, curPos))
-                            neighbours.Add(new Node(curX + dirX, curY - 1));
-                    }
+                    // 3
+                    if (!this.PositionIsBlocked(curX + dirX, curY - 1, curPos))
+                        neighbours.Add(new Node(curX + dirX, curY - 1));
                 }
             }
 
@@ -519,7 +510,7 @@
             if (this.map[x, y] == Enums.HeightLevel.Cliff || this.map[x, y] == Enums.HeightLevel.Impassable) 
                 return true;
 
-            if (Math.Abs((int)this.map[x, y] - (int)this.map[cameFrom.Item1, cameFrom.Item2]) >= 2) 
+            if (Math.Abs(Math.Abs((int)this.map[x, y]) - Math.Abs((int)this.map[cameFrom.Item1, cameFrom.Item2])) >= 2) 
                 return true;
 
             if (this.mapItems[x, y] == Enums.Item.XelNagaTower

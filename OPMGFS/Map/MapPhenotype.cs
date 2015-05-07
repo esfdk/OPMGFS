@@ -127,8 +127,8 @@ namespace OPMGFS.Map
         {
             var tempMap = this.CreateCompleteMap(half, function);
             tempMap.PlaceCliffs();
-            tempMap = tempMap.CreateCompleteMap(half, function);
             tempMap.SmoothCliffs();
+            tempMap = tempMap.CreateCompleteMap(half, function);
             return tempMap;
         }
 
@@ -196,14 +196,19 @@ namespace OPMGFS.Map
         /// </summary>
         public void SmoothCliffs()
         {
-            for (var tempY = this.YSize - 1; tempY >= 0; tempY--)
+            var xStart = (this.mapHalf == Half.Right) ? (this.XSize / 2) - (int)(this.XSize * 0.1) : 0;
+            var xEnd = (this.mapHalf == Half.Left) ? (this.XSize / 2) + (int)(this.XSize * 0.1) : this.XSize;
+            var yStart = (this.mapHalf == Half.Top) ? (this.YSize / 2) - (int)(this.YSize * 0.1) : 0;
+            var yEnd = (this.mapHalf == Half.Bottom) ? (this.YSize / 2) + (int)(this.YSize * 0.1) : this.YSize;
+
+            for (var tempY = yStart; tempY < yEnd; tempY++)
             {
-                for (var tempX = 0; tempX < this.XSize; tempX++)
+                for (var tempX = xStart; tempX < xEnd; tempX++)
                 {
                     if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff) 
                         continue;
 
-                    var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels);
+                    var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumannExtended);
 
                     // Count number of different height levels that are around the tile.
                     var differentHeights = neighbours.Where(neighbour => neighbour.Key != HeightLevel.Cliff).Count(neighbour => neighbour.Value > 0);
@@ -263,7 +268,6 @@ namespace OPMGFS.Map
         {
             var tempMap = (HeightLevel[,])this.HeightLevels.Clone();
 
-            // TODO: No diagonal cliffs
             var xStart = (this.mapHalf == Half.Right) ? (this.XSize / 2) - (int)(this.XSize * 0.1) : 0;
             var xEnd = (this.mapHalf == Half.Left) ? (this.XSize / 2) + (int)(this.XSize * 0.1) : this.XSize;
             var yStart = (this.mapHalf == Half.Top) ? (this.YSize / 2) - (int)(this.YSize * 0.1) : 0;
@@ -273,25 +277,70 @@ namespace OPMGFS.Map
             {
                 for (var x = xStart; x < xEnd; x++)
                 {
-                    foreach (var neighbourPosition in MapHelper.GetNeighbourPositions(x, y, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumann))
+                    // If this position is a cliff or ramp, don't bother placing cliffs around.
+                    if (this.HeightLevels[x, y] == HeightLevel.Cliff 
+                        || this.HeightLevels[x, y] == HeightLevel.Ramp01
+                        || this.HeightLevels[x, y] == HeightLevel.Ramp12) 
+                        continue;
+
+                    var positionsLowerThanMe = new List<Tuple<int, int>>();
+                    var neighbourPositions = MapHelper.GetNeighbourPositions(
+                        x,
+                        y,
+                        this.HeightLevels,
+                        RuleEnums.Neighbourhood.VonNeumann);
+
+                    foreach (var np in neighbourPositions)
                     {
-                        // Don't do anything if we are at, or are looking at, a cliff or a ramp.
-                        if (this.HeightLevels[x, y] == HeightLevel.Cliff
-                            || this.HeightLevels[x, y] == HeightLevel.Ramp01
-                            || this.HeightLevels[x, y] == HeightLevel.Ramp12
-                            || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Cliff
-                            || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Ramp01
-                            || this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] == HeightLevel.Ramp12) continue;
+                        // Don't do anything if we are looking at a cliff or a ramp.
+                        if (this.HeightLevels[np.Item1, np.Item2] == HeightLevel.Cliff
+                            || this.HeightLevels[np.Item1, np.Item2] == HeightLevel.Ramp01
+                            || this.HeightLevels[np.Item1, np.Item2] == HeightLevel.Ramp12) continue;
 
                         // If there are no items on the position being checked, place a cliff.
-                        if ((this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] == Item.None
-                            || this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] == Item.Occupied)
-                            && (int)this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] < (int)this.HeightLevels[x, y])
-                            tempMap[neighbourPosition.Item1, neighbourPosition.Item2] = HeightLevel.Cliff;
-                        else if (this.MapItems[neighbourPosition.Item1, neighbourPosition.Item2] != Item.None
-                            && (int)this.HeightLevels[neighbourPosition.Item1, neighbourPosition.Item2] < (int)this.HeightLevels[x, y]) // If there is an item, place a cliff on x, y
+                        if ((this.MapItems[np.Item1, np.Item2] == Item.None
+                            || this.MapItems[np.Item1, np.Item2] == Item.Occupied)
+                            && (int)this.HeightLevels[np.Item1, np.Item2] < (int)this.HeightLevels[x, y])
+                            tempMap[np.Item1, np.Item2] = HeightLevel.Cliff;
+                        else if (this.MapItems[np.Item1, np.Item2] != Item.None
+                            && (int)this.HeightLevels[np.Item1, np.Item2] < (int)this.HeightLevels[x, y]) // If there is an item, place a cliff on x, y
                             tempMap[x, y] = HeightLevel.Cliff;
+
+                        if ((int)this.HeightLevels[np.Item1, np.Item2] < (int)this.HeightLevels[x, y])
+                            positionsLowerThanMe.Add(np);
                     }
+
+                    // TODO: (done) Grooss - No diagonal cliffs
+                    ////if (positionsLowerThanMe.Count >= 2)
+                    ////{
+                    ////    if (this.MapItems[x, y] == Item.None)
+                    ////    {
+                    ////        tempMap[x, y] = HeightLevel.Cliff;
+                    ////    }
+                    ////    else
+                    ////    {
+                    ////        // Iterate over all combinations of neighbours
+                    ////        foreach (var np1 in neighbourPositions)
+                    ////        {
+                    ////            foreach (var np2 in neighbourPositions)
+                    ////            {
+                    ////                // If they are equal, don't do anything.
+                    ////                if (np1.Equals(np2)) continue;
+                    ////                if ((int)this.HeightLevels[np1.Item1, np1.Item2] >= (int)this.HeightLevels[x, y]) continue;
+                    ////                if ((int)this.HeightLevels[np2.Item1, np2.Item2] >= (int)this.HeightLevels[x, y]) continue;
+
+                    ////                // If they are oppesite of each other, don't do anything.
+                    ////                var diff = new Tuple<int, int>(
+                    ////                    np1.Item1 - np2.Item1,
+                    ////                    np2.Item2 - np1.Item2);
+                    ////                if (diff.Item1 == 0 || diff.Item2 == 0) continue;
+
+                    ////                // Place a cliff in the space "between" the neighbours.
+                    ////                tempMap[x + diff.Item1, y + diff.Item2] = HeightLevel.Cliff;
+                    ////            }
+                    ////        }
+                    ////    }
+                    ////}
                 }
             }
 

@@ -361,7 +361,8 @@ namespace OPMGFS.Map
                                   { Enums.HeightLevel.Ramp01, Image.FromFile(Path.Combine(imgDir, @"Ramp01.png")) },
                                   { Enums.HeightLevel.Ramp12, Image.FromFile(Path.Combine(imgDir, @"Ramp12.png")) },
                                   { Enums.HeightLevel.Cliff, Image.FromFile(Path.Combine(imgDir, @"Cliff.png")) },
-                                  { Enums.HeightLevel.Impassable, Image.FromFile(Path.Combine(imgDir, @"Impassable.png")) }
+                                  { Enums.HeightLevel.Impassable, Image.FromFile(Path.Combine(imgDir, @"Impassable.png")) },
+                                  { Enums.HeightLevel.Marker, Image.FromFile(Path.Combine(imgDir, @"Marker.png")) }
                                 };
 
             return tileDic;

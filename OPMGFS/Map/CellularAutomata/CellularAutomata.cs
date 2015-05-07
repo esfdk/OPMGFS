@@ -110,7 +110,7 @@ namespace OPMGFS.Map.CellularAutomata
 
                     if (groupList.Count > 0)
                     {
-                        // TODO: Play around with values
+                        // TODO: Grooss - Play around with values
                         var closest = (double)MapHelper.ClosestTo(new Position(x, y), groupList, maxRangeToGroupPoint);
                         if (closest <= maxRangeToGroupPoint) odds = odds - ((maxRangeToGroupPoint - closest) / (maxRangeToGroupPoint * 3));
                         // ReSharper disable once RedundantCast
@@ -213,7 +213,7 @@ namespace OPMGFS.Map.CellularAutomata
         /// <param name="radius"> The radius of each drop zone. </param>
         public void AddImpassableTerrain(int drops, int radius)
         {
-            // TODO: Change from circle drop to more natural method.
+            // TODO: Grooss - Change from circle drop to more natural method.
             var tempMap = (Enums.HeightLevel[,])this.Map.Clone();
             var moves = new int[(radius * 2) + 1];
             var movesPosition = 1;
