@@ -62,7 +62,6 @@
         /// <param name="destructibleRocks"> The destructible rocks in the map. </param>
         public JPSMapPathfinding(Enums.HeightLevel[,] mapHeightLevels, Enums.Item[,] mapItems, bool[,] destructibleRocks)
         {
-            // ITODO: (DONE) Grooss - Consider xel'naga towers in jps
             this.map = mapHeightLevels;
             this.mapItems = mapItems;
             this.destructibleRocks = destructibleRocks;
