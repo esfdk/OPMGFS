@@ -103,14 +103,14 @@
                 for (var tempX = 0; tempX < this.xSize; tempX++)
                 {
                     // Find start base 1
-                    if (this.map.MapItems[tempX, tempY] == Enums.Item.StartBase 
+                    if (this.map.MapItems[tempX, tempY] == Enums.Item.StartBase
                         && this.startBasePosition2 == null)
                     {
                         this.startBasePosition2 = new Tuple<int, int>(tempX + 2, tempY - 2);
                     }
 
                     // Find start base 2
-                    if (this.map.MapItems[tempX, tempY] == Enums.Item.StartBase 
+                    if (this.map.MapItems[tempX, tempY] == Enums.Item.StartBase
                         && this.startBasePosition1 == null
                         && this.startBasePosition2 != null)
                     {
@@ -139,7 +139,7 @@
                     }
 
                     // Save the first XelNaga tower found
-                    if (this.map.MapItems[tempX, tempY] == Enums.Item.XelNagaTower 
+                    if (this.map.MapItems[tempX, tempY] == Enums.Item.XelNagaTower
                         && this.xelNagaPosition2 == null)
                     {
                         this.xelNagaPosition2 = tempPos;
@@ -202,6 +202,8 @@
             fitness += this.XelNagaPlacement();
             Console.WriteLine("Xel'Naga Placement:                 {0}", fitness - prevFitness);
 
+            // ITODO: Grooss - Consider base openess
+            
             //// Used to check Xel'Naga vision
             ////for (var tempY = this.ySize - 1; tempY >= 0; tempY--)
             ////{
@@ -216,6 +218,82 @@
             return fitness;
         }
 
+        public int FreeTilesAroundBase(int index)
+        {
+            // HACK: Will bug if base placement is changed
+            var counter = 0;
+
+            var baseLocation = bases[index];
+
+            var modifier = 0;
+
+            if (baseLocation.Item2 < this.map.YSize / 2)
+            {
+                modifier = 1;
+            }
+
+            var bottomLineY = baseLocation.Item2 - 7 - (modifier * 3);
+            var upperLineY = baseLocation.Item2 + 10 - (modifier * 3);
+            var leftSideX = baseLocation.Item1 - 9 + modifier;
+            var rightSideX = baseLocation.Item1 + 8 + modifier;
+
+            for (var y = bottomLineY; y <= upperLineY; y++)
+            {
+                var xIncrease = (y == bottomLineY || y == upperLineY) ? 1 : 17;
+
+                for (var x = leftSideX; x <= rightSideX; x += xIncrease)
+                {
+                    if (this.map.HeightLevels[x, y] != Enums.HeightLevel.Cliff
+                        && this.map.HeightLevels[x, y] != Enums.HeightLevel.Impassable
+                        && this.map.MapItems[x, y] != Enums.Item.Base
+                        && this.map.MapItems[x, y] != Enums.Item.StartBase
+                        && this.map.MapItems[x, y] != Enums.Item.GoldMinerals
+                        && this.map.MapItems[x, y] != Enums.Item.BlueMinerals
+                        && this.map.MapItems[x, y] != Enums.Item.Gas
+                        && this.map.MapItems[x, y] != Enums.Item.XelNagaTower)
+                    {
+                        counter++;
+                        this.map.HeightLevels[x,y] = Enums.HeightLevel.Impassable;
+                    }
+                }
+            }
+
+            return counter;
+        }
+
+        public int FreeTilesAroundStartBase()
+        {
+            var counter = 0;
+
+            var baseLocation = startBasePosition2;
+            var bottomLineY = baseLocation.Item2 - 12;
+            var upperLineY = baseLocation.Item2 + 13;
+            var leftSideX = baseLocation.Item1 - 12;
+            var rightSideX = baseLocation.Item1 + 13;
+
+            for (var y = bottomLineY; y <= upperLineY; y++)
+            {
+                var xIncrease = (y == bottomLineY || y == upperLineY) ? 1 : 25;
+
+                for (var x = leftSideX; x <= rightSideX; x += xIncrease)
+                {
+                    if (this.map.HeightLevels[x, y] != Enums.HeightLevel.Cliff
+                        && this.map.HeightLevels[x, y] != Enums.HeightLevel.Impassable
+                        && this.map.MapItems[x, y] != Enums.Item.Base
+                        && this.map.MapItems[x, y] != Enums.Item.StartBase
+                        && this.map.MapItems[x, y] != Enums.Item.GoldMinerals
+                        && this.map.MapItems[x, y] != Enums.Item.BlueMinerals
+                        && this.map.MapItems[x, y] != Enums.Item.Gas
+                        && this.map.MapItems[x, y] != Enums.Item.XelNagaTower)
+                    {
+                        counter++;
+                    }
+                }
+            }
+
+            return counter;
+        }
+
         /// <summary>
         /// Checks that there is space for building around the base. All spaces within 5 range of the main base (7 from middle of the base)
         /// should be traversable. Does not account for items (gas/minerals, etc.)
@@ -227,7 +305,7 @@
 
             // Finds the reachable tiles.
             List<Position> reachable;
-            
+
             if (this.mfo.BaseSpaceIgnoreDestructibleRocks)
                 reachable = MapHelper.GetReachableTilesFrom(
                     this.startBasePosition1.Item1,
@@ -273,7 +351,7 @@
         /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how far the bases are from each other. </returns>
         private double PathBetweenStartBases()
         {
-            if (this.pathBetweenStartBases.Count <= 0) 
+            if (this.pathBetweenStartBases.Count <= 0)
                 return -100000d;
 
             // Ground path distance
@@ -316,7 +394,7 @@
         /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how many times a new height is reached. </returns>
         private double NewHeightReached()
         {
-            if (this.pathBetweenStartBases.Count <= 0) 
+            if (this.pathBetweenStartBases.Count <= 0)
                 return 0d;
 
             var actual = 0d;
@@ -393,7 +471,7 @@
             // Removes the natural expansion from the list.
             closestExpansions = closestExpansions.OrderBy(x => x.Item2).ToList();
             closestExpansions.RemoveAt(0);
-            
+
             // Calculate total normalized value for paths to the nearest expansions.
             var totalNormalized = 0.0d;
             for (var i = 0; i < closestExpansions.Count; i++)
@@ -603,7 +681,7 @@
 
             double max = this.mfo.ChokePointsMax;
             double min = this.mfo.ChokePointsMin;
-            var actual = (chokePoints > max) 
+            var actual = (chokePoints > max)
                             ? max - (chokePoints - max)
                             : chokePoints;
             if (actual < min) actual = min;
@@ -628,8 +706,8 @@
 
             double max2 = this.mfo.StepsInXelNagaRangeMax;
             double min2 = this.mfo.StepsInXelNagaRangeMin;
-            var actual2 = (stepsCovered2 > max2) 
-                            ? max2 - (stepsCovered2 - max2) 
+            var actual2 = (stepsCovered2 > max2)
+                            ? max2 - (stepsCovered2 - max2)
                             : stepsCovered2;
             if (actual2 < min2) actual2 = min2;
 
@@ -642,7 +720,7 @@
             if (startBaseInVision2) normalized2 /= 4;
 
             // If only one Xel'Naga tower is found, return the significance for just that one, but halved.
-            if (this.xelNagaPosition1 == null) 
+            if (this.xelNagaPosition1 == null)
                 return (normalized2 * this.mfo.XelNagaPlacementSignificance) / 2d;
 
             double stepsCovered1 =
@@ -711,14 +789,14 @@
                     if (MapHelper.WithinMapBounds(newPos1, this.map.XSize, this.map.YSize))
                     {
                         if (directions[dc.Key].Item2 < 0
-                            && this.map.HeightLevels[newPos1.Item1, newPos1.Item2] == Enums.HeightLevel.Cliff) 
+                            && this.map.HeightLevels[newPos1.Item1, newPos1.Item2] == Enums.HeightLevel.Cliff)
                             directions[dc.Key] = new Tuple<Position, int>(dir1, i);
                     }
 
                     if (MapHelper.WithinMapBounds(newPos2, this.map.XSize, this.map.YSize))
                     {
                         if (directions[dc.Value].Item2 < 0
-                            && this.map.HeightLevels[newPos2.Item1, newPos2.Item2] == Enums.HeightLevel.Cliff) 
+                            && this.map.HeightLevels[newPos2.Item1, newPos2.Item2] == Enums.HeightLevel.Cliff)
                             directions[dc.Value] = new Tuple<Position, int>(dir2, i);
                     }
                 }
@@ -769,7 +847,7 @@
 
             // Figure out what is hit first when going either right or up
             for (var i = 0; i < 10; i++)
-            {   
+            {
                 // Check to the right
                 if (MapHelper.WithinMapBounds(pos.Item1, pos.Item2 + i, this.xSize, this.ySize))
                 {
@@ -781,7 +859,7 @@
 
                 // Check up
                 if (MapHelper.WithinMapBounds(pos.Item1 + i, pos.Item2, this.xSize, this.ySize))
-                { 
+                {
                     var up = this.map.HeightLevels[pos.Item1 + i, pos.Item2];
                     if (verticalFirstEncounter == originalRampType
                         && up != originalRampType)

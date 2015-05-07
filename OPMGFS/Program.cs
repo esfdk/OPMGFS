@@ -69,11 +69,32 @@
             ////baseMaps[0].SaveMapToPngFile("baseMap1", "bm", itemMap: false);
 
             ////RunEvolutionWithNoveltyAsBase(GetBaseMaps(), new Random());
+            
+            TestEnclosedArea();
+
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
         }
 
         #region Test Methods
+        private static void TestEnclosedArea()
+        {
+            const int Height = 128;
+            const int Width = 128;
+
+            var map = new MapPhenotype(new Enums.HeightLevel[Width, Height], new Enums.Item[Width, Height]);
+            map.HeightLevels[108, 108] = Enums.HeightLevel.Height1;
+            var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions(), new Random());
+            mapSolution.MapPoints.Add(new MapPoint(0.7, 45, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
+            map = mapSolution.ConvertedPhenotype;
+            
+            var mf = new MapFitness(map, new MapFitnessOptions());
+            mf.CalculateFitness();
+            Console.WriteLine(mf.FreeTilesAroundBase(1));
+            map.SaveMapToPngFile("Enclosed stuff", heightMap: false);
+            // Mapfitness goes here
+        }
+        
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestPathfinding()
         {
