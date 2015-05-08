@@ -9,6 +9,7 @@ TODO:
 		
 	Melnyk
 		Fix ramps
+		Make fix for infinite loop in novelty search initial population
 				
 	Uassigned TODOs
 		Time limit on evolution/novelty search (and figure out what should be limit)
@@ -47,6 +48,8 @@ Notes:
 	We do not consider blink/reaper movement in fitness calculation
 	Novelty search: one parent - one child
 	2 tile wide cliffs cover more area than otherwise
+	Start Base Approach openess is VERY naive
+	When we in code use "max" in fitness, we sometimes mean "optimal"
 	
 Old Notes:
 	1-1 representation
