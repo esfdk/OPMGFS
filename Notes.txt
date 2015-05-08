@@ -1,9 +1,5 @@
 TODO:
 	Grooss
-		(done) Xel naga tower in fitness
-		(done) Consider destructible rocks in jump point search
-		(done) Consider xel'naga towers in jps (maybe other stuff?)
-		(done, we decided to go with old method) No diagonal cliffs
 		(check if fixed)Base openess (combine number of traversable points around occupied area & 8 directions from center of base (8 directions only from start)
 		Remove TODOs from his TODO list if the TODO is not longer TOBEDONE
 		

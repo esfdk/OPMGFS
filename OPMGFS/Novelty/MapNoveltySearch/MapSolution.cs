@@ -320,44 +320,7 @@
 
             var distance = 0.0;
 
-            /* HACK: Removed calculation of how close not-placed map points are from feasibility
-            // Calculate distances between map points
-            foreach (var mp in this.MapPoints.Where(mp => mp.WasPlaced != Enums.WasPlaced.Yes))
-            {
-                var maximumDistance = mp.Type == Enums.MapPointType.StartBase ? this.MapSearchOptions.MaximumStartBaseDistance : this.MapSearchOptions.MaximumDistance;
-                var minimumDistance = mp.Type == Enums.MapPointType.StartBase ? this.MapSearchOptions.MinimumStartBaseDistance : this.MapSearchOptions.MinimumDistance;
-
-                var dist = 0.0;
-
-                // Degree difference
-                if (mp.Degree > this.MapSearchOptions.MaximumDegree)
-                {
-                    dist += mp.Degree - this.MapSearchOptions.MaximumDegree;
-                }
-                else if (mp.Degree < this.MapSearchOptions.MinimumDegree)
-                {
-                    dist += this.MapSearchOptions.MinimumDegree - mp.Degree;
-                }
-
-                // Distance difference
-                if (mp.Distance > maximumDistance)
-                {
-                    dist += mp.Distance - maximumDistance;
-                }
-                else if (mp.Degree < minimumDistance)
-                {
-                    dist += minimumDistance - mp.Distance;
-                }
-
-                dist *= this.MapSearchOptions.NotPlacedPenaltyModifier;
-
-                distance += dist;
-            }
-
-            distance = distance / this.MapPoints.Count();
-             */
-
-            // Too many / too few elements placed
+           // Too many / too few elements placed
             var elements = MapConversionHelper.CalculateNumberOfMapPointsOutsideTypeBounds(this.MapPoints, this.MapSearchOptions);
             distance += elements.Item1 * this.MapSearchOptions.TooFewElementsPenalty;
             distance += elements.Item2 * this.MapSearchOptions.TooManyElementsPenalty;

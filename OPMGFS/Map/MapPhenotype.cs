@@ -208,7 +208,6 @@ namespace OPMGFS.Map
                     if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff)
                         continue;
 
-                    // HACK: VanNeumannExtended
                     var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels);
 
                     // Count number of different height levels that are around the tile.
@@ -311,7 +310,6 @@ namespace OPMGFS.Map
                             positionsLowerThanMe.Add(np);
                     }
 
-                    // HACK: Uncommented this
                     if (positionsLowerThanMe.Count >= 2)
                     {
                         if (this.MapItems[x, y] == Item.None || this.MapItems[x, y] == Item.Occupied)
