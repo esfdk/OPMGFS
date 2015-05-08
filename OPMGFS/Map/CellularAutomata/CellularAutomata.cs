@@ -322,7 +322,6 @@ namespace OPMGFS.Map.CellularAutomata
         /// </summary>
         private void LoadBasicRuleset()
         {
-            // TODO: Grooss - Take a look at the rules
             var ruleExtBasicHeight2 = new RuleDeterministic(Enums.HeightLevel.Height2)
             {
                 Neighbourhood =

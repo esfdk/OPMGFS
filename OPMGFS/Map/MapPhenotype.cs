@@ -62,7 +62,7 @@ namespace OPMGFS.Map
         {
             this.HeightLevels = heightLevels;
             this.MapItems = mapItems;
-            
+
             this.XSize = this.HeightLevels.GetLength(0);
             this.YSize = this.HeightLevels.GetLength(1);
 
@@ -112,7 +112,7 @@ namespace OPMGFS.Map
         /// <summary>
         /// Gets a list of all positions that contains a cliff.
         /// </summary>
-        public HashSet<Tuple<int, int>> CliffPositions { get; private set; } 
+        public HashSet<Tuple<int, int>> CliffPositions { get; private set; }
         #endregion
 
         #region Public Methods
@@ -157,7 +157,7 @@ namespace OPMGFS.Map
                 var otherY = y;
 
                 // If we mirror top or bottom or turn the map, find the height to copy to.
-                if ((function == Enums.MapFunction.Mirror && (half == Half.Top || half == Half.Bottom)) 
+                if ((function == Enums.MapFunction.Mirror && (half == Half.Top || half == Half.Bottom))
                     || function == Enums.MapFunction.Turn)
                     otherY = this.YSize - y - 1;
 
@@ -181,7 +181,7 @@ namespace OPMGFS.Map
         }
 
         /// <summary>
-        /// Checks if a point is inside the boundaries of the map.
+        /// Checks if a point is inside the top half of the map.
         /// </summary>
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
@@ -330,9 +330,9 @@ namespace OPMGFS.Map
                 for (var x = xStart; x < xEnd; x++)
                 {
                     // If this position is a cliff or ramp, don't bother placing cliffs around.
-                    if (this.HeightLevels[x, y] == HeightLevel.Cliff 
+                    if (this.HeightLevels[x, y] == HeightLevel.Cliff
                         || this.HeightLevels[x, y] == HeightLevel.Ramp01
-                        || this.HeightLevels[x, y] == HeightLevel.Ramp12) 
+                        || this.HeightLevels[x, y] == HeightLevel.Ramp12)
                         continue;
 
                     var positionsLowerThanMe = new List<Tuple<int, int>>();
@@ -362,11 +362,9 @@ namespace OPMGFS.Map
                             positionsLowerThanMe.Add(np);
                     }
 
-                    // TODO: (done) Grooss - No diagonal cliffs
                     if (positionsLowerThanMe.Count >= 2)
                     {
-                        if (this.MapItems[x, y] == Item.None
-                            || this.MapItems[x, y] == Item.Occupied)
+                        if (this.MapItems[x, y] == Item.None || this.MapItems[x, y] == Item.Occupied)
                         {
                             tempMap[x, y] = HeightLevel.Cliff;
                         }
@@ -382,7 +380,7 @@ namespace OPMGFS.Map
                                     if ((int)this.HeightLevels[np1.Item1, np1.Item2] >= (int)this.HeightLevels[x, y]) continue;
                                     if ((int)this.HeightLevels[np2.Item1, np2.Item2] >= (int)this.HeightLevels[x, y]) continue;
 
-                                    // If they are oppesite of each other, don't do anything.
+                                    // If they are opposite of each other, don't do anything.
                                     var diff = new Tuple<int, int>(
                                         np1.Item1 - np2.Item1,
                                         np2.Item2 - np1.Item2);
@@ -415,7 +413,7 @@ namespace OPMGFS.Map
             var bm = new Bitmap((this.XSize * MapHelper.SizeOfMapTiles) + 1, (this.YSize * MapHelper.SizeOfMapTiles) + 1);
 
             // The file names
-            var currentTime = string.Format("{0}.{1}_{2}.{3}", DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute); 
+            var currentTime = string.Format("{0}.{1}_{2}.{3}", DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute);
             currentTime = currentTime.Replace("/", ".");
             currentTime = currentTime.Replace(":", ".");
             currentTime = currentTime.Replace(" ", "_");
@@ -423,7 +421,7 @@ namespace OPMGFS.Map
             var mapDir = Path.Combine(MapHelper.GetImageDirectory(), @"Finished Maps");
 
             // If the folder parameter is not empty, create a folder.
-            if (!folder.Equals(string.Empty)) 
+            if (!folder.Equals(string.Empty))
                 mapDir = Path.Combine(mapDir, folder);
 
             // IF there is no file name addition, don't add an underscore.
@@ -578,6 +576,32 @@ namespace OPMGFS.Map
             {
                 this.CliffPositions.Add(t);
             }
+        }
+
+        /// <summary>
+        /// Checks if a tile is passable.
+        /// </summary>
+        /// <param name="x"> The x-position. </param>
+        /// <param name="y"> The y-position. </param>
+        /// <returns> True if tile is passable, false if not. </returns>
+        public bool IsTilePassable(int x, int y)
+        {
+            if (MapHelper.WithinMapBounds(x, y, this.XSize, this.YSize))
+            {
+                if (this.HeightLevels[x, y] != HeightLevel.Cliff
+                    && this.HeightLevels[x, y] != HeightLevel.Impassable
+                    && this.MapItems[x, y] != Item.Base
+                    && this.MapItems[x, y] != Item.StartBase
+                    && this.MapItems[x, y] != Item.GoldMinerals
+                    && this.MapItems[x, y] != Item.BlueMinerals
+                    && this.MapItems[x, y] != Item.Gas
+                    && this.MapItems[x, y] != Item.XelNagaTower)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion

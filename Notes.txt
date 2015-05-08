@@ -1,25 +1,23 @@
 TODO:
 	Grooss
-		(done) Xel naga tower in fitness
-		(done) Consider destructible rocks in jump point search
-		(done) Consider xel'naga towers in jps (maybe other stuff?)
-		(done, we decided to go with old method) No diagonal cliffs
-		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search		
+		(check if fixed)Base openess (combine number of traversable points around occupied area & 8 directions from center of base (8 directions only from start)
+		Remove TODOs from his TODO list if the TODO is not longer TOBEDONE
 		
 	Melnyk
 		Fix ramps
-		
+		Make fix for infinite loop in novelty search initial population
+				
 	Uassigned TODOs
-		Time limit on evolution/novelty search
-		Base openess (combine number of traversable points around occupied area & 8 directions from center of base)
+		Time limit on evolution/novelty search (and figure out what should be limit)
 		Figure out best values for ground map distances and other fitness values
 	
 	Low prio TODOs
+		Number of choke points seen by Xel'Naga towers
 		Implement offspring boost (as option?)
 		Implement FI2NS
 		Figure out cost and/or how to consider siege tank ranges
-		Number of choke points seen by Xel'Naga towers
 		Impassable terrain around edge of map (possibly in base map generation)
+		Figure out how to remove "bad starting maps" by preprocess prior to starting evolution/novelty search
 		
 	Finished TODOs
 		(done) Cellular Automata after placing map points
@@ -46,6 +44,8 @@ Notes:
 	We do not consider blink/reaper movement in fitness calculation
 	Novelty search: one parent - one child
 	2 tile wide cliffs cover more area than otherwise
+	Start Base Approach openess is VERY naive
+	When we in code use "max" in fitness, we sometimes mean "optimal"
 	
 Old Notes:
 	1-1 representation

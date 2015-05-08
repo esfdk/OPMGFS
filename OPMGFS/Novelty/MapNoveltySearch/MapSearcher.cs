@@ -30,6 +30,7 @@
             this.InfeasiblePopulation = new MapPopulation(false, noveltySearchOptions.InfeasiblePopulationSize);
             this.Archive = new MapNovelArchive();
 
+            // ITODO: Melnyk - Fix infinite loop in case of not enough feasible solutions
             while (this.FeasiblePopulation.CurrentGeneration.Count < noveltySearchOptions.FeasiblePopulationSize)
             {
                 var list = MapConversionHelper.GenerateInitialMapPoints(mapSearchOptions, r);
@@ -49,7 +50,7 @@
             {
                 var list = MapConversionHelper.GenerateInitialMapPoints(mapSearchOptions, r);
 
-                for (var j = 0; j < noveltySearchOptions.InfeasiblePopulationSize / 2.0; j++)
+                for (var j = 0; j < list.Count; j++)
                 {
                     var item = list[j];
 

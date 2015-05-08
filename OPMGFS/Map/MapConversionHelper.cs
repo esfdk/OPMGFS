@@ -612,13 +612,20 @@
                         break;
                     case Enums.MapPointType.Ramp:
                         placed = PlaceRamp(xPos, yPos, newMap);
-                        if (!placed)
+
+                        var displacementAttempts = 0;
+                        while (!placed)
                         {
                             var cliffPos = newMap.CliffPositions.ToList();
                             var hash = Math.Abs((mp.Degree * mp.Distance).GetHashCode());
-                            var index = hash % cliffPos.Count;
+                            var index = (hash + displacementAttempts) % cliffPos.Count;
                             var pos = cliffPos[index];
                             placed = PlaceRamp(pos.Item1, pos.Item2, newMap);
+                            displacementAttempts += mso.DisplacementAmountPerStep;
+                            if (displacementAttempts > mso.MaximumDisplacement)
+                            {
+                                break;
+                            }
                         }
 
                         mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
@@ -705,7 +712,7 @@
         /// <param name="mp">The map phenotype to flatten the area on.</param>
         private static void FlattenArea(Enums.HeightLevel height, int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
-            // TODO: Implement variations of flattening
+            // TODO: Melnyk - Implement variations of flattening
             ////var centreY = startY + (lengthY / 2);
             ////for (var y = startY; y <= startY + lengthY; y++)
             ////{
@@ -1011,41 +1018,50 @@
             }
 
             // HACK: Removed check for occupied tiles (risks being placed on inside a starting position)
-            if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x + xMod, y + yMod))
+            while (xMod >= 1)
             {
-                // Bottom-left
-                if (DestructibleRocksPlacableInArea(x, y, xMod, yMod, mp))
+                if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x + xMod, y + yMod))
                 {
-                    PlaceDestructibleRocks(x, y, xMod, yMod, mp);
-                    return true;
+                    // Bottom-left
+                    if (DestructibleRocksPlacableInArea(x, y, xMod, yMod, mp))
+                    {
+                        PlaceDestructibleRocks(x, y, xMod, yMod, mp);
+                        return true;
+                    }
                 }
-            }
-            else if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x - xMod, y + yMod))
-            {
-                // Bottom-right
-                if (DestructibleRocksPlacableInArea(x - xMod, y, xMod, yMod, mp))
+
+                if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x - xMod, y + yMod))
                 {
-                    PlaceDestructibleRocks(x - xMod, y, xMod, yMod, mp);
-                    return true;
+                    // Bottom-right
+                    if (DestructibleRocksPlacableInArea(x - xMod, y, xMod, yMod, mp))
+                    {
+                        PlaceDestructibleRocks(x - xMod, y, xMod, yMod, mp);
+                        return true;
+                    }
                 }
-            }
-            else if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x + xMod, y - yMod))
-            {
-                // Top-left
-                if (DestructibleRocksPlacableInArea(x, y - yMod, xMod, yMod, mp))
+
+                if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x + xMod, y - yMod))
                 {
-                    PlaceDestructibleRocks(x, y - yMod, xMod, yMod, mp);
-                    return true;
+                    // Top-left
+                    if (DestructibleRocksPlacableInArea(x, y - yMod, xMod, yMod, mp))
+                    {
+                        PlaceDestructibleRocks(x, y - yMod, xMod, yMod, mp);
+                        return true;
+                    }
                 }
-            }
-            else if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x - xMod, y - yMod))
-            {
-                // Top-right
-                if (DestructibleRocksPlacableInArea(x - xMod, y - yMod, xMod, yMod, mp))
+
+                if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x - xMod, y - yMod))
                 {
-                    PlaceDestructibleRocks(x - xMod, y - yMod, xMod, yMod, mp);
-                    return true;
+                    // Top-right
+                    if (DestructibleRocksPlacableInArea(x - xMod, y - yMod, xMod, yMod, mp))
+                    {
+                        PlaceDestructibleRocks(x - xMod, y - yMod, xMod, yMod, mp);
+                        return true;
+                    }
                 }
+
+                xMod -= 2;
+                yMod -= 2;
             }
 
             return false;
@@ -1223,7 +1239,7 @@
                 }
             }
 
-            // TODO: Diagonal ramps
+            // TODO: Melnyk - Diagonal ramps
             // Northwest-Southeast diagonal
             // Northeast-Southwest diagonal
             return false;
@@ -1247,95 +1263,144 @@
                 return false;
             }
 
-            // ITODO: Fix ramp so that ground level has extra space
+            var westHigherLevel = false;
+            switch (west)
+            {
+                case Enums.HeightLevel.Height2:
+                    if (east == Enums.HeightLevel.Height1 || east == Enums.HeightLevel.Height0)
+                    {
+                        westHigherLevel = true;
+                    }
+
+                    break;
+
+                case Enums.HeightLevel.Height1:
+                    if (east == Enums.HeightLevel.Height0)
+                    {
+                        westHigherLevel = true;
+                    }
+
+                    break;
+            }
 
             if (mp.HeightLevels[x - 1, y] == west && mp.HeightLevels[x - 1, y + 1] == west
                 && mp.HeightLevels[x + 1, y] == east && mp.HeightLevels[x + 1, y + 1] == east)
             {
-                if (mp.InsideTopHalf(x + 2, y) || mp.InsideTopHalf(x + 2, y + 1))
+                if (westHigherLevel)
                 {
-                    if (!IsAreaOccupied(x - 1, y - 1, 4, 4, mp))
+                    if (mp.InsideTopHalf(x - 3, y) || mp.InsideTopHalf(x - 3, y + 1))
                     {
-                        if (mp.HeightLevels[x + 2, y] == east
-                            && mp.HeightLevels[x + 2, y + 1] == east)
+                        if (!IsAreaOccupied(x - 3, y, 1, 2, mp) && !IsAreaOccupied(x - 2, y - 1, 4, 4, mp))
                         {
-                            OccupyArea(x - 1, y - 1, 4, 4, mp);
+                            if (mp.HeightLevels[x - 2, y] == west && mp.HeightLevels[x - 2, y + 1] == west
+                                && mp.HeightLevels[x - 3, y] == west && mp.HeightLevels[x - 3, y + 1] == west)
+                            {
+                                OccupyArea(x - 3, y - 1, 4, 4, mp);
 
-                            mp.HeightLevels[x - 1, y] = ramp;
-                            mp.HeightLevels[x - 1, y + 1] = ramp;
+                                mp.HeightLevels[x - 3, y] = ramp;
+                                mp.HeightLevels[x - 3, y + 1] = ramp;
 
-                            mp.HeightLevels[x, y] = ramp;
-                            mp.HeightLevels[x, y + 1] = ramp;
-                            mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Cliff;
-                            mp.HeightLevels[x, y + 2] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x - 2, y] = ramp;
+                                mp.HeightLevels[x - 2, y + 1] = ramp;
+                                mp.HeightLevels[x - 2, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x - 2, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x + 1, y] = ramp;
-                            mp.HeightLevels[x + 1, y + 1] = ramp;
-                            mp.HeightLevels[x + 1, y - 1] = Enums.HeightLevel.Cliff;
-                            mp.HeightLevels[x + 1, y + 2] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x - 1, y] = ramp;
+                                mp.HeightLevels[x - 1, y + 1] = ramp;
+                                mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x - 1, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x + 2, y] = ramp;
-                            mp.HeightLevels[x + 2, y + 1] = ramp;
+                                mp.HeightLevels[x, y] = ramp;
+                                mp.HeightLevels[x, y + 1] = ramp;
+                                mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 2, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 2, y + 1));
+                                mp.HeightLevels[x + 1, y] = ramp;
+                                mp.HeightLevels[x + 1, y + 1] = ramp;
+                                mp.HeightLevels[x + 1, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 1, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.CliffPositions.Add(new Tuple<int, int>(x, y - 1));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x, y + 2));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x + 1, y - 1));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x + 1, y + 2));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x - 3, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x - 3, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x - 2, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x - 2, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
 
-                            return true;
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 2, y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 2, y + 2));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y + 2));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x, y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x, y + 2));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 1, y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 1, y + 2));
+
+                                return true;
+                            }
                         }
                     }
                 }
-
-                if (mp.InsideTopHalf(x - 2, y) || mp.InsideTopHalf(x - 2, y + 1))
+                else
                 {
-                    if (!IsAreaOccupied(x - 2, y - 1, 4, 4, mp))
+                    if (mp.InsideTopHalf(x - 1, y) || mp.InsideTopHalf(x - 1, y + 1))
                     {
-                        if (mp.HeightLevels[x - 2, y] == west
-                            && mp.HeightLevels[x - 2, y + 1] == west)
+                        if (!IsAreaOccupied(x - 1, y - 1, 4, 4, mp) && !IsAreaOccupied(x + 3, y, 1, 2, mp))
                         {
-                            OccupyArea(x - 2, y - 1, 4, 4, mp);
+                            if (mp.HeightLevels[x + 2, y] == east && mp.HeightLevels[x + 2, y + 1] == east
+                                && mp.HeightLevels[x + 3, y] == east && mp.HeightLevels[x + 3, y + 1] == east)
+                            {
+                                OccupyArea(x - 1, y - 1, 4, 4, mp);
 
-                            mp.HeightLevels[x - 2, y] = ramp;
-                            mp.HeightLevels[x - 2, y + 1] = ramp;
+                                mp.HeightLevels[x - 1, y] = ramp;
+                                mp.HeightLevels[x - 1, y + 1] = ramp;
+                                mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x - 1, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x - 1, y] = ramp;
-                            mp.HeightLevels[x - 1, y + 1] = ramp;
-                            mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
-                            mp.HeightLevels[x - 1, y + 2] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x, y] = ramp;
+                                mp.HeightLevels[x, y + 1] = ramp;
+                                mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x, y] = ramp;
-                            mp.HeightLevels[x, y + 1] = ramp;
-                            mp.HeightLevels[x, y - 1] = Enums.HeightLevel.Cliff;
-                            mp.HeightLevels[x, y + 2] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 1, y] = ramp;
+                                mp.HeightLevels[x + 1, y + 1] = ramp;
+                                mp.HeightLevels[x + 1, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 1, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x + 1, y] = ramp;
-                            mp.HeightLevels[x + 1, y + 1] = ramp;
+                                mp.HeightLevels[x + 2, y] = ramp;
+                                mp.HeightLevels[x + 2, y + 1] = ramp;
+                                mp.HeightLevels[x + 2, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 2, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 2, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 2, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
+                                mp.HeightLevels[x + 3, y] = ramp;
+                                mp.HeightLevels[x + 3, y + 1] = ramp;
 
-                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y - 1));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y + 2));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x, y - 1));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x, y + 2));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x - 1, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 2, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 2, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 3, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 3, y + 1));
 
-                            return true;
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y + 2));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x, y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x, y + 2));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 1, y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 1, y + 2));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y + 2));
+
+                                return true;
+                            }
                         }
                     }
                 }
@@ -1356,6 +1421,7 @@
         /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceHorizontalRamp(int x, int y, Enums.HeightLevel north, Enums.HeightLevel south, Enums.HeightLevel ramp, MapPhenotype mp)
         {
+            // ITODO: Melnyk - Fix ramp so that ground level has extra space
             if (!mp.InsideTopHalf(x, y + 1) || !mp.InsideTopHalf(x + 1, y + 1) || !mp.InsideTopHalf(x, y - 1) || !mp.InsideTopHalf(x + 1, y - 1))
             {
                 return false;

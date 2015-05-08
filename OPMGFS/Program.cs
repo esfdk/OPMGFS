@@ -30,12 +30,11 @@
             ////TestFitness();
             ////TestPathfinding();
 
-            /*
             var sw = new Stopwatch();
             sw.Start();
 
             var list = new List<int>();
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i < 1; i++)
             {
                 list.Add(0);
             }
@@ -45,11 +44,10 @@
             Console.WriteLine("It took {0} milliseconds to generate base maps.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
-            for(var i = 0; i < maps.Count; i++) maps[i].SaveMapToPngFile(string.Format("{0}", i));
-            return;
+            for (var i = 0; i < maps.Count; i++) maps[i].SaveMapToPngFile(string.Format("{0}", i));
 
             Console.WriteLine("Starting evolution");
-            RunEvolution(maps, new Random(0), numberOfGenerations: 1, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
+            //RunEvolution(maps, new Random(0), numberOfGenerations: 5, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
             Console.WriteLine("Evolution done. It took  {0} milliseconds to perform evolution.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
@@ -59,17 +57,16 @@
                 addToArchive: 5,
                 feasiblePopulationSize: 50,
                 infeasiblePopulationSize: 50);
-            RunNoveltySearch(maps, new Random(0), numberOfGenerations: 2, noveltySearchOptions: nso);
+            RunNoveltySearch(maps, new Random(0), numberOfGenerations: 5, noveltySearchOptions: nso);
             Console.WriteLine("Novelty search done. It took {0} milliseconds to perform novelty search.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
-             * */
 
             ////var baseMaps = GetBaseMaps(groupPoints: 4, caGenerations: 0, smoothingGenerations: 0, caRandomSeeds: new List<int> { 100001 });
             ////baseMaps[0].SaveMapToPngFile("baseMap1", "bm", itemMap: false);
 
             ////RunEvolutionWithNoveltyAsBase(GetBaseMaps(), new Random());
-            
+
             ////TestEnclosedArea();
 
             Console.WriteLine("Everything is done running");
@@ -85,13 +82,16 @@
             var map = new MapPhenotype(new Enums.HeightLevel[Width, Height], new Enums.Item[Width, Height]);
             map.HeightLevels[108, 108] = Enums.HeightLevel.Height1;
             var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions(), new Random());
-            mapSolution.MapPoints.Add(new MapPoint(0.7, 45, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
+            mapSolution.MapPoints.Add(new MapPoint(0.7, 45, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
             map = mapSolution.ConvertedPhenotype;
             map.PlaceCliffs();
             
+            map.HeightLevels[121, 108] = Enums.HeightLevel.Height1;
+            map.HeightLevels[108, 121] = Enums.HeightLevel.Height1;
+            map.HeightLevels[96, 108] = Enums.HeightLevel.Height1;
+            
             var mf = new MapFitness(map, new MapFitnessOptions());
             mf.CalculateFitness();
-            Console.WriteLine(mf.FreeTilesAroundBase(1));
             map.SaveMapToPngFile("Enclosed stuff", heightMap: false);
             // Mapfitness goes here
         }
@@ -1009,6 +1009,7 @@
                 var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                 map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
                 map.PlaceCliffs();
+                map.SmoothCliffs();
                 map.UpdateCliffPositions(Enums.Half.Top);
                 baseMaps.Add(map);
             }
@@ -1029,6 +1030,7 @@
                     var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                     map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet, random);
                     map.PlaceCliffs();
+                    map.SmoothCliffs();
                     map.UpdateCliffPositions(Enums.Half.Top);
                     baseMaps.Add(map);
                 }
