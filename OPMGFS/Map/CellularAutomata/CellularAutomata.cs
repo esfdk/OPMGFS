@@ -209,52 +209,98 @@ namespace OPMGFS.Map.CellularAutomata
         /// <summary>
         /// Adds impassable terrain at random positions in the map.
         /// </summary>
-        /// <param name="drops"> The number of impassable terrain drops. </param>
-        /// <param name="radius"> The radius of each drop zone. </param>
-        public void AddImpassableTerrain(int drops, int radius)
+        /// <param name="sections"> The number of impassable terrain sections. </param>
+        /// <param name="maxLength"> The max length of a section. </param>
+        /// <param name="placementIntervals"> The interval between placements of points in the section. </param>
+        /// <param name="maxPathNoiseDisplacement"> The max displacement of any point in the section. </param>
+        /// <param name="maxWidth"> The max width of a point. </param>
+        public void CreateImpassableTerrain(int sections = 4, int maxLength = 50, double placementIntervals = 0.1, int maxPathNoiseDisplacement = 3, int maxWidth = 4)
         {
-            // TODO: Grooss - Change from circle drop to more natural method.
+            if (sections <= 0) return;
+
             var tempMap = (Enums.HeightLevel[,])this.Map.Clone();
-            var moves = new int[(radius * 2) + 1];
-            var movesPosition = 1;
+            var moves = new List<int> { 0 };
 
             // Get the moves to make to reach the entire area around the drop zone.
-            moves[0] = 0;
-            for (var r = 1; r <= radius; r++)
+            for (var r = 1; r <= maxWidth; r++)
             {
-                moves[movesPosition] = r;
-                moves[movesPosition + 1] = -r;
-
-                movesPosition += 2;
+                moves.Add(r);
             }
 
-            // Randomly choses an area and drops impassable terrain in it.
-            for (var drop = 0; drop < drops; drop++)
+            // TODO: Grooss - Change from circle drop to more natural method.
+            for (var sec = 0; sec < sections; sec++)
             {
-                var startX = this.random.Next(this.caXStart, this.caXEnd);
-                var startY = this.random.Next(this.caYStart, this.caYEnd);
+                // Calculate section placement
+                var x1 = this.random.Next(this.caXStart, this.caXEnd);
+                var y1 = this.random.Next(this.caYStart, this.caYEnd);
+                var x2 = x1 + (this.random.Next(maxLength * 2) - maxLength);
+                var y2 = y1 + (this.random.Next(maxLength * 2) - maxLength);
+                var dist = Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
 
-                Console.WriteLine("Placing shit around " + startX + " - " + startY);
-
-                foreach (var moveX in moves)
+                // Recalculate 2nd point if it is outside map or too far away
+                while (dist > maxLength
+                        || !MapHelper.WithinMapBounds(x2, y2, this.XSize, this.YSize))
                 {
-                    foreach (var moveY in moves)
+                    x2 = x1 + (this.random.Next(maxLength * 2) - maxLength);
+                    y2 = y1 + (this.random.Next(maxLength * 2) - maxLength);
+                    dist = Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
+                }
+
+                // Minimum width needed for each "drop" in order to connect the entire section
+                var minWidth = (int)Math.Round((dist * placementIntervals) / 2);
+                var prevX = -100000;
+                var prevY = -100000;
+
+                // Create the points and place impassable terrain
+                for (var placement = 0d; placement < 1d; placement += placementIntervals)
+                {
+                    var x = (int)Math.Round(x1 + (placement * (x2 - x1)));
+                    var y = (int)Math.Round(y1 + (placement * (y2 - y1)));
+
+                    // Add noise
+                    var tempX = x + this.random.Next(maxPathNoiseDisplacement * 2) - maxPathNoiseDisplacement;
+                    var tempY = y + this.random.Next(maxPathNoiseDisplacement * 2) - maxPathNoiseDisplacement;
+
+                    while (!MapHelper.WithinMapBounds(tempX, tempY, this.XSize, this.YSize))
                     {
-                        if (moveX == 0 && moveY == 0) continue;
-                        if (moveX + moveY > 5) continue;
-
-                        var posToCheck = new Position(startX + moveX, startY + moveY);
-                        if (!MapHelper.WithinMapBounds(posToCheck, this.XSize, this.YSize)) continue;
-
-                        if (this.random.NextDouble() <= 0.66)
-                            tempMap[posToCheck.Item1, posToCheck.Item2] = Enums.HeightLevel.Impassable;
+                        tempX = x + this.random.Next(maxPathNoiseDisplacement * 2) - maxPathNoiseDisplacement;
+                        tempY = y + this.random.Next(maxPathNoiseDisplacement * 2) - maxPathNoiseDisplacement;
                     }
+
+                    x = tempX;
+                    y = tempY;
+
+                    // Adjust minWidth
+                    if (prevX >= 0 && prevY >= 0)
+                        minWidth = (int)Math.Round(Math.Sqrt(Math.Pow(x - prevX, 2) + Math.Pow(y - prevY, 2)));
+
+                    if (minWidth > maxWidth) maxWidth = minWidth;
+                    
+                    var actualPos = new Position(x, y);
+
+                    // Place impassable terrain
+                    var width = this.random.Next(minWidth, maxWidth);
+                    for (var widthX = 0; widthX < width; widthX++)
+                    {
+                        for (var widthY = 0; widthY < width; widthY++)
+                        {
+                            var widthPos = new Position(x + widthX, y + widthY);
+                            if (MapHelper.WithinMapBounds(widthPos, this.XSize, this.YSize)
+                                 && MapHelper.CloseTo(widthPos, actualPos, width))
+                            {
+                                tempMap[widthPos.Item1, widthPos.Item2] = Enums.HeightLevel.Impassable;
+                            }
+                        }
+                    }
+
+                    prevX = x;
+                    prevY = y;
                 }
             }
 
             var ruleSmoothImpassable = new RuleDeterministic(Enums.HeightLevel.Impassable);
-            ruleSmoothImpassable.AddCondition(4, Enums.HeightLevel.Impassable);
-            
+            ruleSmoothImpassable.AddCondition(6, Enums.HeightLevel.Impassable);
+
             var ruleList = new List<Rule> { ruleSmoothImpassable };
 
             var tempRuleSet = new Ruleset(ruleList);

@@ -27,7 +27,7 @@
             ////TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            TestFitness();
+            ////TestFitness();
             ////TestPathfinding();
 
             /*
@@ -70,7 +70,7 @@
 
             ////RunEvolutionWithNoveltyAsBase(GetBaseMaps(), new Random());
             
-            TestEnclosedArea();
+            ////TestEnclosedArea();
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -87,6 +87,7 @@
             var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions(), new Random());
             mapSolution.MapPoints.Add(new MapPoint(0.7, 45, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
             map = mapSolution.ConvertedPhenotype;
+            map.PlaceCliffs();
             
             var mf = new MapFitness(map, new MapFitnessOptions());
             mf.CalculateFitness();
@@ -167,17 +168,24 @@
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
 
             var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: true, r: new Random(100000), groupPoints: 4);
-            //ca.SetRuleset(new List<Rule> { ruleBasicHeight1 });
-            ca.RunGenerations(generateHeight2ThroughRules: true);
+            ca.RunGenerations();
+            ca.CreateImpassableTerrain(5);
 
             var map = new MapPhenotype((Enums.HeightLevel[,])ca.Map.Clone(), new Enums.Item[Width, Height]);
 
-            map.SmoothTerrain(random: new Random(100000));
-            map.PlaceCliffs();
-            map.SmoothCliffs();
-            map.UpdateCliffPositions(Enums.Half.Top);
+            map.SaveMapToPngFile("0", heightMap: false);
 
-            ////map.SaveMapToPngFile("0", heightMap: false);
+            map.SmoothTerrain(random: new Random(100000));
+            map.SaveMapToPngFile("1", heightMap: false);
+            map.PlaceCliffs();
+
+            var sw = new Stopwatch();
+            sw.Start();
+            map.SmoothCliffs();
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds);
+
+            map.UpdateCliffPositions(Enums.Half.Top);
 
             var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions(), new Random(100000));
             mapSolution.MapPoints.Add(new MapPoint(0.7, 25, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
@@ -186,12 +194,17 @@
             mapSolution.MapPoints.Add(new MapPoint(0.5, 90, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.2, 90, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.5, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.No));
+            sw.Restart();
             map = mapSolution.ConvertedPhenotype;
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds + " lol");
 
-            //for (var y = 0; y < 125; y++)
-            //{
-            //    map.HeightLevels[35, y] = Enums.HeightLevel.Impassable;
-            //}
+            map.SaveMapToPngFile("2", heightMap: false);
+
+            ////for (var y = 0; y < 125; y++)
+            ////{
+            ////    map.HeightLevels[35, y] = Enums.HeightLevel.Impassable;
+            ////}
 
             ////map.SaveMapToPngFile("1", heightMap: false);
 
@@ -208,21 +221,20 @@
 
             ////map.SaveMapToPngFile();
 
+            ////var mapFitness = new MapFitness(map, new MapFitnessOptions());
+            ////var sw = new Stopwatch();
+            ////sw.Start();
+            ////var fitness = mapFitness.CalculateFitness();
+            ////sw.Stop();
+            ////Console.WriteLine("Total fitness: {0}", fitness);
+            ////Console.WriteLine("Took {0} millis to calculate.", sw.ElapsedMilliseconds);
 
-            var mapFitness = new MapFitness(map, new MapFitnessOptions());
-            var sw = new Stopwatch();
-            sw.Start();
-            var fitness = mapFitness.CalculateFitness();
-            sw.Stop();
-            Console.WriteLine("Total fitness: {0}", fitness);
-            Console.WriteLine("Took {0} millis to calculate.", sw.ElapsedMilliseconds);
+            ////foreach (var pos in mapFitness.pathBetweenStartBases)
+            ////{
+            ////    map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Marker;
+            ////}
 
-            foreach (var pos in mapFitness.pathBetweenStartBases)
-            {
-                map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Marker;
-            }
-
-            map.SaveMapToPngFile("2", heightMap: false);
+            ////map.SaveMapToPngFile("2", heightMap: false);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
@@ -246,7 +258,6 @@
 
             map = map.CreateFinishedMap(Enums.Half.Top, Enums.MapFunction.Turn);
             map.SaveMapToPngFile("Finished", Folder);
-
 
             ////map.SaveMapToPngFile("2_CA", Folder);
 
@@ -968,8 +979,11 @@
             bool generateHeight2 = true,
             List<int> caRandomSeeds = null,
             List<Rule> caRuleset = null,
-            int? drops = null,
-            int? radius = null,
+            int sections = 0, 
+            int maxLength = 50, 
+            double placementIntervals = 0.1, 
+            int maxPathNoiseDisplacement = 3, 
+            int maxWidth = 4,
             int caGenerations = 10,
             bool generateHeight2ThroughRules = true,
             int smoothingNormalNeighbourhood = 2,
@@ -989,10 +1003,7 @@
                     ca.SetRuleset(caRuleset);
                 }
 
-                if (drops != null && radius != null)
-                {
-                    ca.AddImpassableTerrain((int)drops, (int)radius);
-                }
+                ca.CreateImpassableTerrain(sections, maxLength, placementIntervals, maxPathNoiseDisplacement, maxWidth);
 
                 ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
                 var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
@@ -1012,10 +1023,7 @@
                         ca.SetRuleset(caRuleset);
                     }
 
-                    if (drops != null && radius != null)
-                    {
-                        ca.AddImpassableTerrain((int)drops, (int)radius);
-                    }
+                    ca.CreateImpassableTerrain(sections, maxLength, placementIntervals, maxPathNoiseDisplacement, maxWidth);
 
                     ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
                     var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);

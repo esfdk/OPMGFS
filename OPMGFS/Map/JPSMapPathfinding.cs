@@ -213,11 +213,6 @@
             var successors = new List<Node>();
             var neighbours = this.NodeNeighbours(current);
 
-            if (current.Position.Item1 == 92 && current.Position.Item2 == 94)
-            {
-                Console.WriteLine(neighbours.Count);
-            }
-
             foreach (var neighbour in neighbours)
             {
                 var dirX = Math.Min(Math.Max(-1, neighbour.Position.Item1 - current.Position.Item1), 1);
@@ -394,11 +389,6 @@
             var curY = curPos.Item2;
             var dirX = Math.Min(Math.Max(-1, current.Position.Item1 - current.Parent.Position.Item1), 1);
             var dirY = Math.Min(Math.Max(-1, current.Position.Item2 - current.Parent.Position.Item2), 1);
-
-            if (current.Position.Item1 == 92 && current.Position.Item2 == 94)
-            {
-                Console.WriteLine(dirX + " - " + dirY);
-            }
 
             if (dirX != 0 && dirY != 0)
             {

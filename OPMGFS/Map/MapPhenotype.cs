@@ -201,18 +201,64 @@ namespace OPMGFS.Map
             var yStart = (this.mapHalf == Half.Top) ? (this.YSize / 2) - (int)(this.YSize * 0.1) : 0;
             var yEnd = (this.mapHalf == Half.Bottom) ? (this.YSize / 2) + (int)(this.YSize * 0.1) : this.YSize;
 
+            ////var changesHappened = true;
+            ////while (changesHappened)
+            ////{
+            ////    var changes = 0;
+
+            ////    for (var tempY = yStart; tempY < yEnd; tempY++)
+            ////    {
+            ////        for (var tempX = xStart; tempX < xEnd; tempX++)
+            ////        {
+            ////            if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff)
+            ////            {
+            ////                var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumann);
+            ////                if (neighbours[this.HeightLevels[tempX, tempY]] <= 1)
+            ////                {
+            ////                    this.HeightLevels[tempX, tempY] = HeightLevel.Cliff;
+            ////                    changes++;
+            ////                }
+            ////            }
+            ////            else
+            ////            {
+            ////                var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels);
+
+            ////                // Count number of different height levels that are around the tile.
+            ////                var differentHeights = neighbours.Where(neighbour => neighbour.Key != HeightLevel.Cliff).Count(neighbour => neighbour.Value > 0);
+            ////                if (differentHeights >= 2)
+            ////                    continue;
+
+            ////                var convertTo = HeightLevel.Cliff;
+            ////                foreach (var neighbour in neighbours)
+            ////                {
+            ////                    if (neighbour.Key == HeightLevel.Cliff) continue;
+            ////                    if (neighbour.Value == 0) continue;
+
+            ////                    convertTo = neighbour.Key;
+            ////                    break;
+            ////                }
+
+            ////                this.HeightLevels[tempX, tempY] = convertTo;
+            ////                //changes++;
+            ////            }
+            ////        }
+            ////    }
+
+            ////    changesHappened = changes > 0;
+            ////}
+
             for (var tempY = yStart; tempY < yEnd; tempY++)
             {
                 for (var tempX = xStart; tempX < xEnd; tempX++)
                 {
-                    if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff) 
+                    if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff)
                         continue;
 
-                    var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumannExtended);
+                    var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels);
 
                     // Count number of different height levels that are around the tile.
                     var differentHeights = neighbours.Where(neighbour => neighbour.Key != HeightLevel.Cliff).Count(neighbour => neighbour.Value > 0);
-                    if (differentHeights >= 2) 
+                    if (differentHeights >= 2)
                         continue;
 
                     var convertTo = HeightLevel.Cliff;
@@ -238,7 +284,12 @@ namespace OPMGFS.Map
         /// <param name="smoothingGenerations"> The number of "generations" to run. </param>
         /// <param name="newRuleset"> The ruleset to use for smoothing. If null, default ruleset is used. </param>
         /// <param name="random"> The random to use during smoothing.</param>
-        public void SmoothTerrain(int smoothingNormalNeighbourhood = 2, int smoothingExtNeighbourhood = 6, int smoothingGenerations = 10, List<Rule> newRuleset = null, Random random = null)
+        public void SmoothTerrain(
+            int smoothingNormalNeighbourhood = 2,
+            int smoothingExtNeighbourhood = 6,
+            int smoothingGenerations = 10,
+            List<Rule> newRuleset = null,
+            Random random = null)
         {
             var smoothCA = new CellularAutomata.CellularAutomata(
                 this.XSize,
@@ -247,6 +298,7 @@ namespace OPMGFS.Map
                 this.HeightLevels,
                 random);
 
+            // TODO: Try to use Von Neumann as well
             if (newRuleset == null)
             {
                 smoothCA.SetRuleset(this.GetSmoothingRules(smoothingNormalNeighbourhood, smoothingExtNeighbourhood));
@@ -311,36 +363,37 @@ namespace OPMGFS.Map
                     }
 
                     // TODO: (done) Grooss - No diagonal cliffs
-                    ////if (positionsLowerThanMe.Count >= 2)
-                    ////{
-                    ////    if (this.MapItems[x, y] == Item.None)
-                    ////    {
-                    ////        tempMap[x, y] = HeightLevel.Cliff;
-                    ////    }
-                    ////    else
-                    ////    {
-                    ////        // Iterate over all combinations of neighbours
-                    ////        foreach (var np1 in neighbourPositions)
-                    ////        {
-                    ////            foreach (var np2 in neighbourPositions)
-                    ////            {
-                    ////                // If they are equal, don't do anything.
-                    ////                if (np1.Equals(np2)) continue;
-                    ////                if ((int)this.HeightLevels[np1.Item1, np1.Item2] >= (int)this.HeightLevels[x, y]) continue;
-                    ////                if ((int)this.HeightLevels[np2.Item1, np2.Item2] >= (int)this.HeightLevels[x, y]) continue;
+                    if (positionsLowerThanMe.Count >= 2)
+                    {
+                        if (this.MapItems[x, y] == Item.None
+                            || this.MapItems[x, y] == Item.Occupied)
+                        {
+                            tempMap[x, y] = HeightLevel.Cliff;
+                        }
+                        else
+                        {
+                            // Iterate over all combinations of neighbours
+                            foreach (var np1 in neighbourPositions)
+                            {
+                                foreach (var np2 in neighbourPositions)
+                                {
+                                    // If they are equal, don't do anything.
+                                    if (np1.Equals(np2)) continue;
+                                    if ((int)this.HeightLevels[np1.Item1, np1.Item2] >= (int)this.HeightLevels[x, y]) continue;
+                                    if ((int)this.HeightLevels[np2.Item1, np2.Item2] >= (int)this.HeightLevels[x, y]) continue;
 
-                    ////                // If they are oppesite of each other, don't do anything.
-                    ////                var diff = new Tuple<int, int>(
-                    ////                    np1.Item1 - np2.Item1,
-                    ////                    np2.Item2 - np1.Item2);
-                    ////                if (diff.Item1 == 0 || diff.Item2 == 0) continue;
+                                    // If they are oppesite of each other, don't do anything.
+                                    var diff = new Tuple<int, int>(
+                                        np1.Item1 - np2.Item1,
+                                        np2.Item2 - np1.Item2);
+                                    if (diff.Item1 == 0 || diff.Item2 == 0) continue;
 
-                    ////                // Place a cliff in the space "between" the neighbours.
-                    ////                tempMap[x + diff.Item1, y + diff.Item2] = HeightLevel.Cliff;
-                    ////            }
-                    ////        }
-                    ////    }
-                    ////}
+                                    // Place a cliff in the space "between" the neighbours.
+                                    tempMap[x + diff.Item1, y + diff.Item2] = HeightLevel.Cliff;
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -558,9 +611,16 @@ namespace OPMGFS.Map
             ruleH2ToH0.AddCondition(12, HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
             ruleH2ToH0.AddCondition(0, HeightLevel.Height1, RuleEnums.Comparison.LessThanEqualTo);
 
+            var ruleH2TooFew = new RuleDeterministic(HeightLevel.Height1, HeightLevel.Height2)
+                {
+                    Neighbourhood = RuleEnums.Neighbourhood.VonNeumann
+                };
+            ruleH2TooFew.AddCondition(1, HeightLevel.Height2, RuleEnums.Comparison.LessThanEqualTo);
+
             list.Add(ruleH2ToH1);
             list.Add(ruleH2ToH1Ext);
             list.Add(ruleH2ToH0);
+            list.Add(ruleH2TooFew);
 
             // Smooth down height 1
             var ruleH1ToH0 = new RuleDeterministic(HeightLevel.Height0, HeightLevel.Height1);
@@ -585,8 +645,15 @@ namespace OPMGFS.Map
                 };
             ruleH0ToH1Ext.AddCondition(smoothingExtNeighbourhood, HeightLevel.Height0, RuleEnums.Comparison.LessThanEqualTo);
 
+            var ruleH0TooFew = new RuleDeterministic(HeightLevel.Height1, HeightLevel.Height0)
+                {
+                    Neighbourhood = RuleEnums.Neighbourhood.VonNeumann
+                };
+            ruleH0TooFew.AddCondition(1, HeightLevel.Height0, RuleEnums.Comparison.LessThanEqualTo);
+
             list.Add(ruleH0ToH1);
             list.Add(ruleH0ToH1Ext);
+            list.Add(ruleH0TooFew);
 
             return list;
         }
