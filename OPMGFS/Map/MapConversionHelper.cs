@@ -612,13 +612,20 @@
                         break;
                     case Enums.MapPointType.Ramp:
                         placed = PlaceRamp(xPos, yPos, newMap);
-                        if (!placed)
+
+                        var displacementAttempts = 0;
+                        while (!placed)
                         {
                             var cliffPos = newMap.CliffPositions.ToList();
                             var hash = Math.Abs((mp.Degree * mp.Distance).GetHashCode());
-                            var index = hash % cliffPos.Count;
+                            var index = (hash + displacementAttempts) % cliffPos.Count;
                             var pos = cliffPos[index];
                             placed = PlaceRamp(pos.Item1, pos.Item2, newMap);
+                            displacementAttempts += mso.DisplacementAmountPerStep;
+                            if (displacementAttempts > mso.MaximumDisplacement)
+                            {
+                                break;
+                            }
                         }
 
                         mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
@@ -1011,41 +1018,50 @@
             }
 
             // HACK: Removed check for occupied tiles (risks being placed on inside a starting position)
-            if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x + xMod, y + yMod))
+            while (xMod >= 1)
             {
-                // Bottom-left
-                if (DestructibleRocksPlacableInArea(x, y, xMod, yMod, mp))
+                if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x + xMod, y + yMod))
                 {
-                    PlaceDestructibleRocks(x, y, xMod, yMod, mp);
-                    return true;
+                    // Bottom-left
+                    if (DestructibleRocksPlacableInArea(x, y, xMod, yMod, mp))
+                    {
+                        PlaceDestructibleRocks(x, y, xMod, yMod, mp);
+                        return true;
+                    }
                 }
-            }
-            else if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x - xMod, y + yMod))
-            {
-                // Bottom-right
-                if (DestructibleRocksPlacableInArea(x - xMod, y, xMod, yMod, mp))
+
+                if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x - xMod, y + yMod))
                 {
-                    PlaceDestructibleRocks(x - xMod, y, xMod, yMod, mp);
-                    return true;
+                    // Bottom-right
+                    if (DestructibleRocksPlacableInArea(x - xMod, y, xMod, yMod, mp))
+                    {
+                        PlaceDestructibleRocks(x - xMod, y, xMod, yMod, mp);
+                        return true;
+                    }
                 }
-            }
-            else if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x + xMod, y - yMod))
-            {
-                // Top-left
-                if (DestructibleRocksPlacableInArea(x, y - yMod, xMod, yMod, mp))
+
+                if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x + xMod, y - yMod))
                 {
-                    PlaceDestructibleRocks(x, y - yMod, xMod, yMod, mp);
-                    return true;
+                    // Top-left
+                    if (DestructibleRocksPlacableInArea(x, y - yMod, xMod, yMod, mp))
+                    {
+                        PlaceDestructibleRocks(x, y - yMod, xMod, yMod, mp);
+                        return true;
+                    }
                 }
-            }
-            else if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x - xMod, y - yMod))
-            {
-                // Top-right
-                if (DestructibleRocksPlacableInArea(x - xMod, y - yMod, xMod, yMod, mp))
+
+                if (mp.InsideTopHalf(x - xMod, y) && mp.InsideTopHalf(x, y - yMod) && mp.InsideTopHalf(x - xMod, y - yMod))
                 {
-                    PlaceDestructibleRocks(x - xMod, y - yMod, xMod, yMod, mp);
-                    return true;
+                    // Top-right
+                    if (DestructibleRocksPlacableInArea(x - xMod, y - yMod, xMod, yMod, mp))
+                    {
+                        PlaceDestructibleRocks(x - xMod, y - yMod, xMod, yMod, mp);
+                        return true;
+                    }
                 }
+
+                xMod -= 2;
+                yMod -= 2;
             }
 
             return false;

@@ -389,9 +389,9 @@
                 }
 
                 var jps = new JPSMapPathfinding(this.ConvertedPhenotype.HeightLevels, this.ConvertedPhenotype.MapItems, this.ConvertedPhenotype.DestructibleRocks);
-
+                var path = jps.FindPathFromTo(topBasePoint, bottomBasePoint);
                 distance =
-                    jps.FindPathFromTo(topBasePoint, bottomBasePoint).Count == 0
+                    path.Count == 0
                         ? distance + this.MapSearchOptions.NoPathBetweenStartBasesPenalty
                         : distance;
             }

@@ -300,40 +300,19 @@
             {
                 for (var y = baseY - 12; y <= baseY + 13; y += 25)
                 {
-                    if (this.map.HeightLevels[x, y] != Enums.HeightLevel.Cliff
-                        && this.map.HeightLevels[x, y] != Enums.HeightLevel.Impassable
-                        && this.map.MapItems[x, y] != Enums.Item.Base
-                        && this.map.MapItems[x, y] != Enums.Item.StartBase
-                        && this.map.MapItems[x, y] != Enums.Item.GoldMinerals
-                        && this.map.MapItems[x, y] != Enums.Item.BlueMinerals
-                        && this.map.MapItems[x, y] != Enums.Item.Gas
-                        && this.map.MapItems[x, y] != Enums.Item.XelNagaTower)
+                    if (this.map.IsTilePassable(x, y))
                     {
                         counter++;
                     }
                 }
             }
 
-            if (this.map.HeightLevels[baseX - 12, baseY] != Enums.HeightLevel.Cliff
-                        && this.map.HeightLevels[baseX - 12, baseY] != Enums.HeightLevel.Impassable
-                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.Base
-                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.StartBase
-                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.GoldMinerals
-                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.BlueMinerals
-                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.Gas
-                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.XelNagaTower)
+            if (this.map.IsTilePassable(baseX - 12, baseY))
             {
                 counter++;
             }
 
-            if (this.map.HeightLevels[baseX + 13, baseY] != Enums.HeightLevel.Cliff
-                        && this.map.HeightLevels[baseX + 13, baseY] != Enums.HeightLevel.Impassable
-                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.Base
-                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.StartBase
-                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.GoldMinerals
-                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.BlueMinerals
-                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.Gas
-                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.XelNagaTower)
+            if (this.map.IsTilePassable(baseX + 13, baseY))
             {
                 counter++;
             }
@@ -366,17 +345,9 @@
 
                 for (var x = leftSideX; x <= rightSideX; x += xIncrease)
                 {
-                    if (this.map.HeightLevels[x, y] != Enums.HeightLevel.Cliff
-                        && this.map.HeightLevels[x, y] != Enums.HeightLevel.Impassable
-                        && this.map.MapItems[x, y] != Enums.Item.Base
-                        && this.map.MapItems[x, y] != Enums.Item.StartBase
-                        && this.map.MapItems[x, y] != Enums.Item.GoldMinerals
-                        && this.map.MapItems[x, y] != Enums.Item.BlueMinerals
-                        && this.map.MapItems[x, y] != Enums.Item.Gas
-                        && this.map.MapItems[x, y] != Enums.Item.XelNagaTower)
+                    if (this.map.IsTilePassable(x,y))
                     {
                         counter++;
-                        this.map.HeightLevels[x,y] = Enums.HeightLevel.Impassable;
                     }
                 }
             }
@@ -400,14 +371,7 @@
 
                 for (var x = leftSideX; x <= rightSideX; x += xIncrease)
                 {
-                    if (this.map.HeightLevels[x, y] != Enums.HeightLevel.Cliff
-                        && this.map.HeightLevels[x, y] != Enums.HeightLevel.Impassable
-                        && this.map.MapItems[x, y] != Enums.Item.Base
-                        && this.map.MapItems[x, y] != Enums.Item.StartBase
-                        && this.map.MapItems[x, y] != Enums.Item.GoldMinerals
-                        && this.map.MapItems[x, y] != Enums.Item.BlueMinerals
-                        && this.map.MapItems[x, y] != Enums.Item.Gas
-                        && this.map.MapItems[x, y] != Enums.Item.XelNagaTower)
+                    if (this.map.IsTilePassable(x, y))
                     {
                         counter++;
                     }

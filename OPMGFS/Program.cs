@@ -30,12 +30,11 @@
             ////TestFitness();
             ////TestPathfinding();
 
-            /*
             var sw = new Stopwatch();
             sw.Start();
 
             var list = new List<int>();
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i < 1; i++)
             {
                 list.Add(0);
             }
@@ -45,11 +44,10 @@
             Console.WriteLine("It took {0} milliseconds to generate base maps.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
-            for(var i = 0; i < maps.Count; i++) maps[i].SaveMapToPngFile(string.Format("{0}", i));
-            return;
+            for (var i = 0; i < maps.Count; i++) maps[i].SaveMapToPngFile(string.Format("{0}", i));
 
             Console.WriteLine("Starting evolution");
-            RunEvolution(maps, new Random(0), numberOfGenerations: 1, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
+            //RunEvolution(maps, new Random(0), numberOfGenerations: 5, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
             Console.WriteLine("Evolution done. It took  {0} milliseconds to perform evolution.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
@@ -59,18 +57,17 @@
                 addToArchive: 5,
                 feasiblePopulationSize: 50,
                 infeasiblePopulationSize: 50);
-            RunNoveltySearch(maps, new Random(0), numberOfGenerations: 2, noveltySearchOptions: nso);
+            RunNoveltySearch(maps, new Random(0), numberOfGenerations: 5, noveltySearchOptions: nso);
             Console.WriteLine("Novelty search done. It took {0} milliseconds to perform novelty search.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
-             * */
 
             ////var baseMaps = GetBaseMaps(groupPoints: 4, caGenerations: 0, smoothingGenerations: 0, caRandomSeeds: new List<int> { 100001 });
             ////baseMaps[0].SaveMapToPngFile("baseMap1", "bm", itemMap: false);
 
             ////RunEvolutionWithNoveltyAsBase(GetBaseMaps(), new Random());
-            
-            TestEnclosedArea();
+
+            ////TestEnclosedArea();
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
@@ -1002,6 +999,7 @@
                 var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                 map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet);
                 map.PlaceCliffs();
+                map.SmoothCliffs();
                 map.UpdateCliffPositions(Enums.Half.Top);
                 baseMaps.Add(map);
             }
@@ -1025,6 +1023,7 @@
                     var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                     map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet, random);
                     map.PlaceCliffs();
+                    map.SmoothCliffs();
                     map.UpdateCliffPositions(Enums.Half.Top);
                     baseMaps.Add(map);
                 }

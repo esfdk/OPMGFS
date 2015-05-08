@@ -215,7 +215,7 @@
 
             if (current.Position.Item1 == 92 && current.Position.Item2 == 94)
             {
-                Console.WriteLine(neighbours.Count);
+                //Console.WriteLine(neighbours.Count);
             }
 
             foreach (var neighbour in neighbours)
@@ -397,7 +397,7 @@
 
             if (current.Position.Item1 == 92 && current.Position.Item2 == 94)
             {
-                Console.WriteLine(dirX + " - " + dirY);
+                //Console.WriteLine(dirX + " - " + dirY);
             }
 
             if (dirX != 0 && dirY != 0)
