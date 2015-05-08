@@ -228,6 +228,24 @@
 
         #endregion
 
+        #region Base Openess
+        public readonly int StartBaseOpenessSignificance;
+
+        public readonly int BaseOpenessSignificance;
+
+        public readonly int OpenStartBaseTilesMinimum;
+
+        public readonly int OpenStartBaseTilesMaximum;
+
+        public readonly int OpenBaseTilesMinimum;
+
+        public readonly int OpenBaseTilesMaximum;
+
+        public readonly int StartBaseApproachDirectionMaximum;
+
+        public readonly int StartBaseApproachDirectionMinimum;
+        #endregion
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MapFitnessOptions"/> class.
         /// </summary>
@@ -267,6 +285,14 @@
         /// <param name="distanceToXelNaga"> The range before a point is considered within range of the Xel'Naga tower. </param>
         /// <param name="stepsInXelNagaRangeMax"> The maximum number of tiles on the path between start bases the Xel'Naga tower should give vision of. </param>
         /// <param name="stepsInXelNagaRangeMin"> The minimum number of tiles on the path between start bases the Xel'Naga tower should give vision of. </param>
+        /// <param name="startBaseOpenessSignificance">The significance of start base openess.</param>
+        /// <param name="baseOpenessSignificance">The significance of base openess.</param>
+        /// <param name="openStartBaseTilesMinimum">The minimum number of tiles that must be open around a start base.</param>
+        /// <param name="openStartBaseTilesMaximum">The maximum number of tiles that must be open around a start base.</param>
+        /// <param name="openBaseTilesMinimum">The minimum number of tiles that must be open around a base.</param>
+        /// <param name="openBaseTilesMaximum">The maximum number of tiles that must be open around a base.</param>
+        /// <param name="startBaseApproachDirectionMinimum">The minimum number of directions that are open to approach for the start base.</param>
+        /// <param name="startBaseApproachDirectionMaximum">The maximum number of directions that are open to approach for the start base</param>
         public MapFitnessOptions(
             bool pathfindingIgnoreDestructibleRocks = true,
             int baseSpaceSignificance = 5, 
@@ -303,7 +329,15 @@
             int xelNagaPlacementSignificance = 5, 
             int distanceToXelNaga = 22, 
             int stepsInXelNagaRangeMax = 30, 
-            int stepsInXelNagaRangeMin = 0)
+            int stepsInXelNagaRangeMin = 0, 
+            int startBaseOpenessSignificance = 5, 
+            int baseOpenessSignificance = 3, 
+            int openStartBaseTilesMinimum = 10, 
+            int openStartBaseTilesMaximum = 85, 
+            int openBaseTilesMinimum = 16, 
+            int openBaseTilesMaximum = 56, 
+            int startBaseApproachDirectionMinimum = 1, 
+            int startBaseApproachDirectionMaximum = 3)
         {
             // TODO: Figure out good default values for this thing.
             this.PathfindingIgnoreDestructibleRocks = pathfindingIgnoreDestructibleRocks;
@@ -340,6 +374,14 @@
             this.DistanceToXelNaga = distanceToXelNaga;
             this.StepsInXelNagaRangeMax = stepsInXelNagaRangeMax;
             this.StepsInXelNagaRangeMin = stepsInXelNagaRangeMin;
+            this.StartBaseOpenessSignificance = startBaseOpenessSignificance;
+            this.BaseOpenessSignificance = baseOpenessSignificance;
+            this.OpenStartBaseTilesMinimum = openStartBaseTilesMinimum;
+            this.OpenStartBaseTilesMaximum = openStartBaseTilesMaximum;
+            this.OpenBaseTilesMinimum = openBaseTilesMinimum;
+            this.OpenBaseTilesMaximum = openBaseTilesMaximum;
+            this.StartBaseApproachDirectionMinimum = startBaseApproachDirectionMinimum;
+            this.StartBaseApproachDirectionMaximum = startBaseApproachDirectionMaximum;
             this.PathExpDirectDistances = pathExpDirectDistances;
 
             if (pathExpMaxDistances == null)

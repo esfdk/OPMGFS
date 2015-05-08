@@ -208,7 +208,7 @@ namespace OPMGFS.Map
                     if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff) 
                         continue;
 
-                    var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumannExtended);
+                    var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels);
 
                     // Count number of different height levels that are around the tile.
                     var differentHeights = neighbours.Where(neighbour => neighbour.Key != HeightLevel.Cliff).Count(neighbour => neighbour.Value > 0);
@@ -310,37 +310,36 @@ namespace OPMGFS.Map
                             positionsLowerThanMe.Add(np);
                     }
 
-                    // TODO: (done) Grooss - No diagonal cliffs
-                    ////if (positionsLowerThanMe.Count >= 2)
-                    ////{
-                    ////    if (this.MapItems[x, y] == Item.None)
-                    ////    {
-                    ////        tempMap[x, y] = HeightLevel.Cliff;
-                    ////    }
-                    ////    else
-                    ////    {
-                    ////        // Iterate over all combinations of neighbours
-                    ////        foreach (var np1 in neighbourPositions)
-                    ////        {
-                    ////            foreach (var np2 in neighbourPositions)
-                    ////            {
-                    ////                // If they are equal, don't do anything.
-                    ////                if (np1.Equals(np2)) continue;
-                    ////                if ((int)this.HeightLevels[np1.Item1, np1.Item2] >= (int)this.HeightLevels[x, y]) continue;
-                    ////                if ((int)this.HeightLevels[np2.Item1, np2.Item2] >= (int)this.HeightLevels[x, y]) continue;
+                    if (positionsLowerThanMe.Count >= 2)
+                    {
+                        if (this.MapItems[x, y] == Item.None)
+                        {
+                            tempMap[x, y] = HeightLevel.Cliff;
+                        }
+                        else
+                        {
+                            // Iterate over all combinations of neighbours
+                            foreach (var np1 in neighbourPositions)
+                            {
+                                foreach (var np2 in neighbourPositions)
+                                {
+                                    // If they are equal, don't do anything.
+                                    if (np1.Equals(np2)) continue;
+                                    if ((int)this.HeightLevels[np1.Item1, np1.Item2] >= (int)this.HeightLevels[x, y]) continue;
+                                    if ((int)this.HeightLevels[np2.Item1, np2.Item2] >= (int)this.HeightLevels[x, y]) continue;
 
-                    ////                // If they are oppesite of each other, don't do anything.
-                    ////                var diff = new Tuple<int, int>(
-                    ////                    np1.Item1 - np2.Item1,
-                    ////                    np2.Item2 - np1.Item2);
-                    ////                if (diff.Item1 == 0 || diff.Item2 == 0) continue;
+                                    // If they are opposite of each other, don't do anything.
+                                    var diff = new Tuple<int, int>(
+                                        np1.Item1 - np2.Item1,
+                                        np2.Item2 - np1.Item2);
+                                    if (diff.Item1 == 0 || diff.Item2 == 0) continue;
 
-                    ////                // Place a cliff in the space "between" the neighbours.
-                    ////                tempMap[x + diff.Item1, y + diff.Item2] = HeightLevel.Cliff;
-                    ////            }
-                    ////        }
-                    ////    }
-                    ////}
+                                    // Place a cliff in the space "between" the neighbours.
+                                    tempMap[x + diff.Item1, y + diff.Item2] = HeightLevel.Cliff;
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

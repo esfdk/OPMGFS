@@ -705,7 +705,7 @@
         /// <param name="mp">The map phenotype to flatten the area on.</param>
         private static void FlattenArea(Enums.HeightLevel height, int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
-            // TODO: Implement variations of flattening
+            // TODO: Melnyk - Implement variations of flattening
             ////var centreY = startY + (lengthY / 2);
             ////for (var y = startY; y <= startY + lengthY; y++)
             ////{
@@ -1223,7 +1223,7 @@
                 }
             }
 
-            // TODO: Diagonal ramps
+            // TODO: Melnyk - Diagonal ramps
             // Northwest-Southeast diagonal
             // Northeast-Southwest diagonal
             return false;
@@ -1247,7 +1247,7 @@
                 return false;
             }
 
-            // ITODO: Fix ramp so that ground level has extra space
+            // ITODO: Melnyk - Fix ramp so that ground level has extra space
 
             if (mp.HeightLevels[x - 1, y] == west && mp.HeightLevels[x - 1, y + 1] == west
                 && mp.HeightLevels[x + 1, y] == east && mp.HeightLevels[x + 1, y + 1] == east)

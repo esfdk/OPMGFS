@@ -201,8 +201,16 @@
 
             fitness += this.XelNagaPlacement();
             Console.WriteLine("Xel'Naga Placement:                 {0}", fitness - prevFitness);
+            prevFitness = fitness;
 
-            // ITODO: Grooss - Consider base openess
+            fitness += this.StartBaseOpeness();
+            Console.WriteLine("Start Base Openess:                 {0}", fitness - prevFitness);
+
+            prevFitness = fitness;
+            fitness += this.BaseOpeness();
+            Console.WriteLine("Base Openess:                       {0}", fitness - prevFitness);
+
+            // ITODO: Grooss - Check if openess calculations make sense
             
             //// Used to check Xel'Naga vision
             ////for (var tempY = this.ySize - 1; tempY >= 0; tempY--)
@@ -218,9 +226,124 @@
             return fitness;
         }
 
-        public int FreeTilesAroundBase(int index)
+        private double StartBaseOpeness()
         {
-            // HACK: Will bug if base placement is changed
+            // Openess
+            var freeTiles = this.FreeTilesAroundStartBase();
+            var maxTiles = this.mfo.OpenStartBaseTilesMaximum;
+            var minTiles = this.mfo.OpenStartBaseTilesMinimum;
+            var actualNumberOfTiles = freeTiles > maxTiles ? maxTiles - (freeTiles - maxTiles) : freeTiles;
+
+            if (actualNumberOfTiles < minTiles)
+            {
+                actualNumberOfTiles = minTiles;
+            }
+            
+            var normalizedOpenTiles = (actualNumberOfTiles - minTiles) / (maxTiles - minTiles);
+
+            // Directions
+            var openDirections = this.OpenDirectionsToStartBase();
+            double maxDirections = this.mfo.StartBaseApproachDirectionMaximum;
+            double minDirections = this.mfo.StartBaseApproachDirectionMinimum;
+
+            var actualNumberOfDirections = openDirections > maxDirections
+                                               ? maxDirections - (openDirections - maxDirections)
+                                               : openDirections;
+
+            if (actualNumberOfDirections < minDirections)
+            {
+                actualNumberOfDirections = minDirections;
+            }
+
+            var normalizedOpenDirections = (actualNumberOfDirections - minDirections) / (maxDirections - minDirections);
+
+            return ((normalizedOpenTiles + normalizedOpenDirections) / 2.0) * this.mfo.StartBaseOpenessSignificance;
+        }
+
+        private double BaseOpeness()
+        {
+            if (this.bases.Count == 0)
+            {
+                return 0;
+            }
+
+            var fitness = 0.0;
+
+            double maxTiles = this.mfo.OpenStartBaseTilesMaximum;
+            double minTiles = this.mfo.OpenStartBaseTilesMinimum;
+
+            for (var i = 0; i < this.bases.Count; i++)
+            {
+                var freeTiles = this.FreeTilesAroundBase(i);
+
+                var actualNumberOfTiles = freeTiles > maxTiles ? maxTiles - (freeTiles - maxTiles) : freeTiles;
+
+                if (actualNumberOfTiles < minTiles)
+                {
+                    actualNumberOfTiles = minTiles;
+                }
+
+                fitness += (actualNumberOfTiles - minTiles) / (maxTiles - minTiles);
+            }
+            
+            return (fitness / this.bases.Count) * this.mfo.BaseOpenessSignificance;
+        }
+
+        private int OpenDirectionsToStartBase()
+        {
+            var counter = 0;
+
+            var baseX = startBasePosition2.Item1;
+            var baseY = startBasePosition2.Item2;
+
+            for (var x = baseX - 12; x <= baseX + 13; x += 25)
+            {
+                for (var y = baseY - 12; y <= baseY + 13; y += 25)
+                {
+                    if (this.map.HeightLevels[x, y] != Enums.HeightLevel.Cliff
+                        && this.map.HeightLevels[x, y] != Enums.HeightLevel.Impassable
+                        && this.map.MapItems[x, y] != Enums.Item.Base
+                        && this.map.MapItems[x, y] != Enums.Item.StartBase
+                        && this.map.MapItems[x, y] != Enums.Item.GoldMinerals
+                        && this.map.MapItems[x, y] != Enums.Item.BlueMinerals
+                        && this.map.MapItems[x, y] != Enums.Item.Gas
+                        && this.map.MapItems[x, y] != Enums.Item.XelNagaTower)
+                    {
+                        counter++;
+                    }
+                }
+            }
+
+            if (this.map.HeightLevels[baseX - 12, baseY] != Enums.HeightLevel.Cliff
+                        && this.map.HeightLevels[baseX - 12, baseY] != Enums.HeightLevel.Impassable
+                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.Base
+                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.StartBase
+                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.GoldMinerals
+                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.BlueMinerals
+                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.Gas
+                        && this.map.MapItems[baseX - 12, baseY] != Enums.Item.XelNagaTower)
+            {
+                counter++;
+            }
+
+            if (this.map.HeightLevels[baseX + 13, baseY] != Enums.HeightLevel.Cliff
+                        && this.map.HeightLevels[baseX + 13, baseY] != Enums.HeightLevel.Impassable
+                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.Base
+                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.StartBase
+                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.GoldMinerals
+                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.BlueMinerals
+                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.Gas
+                        && this.map.MapItems[baseX + 13, baseY] != Enums.Item.XelNagaTower)
+            {
+                counter++;
+            }
+
+            return counter;
+        }
+
+        private int FreeTilesAroundBase(int index)
+        {
+            // HACK: Bugs if base placement is changed
             var counter = 0;
 
             var baseLocation = bases[index];
@@ -261,7 +384,7 @@
             return counter;
         }
 
-        public int FreeTilesAroundStartBase()
+        private int FreeTilesAroundStartBase()
         {
             var counter = 0;
 

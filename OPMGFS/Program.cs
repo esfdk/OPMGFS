@@ -27,7 +27,7 @@
             ////TestPhenotypeConversion();
             ////TestCA();
             ////TestMapNoveltySearch();
-            TestFitness();
+            ////TestFitness();
             ////TestPathfinding();
 
             /*
@@ -85,12 +85,15 @@
             var map = new MapPhenotype(new Enums.HeightLevel[Width, Height], new Enums.Item[Width, Height]);
             map.HeightLevels[108, 108] = Enums.HeightLevel.Height1;
             var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions(), new Random());
-            mapSolution.MapPoints.Add(new MapPoint(0.7, 45, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
+            mapSolution.MapPoints.Add(new MapPoint(0.7, 45, Enums.MapPointType.StartBase, Enums.WasPlaced.NotAttempted));
             map = mapSolution.ConvertedPhenotype;
+            
+            map.HeightLevels[121, 108] = Enums.HeightLevel.Height1;
+            map.HeightLevels[108, 121] = Enums.HeightLevel.Height1;
+            map.HeightLevels[96, 108] = Enums.HeightLevel.Height1;
             
             var mf = new MapFitness(map, new MapFitnessOptions());
             mf.CalculateFitness();
-            Console.WriteLine(mf.FreeTilesAroundBase(1));
             map.SaveMapToPngFile("Enclosed stuff", heightMap: false);
             // Mapfitness goes here
         }
@@ -217,10 +220,11 @@
             Console.WriteLine("Total fitness: {0}", fitness);
             Console.WriteLine("Took {0} millis to calculate.", sw.ElapsedMilliseconds);
 
+            /*
             foreach (var pos in mapFitness.pathBetweenStartBases)
             {
                 map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Marker;
-            }
+            }*/
 
             map.SaveMapToPngFile("2", heightMap: false);
         }
