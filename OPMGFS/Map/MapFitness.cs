@@ -210,175 +210,7 @@
             fitness += this.BaseOpeness();
             Console.WriteLine("Base Openess:                       {0}", fitness - prevFitness);
 
-            // ITODO: Grooss - Check if openess calculations make sense
-            
-            //// Used to check Xel'Naga vision
-            ////for (var tempY = this.ySize - 1; tempY >= 0; tempY--)
-            ////{
-            ////    for (var tempX = 0; tempX < this.xSize; tempX++)
-            ////    {
-            ////        if (MapHelper.CloseTo(new Position(tempX, tempY), this.xelNagaPosition1, this.mfo.DistanceToXelNaga)
-            ////            || MapHelper.CloseTo(new Position(tempX, tempY), this.xelNagaPosition2, this.mfo.DistanceToXelNaga))
-            ////            this.map.MapItems[tempX, tempY] = Enums.Item.GoldMinerals;
-            ////    }
-            ////}
-
             return fitness;
-        }
-
-        private double StartBaseOpeness()
-        {
-            // Openess
-            var freeTiles = this.FreeTilesAroundStartBase();
-            var maxTiles = this.mfo.OpenStartBaseTilesMaximum;
-            var minTiles = this.mfo.OpenStartBaseTilesMinimum;
-            var actualNumberOfTiles = freeTiles > maxTiles ? maxTiles - (freeTiles - maxTiles) : freeTiles;
-
-            if (actualNumberOfTiles < minTiles)
-            {
-                actualNumberOfTiles = minTiles;
-            }
-            
-            var normalizedOpenTiles = (actualNumberOfTiles - minTiles) / (maxTiles - minTiles);
-
-            // Directions
-            var openDirections = this.OpenDirectionsToStartBase();
-            double maxDirections = this.mfo.StartBaseApproachDirectionMaximum;
-            double minDirections = this.mfo.StartBaseApproachDirectionMinimum;
-
-            var actualNumberOfDirections = openDirections > maxDirections
-                                               ? maxDirections - (openDirections - maxDirections)
-                                               : openDirections;
-
-            if (actualNumberOfDirections < minDirections)
-            {
-                actualNumberOfDirections = minDirections;
-            }
-
-            var normalizedOpenDirections = (actualNumberOfDirections - minDirections) / (maxDirections - minDirections);
-
-            return ((normalizedOpenTiles + normalizedOpenDirections) / 2.0) * this.mfo.StartBaseOpenessSignificance;
-        }
-
-        private double BaseOpeness()
-        {
-            if (this.bases.Count == 0)
-            {
-                return 0;
-            }
-
-            var fitness = 0.0;
-
-            double maxTiles = this.mfo.OpenStartBaseTilesMaximum;
-            double minTiles = this.mfo.OpenStartBaseTilesMinimum;
-
-            for (var i = 0; i < this.bases.Count; i++)
-            {
-                var freeTiles = this.FreeTilesAroundBase(i);
-
-                var actualNumberOfTiles = freeTiles > maxTiles ? maxTiles - (freeTiles - maxTiles) : freeTiles;
-
-                if (actualNumberOfTiles < minTiles)
-                {
-                    actualNumberOfTiles = minTiles;
-                }
-
-                fitness += (actualNumberOfTiles - minTiles) / (maxTiles - minTiles);
-            }
-            
-            return (fitness / this.bases.Count) * this.mfo.BaseOpenessSignificance;
-        }
-
-        private int OpenDirectionsToStartBase()
-        {
-            var counter = 0;
-
-            var baseX = startBasePosition2.Item1;
-            var baseY = startBasePosition2.Item2;
-
-            for (var x = baseX - 12; x <= baseX + 13; x += 25)
-            {
-                for (var y = baseY - 12; y <= baseY + 13; y += 25)
-                {
-                    if (this.map.IsTilePassable(x, y))
-                    {
-                        counter++;
-                    }
-                }
-            }
-
-            if (this.map.IsTilePassable(baseX - 12, baseY))
-            {
-                counter++;
-            }
-
-            if (this.map.IsTilePassable(baseX + 13, baseY))
-            {
-                counter++;
-            }
-
-            return counter;
-        }
-
-        private int FreeTilesAroundBase(int index)
-        {
-            // HACK: Bugs if base placement is changed
-            var counter = 0;
-
-            var baseLocation = bases[index];
-
-            var modifier = 0;
-
-            if (baseLocation.Item2 < this.map.YSize / 2)
-            {
-                modifier = 1;
-            }
-
-            var bottomLineY = baseLocation.Item2 - 7 - (modifier * 3);
-            var upperLineY = baseLocation.Item2 + 10 - (modifier * 3);
-            var leftSideX = baseLocation.Item1 - 9 + modifier;
-            var rightSideX = baseLocation.Item1 + 8 + modifier;
-
-            for (var y = bottomLineY; y <= upperLineY; y++)
-            {
-                var xIncrease = (y == bottomLineY || y == upperLineY) ? 1 : 17;
-
-                for (var x = leftSideX; x <= rightSideX; x += xIncrease)
-                {
-                    if (this.map.IsTilePassable(x,y))
-                    {
-                        counter++;
-                    }
-                }
-            }
-
-            return counter;
-        }
-
-        private int FreeTilesAroundStartBase()
-        {
-            var counter = 0;
-
-            var baseLocation = startBasePosition2;
-            var bottomLineY = baseLocation.Item2 - 12;
-            var upperLineY = baseLocation.Item2 + 13;
-            var leftSideX = baseLocation.Item1 - 12;
-            var rightSideX = baseLocation.Item1 + 13;
-
-            for (var y = bottomLineY; y <= upperLineY; y++)
-            {
-                var xIncrease = (y == bottomLineY || y == upperLineY) ? 1 : 25;
-
-                for (var x = leftSideX; x <= rightSideX; x += xIncrease)
-                {
-                    if (this.map.IsTilePassable(x, y))
-                    {
-                        counter++;
-                    }
-                }
-            }
-
-            return counter;
         }
 
         /// <summary>
@@ -752,7 +584,6 @@
 
                     chokePoints++;
                     chokePointList.Add(node);
-                    this.map.MapItems[node.Item1, node.Item2] = Enums.Item.XelNagaTower;
                 }
                 else if (nodeIndex % this.mfo.ChokePointSearchStep == 0)
                 {
@@ -762,7 +593,6 @@
 
                     chokePoints++;
                     chokePointList.Add(node);
-                    this.map.MapItems[node.Item1, node.Item2] = Enums.Item.XelNagaTower;
                 }
             }
 
@@ -830,6 +660,161 @@
             if (startBaseInVision1) normalized1 /= 4;
 
             return ((normalized1 + normalized2) / 2d) * this.mfo.XelNagaPlacementSignificance;
+        }
+
+        private double StartBaseOpeness()
+        {
+            // Openess
+            var freeTiles = this.FreeTilesAroundStartBase();
+            var maxTiles = this.mfo.OpenStartBaseTilesMaximum;
+            var minTiles = this.mfo.OpenStartBaseTilesMinimum;
+            var actualNumberOfTiles = freeTiles > maxTiles ? maxTiles - (freeTiles - maxTiles) : freeTiles;
+
+            if (actualNumberOfTiles < minTiles)
+            {
+                actualNumberOfTiles = minTiles;
+            }
+
+            var normalizedOpenTiles = (actualNumberOfTiles - minTiles) / (maxTiles - minTiles);
+
+            // Directions
+            var openDirections = this.OpenDirectionsToStartBase();
+            double maxDirections = this.mfo.StartBaseApproachDirectionMaximum;
+            double minDirections = this.mfo.StartBaseApproachDirectionMinimum;
+
+            var actualNumberOfDirections = openDirections > maxDirections
+                                               ? maxDirections - (openDirections - maxDirections)
+                                               : openDirections;
+
+            if (actualNumberOfDirections < minDirections)
+            {
+                actualNumberOfDirections = minDirections;
+            }
+
+            var normalizedOpenDirections = (actualNumberOfDirections - minDirections) / (maxDirections - minDirections);
+
+            return ((normalizedOpenTiles + normalizedOpenDirections) / 2.0) * this.mfo.StartBaseOpenessSignificance;
+        }
+
+        private double BaseOpeness()
+        {
+            if (this.bases.Count == 0)
+            {
+                return 0;
+            }
+
+            var fitness = 0.0;
+
+            double maxTiles = this.mfo.OpenStartBaseTilesMaximum;
+            double minTiles = this.mfo.OpenStartBaseTilesMinimum;
+
+            for (var i = 0; i < this.bases.Count; i++)
+            {
+                var freeTiles = this.FreeTilesAroundBase(i);
+
+                var actualNumberOfTiles = freeTiles > maxTiles ? maxTiles - (freeTiles - maxTiles) : freeTiles;
+
+                if (actualNumberOfTiles < minTiles)
+                {
+                    actualNumberOfTiles = minTiles;
+                }
+
+                fitness += (actualNumberOfTiles - minTiles) / (maxTiles - minTiles);
+            }
+
+            return (fitness / this.bases.Count) * this.mfo.BaseOpenessSignificance;
+        }
+
+        private int OpenDirectionsToStartBase()
+        {
+            var counter = 0;
+
+            var baseX = startBasePosition2.Item1;
+            var baseY = startBasePosition2.Item2;
+
+            for (var x = baseX - 12; x <= baseX + 13; x += 25)
+            {
+                for (var y = baseY - 12; y <= baseY + 13; y += 25)
+                {
+                    if (this.map.IsTilePassable(x, y))
+                    {
+                        counter++;
+                    }
+                }
+            }
+
+            if (this.map.IsTilePassable(baseX - 12, baseY))
+            {
+                counter++;
+            }
+
+            if (this.map.IsTilePassable(baseX + 13, baseY))
+            {
+                counter++;
+            }
+
+            return counter;
+        }
+
+        private int FreeTilesAroundBase(int index)
+        {
+            // HACK: Bugs if base placement is changed
+            var counter = 0;
+
+            var baseLocation = bases[index];
+
+            var modifier = 0;
+
+            if (baseLocation.Item2 < this.map.YSize / 2)
+            {
+                modifier = 1;
+            }
+
+            var bottomLineY = baseLocation.Item2 - 7 - (modifier * 3);
+            var upperLineY = baseLocation.Item2 + 10 - (modifier * 3);
+            var leftSideX = baseLocation.Item1 - 9 + modifier;
+            var rightSideX = baseLocation.Item1 + 8 + modifier;
+
+            for (var y = bottomLineY; y <= upperLineY; y++)
+            {
+                var xIncrease = (y == bottomLineY || y == upperLineY) ? 1 : 17;
+
+                for (var x = leftSideX; x <= rightSideX; x += xIncrease)
+                {
+                    if (this.map.IsTilePassable(x, y))
+                    {
+                        counter++;
+                    }
+                }
+            }
+
+            return counter;
+        }
+
+        private int FreeTilesAroundStartBase()
+        {
+            var counter = 0;
+
+            var baseLocation = startBasePosition2;
+            var bottomLineY = baseLocation.Item2 - 12;
+            var upperLineY = baseLocation.Item2 + 13;
+            var leftSideX = baseLocation.Item1 - 12;
+            var rightSideX = baseLocation.Item1 + 13;
+
+            for (var y = bottomLineY; y <= upperLineY; y++)
+            {
+                var xIncrease = (y == bottomLineY || y == upperLineY) ? 1 : 25;
+
+                for (var x = leftSideX; x <= rightSideX; x += xIncrease)
+                {
+                    if (this.map.IsTilePassable(x, y))
+                    {
+                        counter++;
+                    }
+                }
+            }
+
+            return counter;
         }
 
         /// <summary>

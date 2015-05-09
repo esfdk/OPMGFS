@@ -110,7 +110,6 @@ namespace OPMGFS.Map.CellularAutomata
 
                     if (groupList.Count > 0)
                     {
-                        // TODO: Grooss - Play around with values
                         var closest = (double)MapHelper.ClosestTo(new Position(x, y), groupList, maxRangeToGroupPoint);
                         if (closest <= maxRangeToGroupPoint) odds = odds - ((maxRangeToGroupPoint - closest) / (maxRangeToGroupPoint * 3));
                         // ReSharper disable once RedundantCast
@@ -227,7 +226,6 @@ namespace OPMGFS.Map.CellularAutomata
                 moves.Add(r);
             }
 
-            // TODO: Grooss - Change from circle drop to more natural method.
             for (var sec = 0; sec < sections; sec++)
             {
                 // Calculate section placement

@@ -22,6 +22,8 @@ namespace OPMGFS.Map
     using HeightLevel = Enums.HeightLevel;
     using Item = Enums.Item;
 
+    using Position = System.Tuple<int, int>;
+
     /// <summary>
     /// The map phenotype.
     /// </summary>
@@ -201,79 +203,77 @@ namespace OPMGFS.Map
             var yStart = (this.mapHalf == Half.Top) ? (this.YSize / 2) - (int)(this.YSize * 0.1) : 0;
             var yEnd = (this.mapHalf == Half.Bottom) ? (this.YSize / 2) + (int)(this.YSize * 0.1) : this.YSize;
 
-            ////var changesHappened = true;
-            ////while (changesHappened)
-            ////{
-            ////    var changes = 0;
-
-            ////    for (var tempY = yStart; tempY < yEnd; tempY++)
-            ////    {
-            ////        for (var tempX = xStart; tempX < xEnd; tempX++)
-            ////        {
-            ////            if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff)
-            ////            {
-            ////                var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumann);
-            ////                if (neighbours[this.HeightLevels[tempX, tempY]] <= 1)
-            ////                {
-            ////                    this.HeightLevels[tempX, tempY] = HeightLevel.Cliff;
-            ////                    changes++;
-            ////                }
-            ////            }
-            ////            else
-            ////            {
-            ////                var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels);
-
-            ////                // Count number of different height levels that are around the tile.
-            ////                var differentHeights = neighbours.Where(neighbour => neighbour.Key != HeightLevel.Cliff).Count(neighbour => neighbour.Value > 0);
-            ////                if (differentHeights >= 2)
-            ////                    continue;
-
-            ////                var convertTo = HeightLevel.Cliff;
-            ////                foreach (var neighbour in neighbours)
-            ////                {
-            ////                    if (neighbour.Key == HeightLevel.Cliff) continue;
-            ////                    if (neighbour.Value == 0) continue;
-
-            ////                    convertTo = neighbour.Key;
-            ////                    break;
-            ////                }
-
-            ////                this.HeightLevels[tempX, tempY] = convertTo;
-            ////                //changes++;
-            ////            }
-            ////        }
-            ////    }
-
-            ////    changesHappened = changes > 0;
-            ////}
-
+            // Initial smoothing
+            var positionsCliffAdded = new List<Position>();
             for (var tempY = yStart; tempY < yEnd; tempY++)
             {
                 for (var tempX = xStart; tempX < xEnd; tempX++)
                 {
-                    if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff)
-                        continue;
-
-                    var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels);
-
-                    // Count number of different height levels that are around the tile.
-                    var differentHeights = neighbours.Where(neighbour => neighbour.Key != HeightLevel.Cliff).Count(neighbour => neighbour.Value > 0);
-                    if (differentHeights >= 2)
-                        continue;
-
-                    var convertTo = HeightLevel.Cliff;
-                    foreach (var neighbour in neighbours)
-                    {
-                        if (neighbour.Key == HeightLevel.Cliff) continue;
-                        if (neighbour.Value == 0) continue;
-
-                        convertTo = neighbour.Key;
-                        break;
-                    }
-
-                    this.HeightLevels[tempX, tempY] = convertTo;
+                    var result = this.SmoothCliffAtPoint(tempX, tempY);
+                    if (result != null)
+                        positionsCliffAdded.Add(result);
                 }
             }
+
+            // More smoothing in case there are single tiles lying around.
+            var iterations = 0;
+            var moves = new List<int> { -3, -2, -1, 0, 1, 2, 3 };
+            while (positionsCliffAdded.Count > 0)
+            {
+                var tempList = new List<Position>();
+
+                foreach (var pca in positionsCliffAdded)
+                {
+                    foreach (var moveX in moves)
+                    {
+                        foreach (var moveY in moves)
+                        {
+                            var x = pca.Item1 + moveX;
+                            var y = pca.Item2 + moveY;
+
+                            if (!MapHelper.WithinMapBounds(x, y, this.XSize, this.YSize))
+                                continue;
+
+                            var result = this.SmoothCliffAtPoint(x, y);
+                            if (result != null)
+                                tempList.Add(result);
+                        }
+                    }
+                }
+
+                iterations++;
+                positionsCliffAdded = tempList;
+                if (iterations > 10) break;
+            }
+
+            ////// Old implementation.
+            ////for (var tempY = yStart; tempY < yEnd; tempY++)
+            ////{
+            ////    for (var tempX = xStart; tempX < xEnd; tempX++)
+            ////    {
+            ////        if (this.HeightLevels[tempX, tempY] != HeightLevel.Cliff)
+            ////            continue;
+
+            ////        var neighbours = MapHelper.GetNeighbours(tempX, tempY, this.HeightLevels);
+
+            ////        // Count number of different height levels that are around the tile.
+            ////        var differentHeights = neighbours.Where(neighbour => neighbour.Key != HeightLevel.Cliff).Count(neighbour => neighbour.Value > 0);
+            ////        if (differentHeights >= 2)
+            ////            continue;
+
+            ////        var convertTo = HeightLevel.Cliff;
+            ////        foreach (var neighbour in neighbours)
+            ////        {
+            ////            if (neighbour.Key == HeightLevel.Cliff) continue;
+            ////            if (neighbour.Value == 0) continue;
+
+            ////            convertTo = neighbour.Key;
+            ////            break;
+            ////        }
+
+            ////        this.HeightLevels[tempX, tempY] = convertTo;
+            ////    }
+            ////}
         }
 
         /// <summary>
@@ -298,7 +298,6 @@ namespace OPMGFS.Map
                 this.HeightLevels,
                 random);
 
-            // TODO: Try to use Von Neumann as well
             if (newRuleset == null)
             {
                 smoothCA.SetRuleset(this.GetSmoothingRules(smoothingNormalNeighbourhood, smoothingExtNeighbourhood));
@@ -607,6 +606,51 @@ namespace OPMGFS.Map
         #endregion
 
         #region Private methods
+
+        /// <summary>
+        /// Cliff smoothing for a given point on the map. If a heightlevel only has 1 neighbour of its own kind,
+        /// it is changed into a cliff instead.
+        /// </summary>
+        /// <param name="x"> The x-coordinate. </param>
+        /// <param name="y"> The y-coordinate. </param>
+        /// <returns> A position if a point was changed to a cliff; null otherwise. </returns>
+        private Position SmoothCliffAtPoint(int x, int y)
+        {
+            if (this.HeightLevels[x, y] != HeightLevel.Cliff)
+            {
+                var neighbours = MapHelper.GetNeighbours(x, y, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumann);
+                if (neighbours[this.HeightLevels[x, y]] <= 1)
+                {
+                    this.HeightLevels[x, y] = HeightLevel.Cliff;
+                    return new Position(x, y);
+                }
+            }
+            else
+            {
+                var neighbours = MapHelper.GetNeighbours(x, y, this.HeightLevels);
+
+                // Count number of different height levels that are around the tile.
+                var differentHeights = neighbours.Where(neighbour => neighbour.Key != HeightLevel.Cliff).Count(neighbour => neighbour.Value > 0);
+                if (differentHeights >= 2)
+                    return null;
+
+                var convertTo = HeightLevel.Cliff;
+                foreach (var neighbour in neighbours)
+                {
+                    if (neighbour.Key == HeightLevel.Cliff) continue;
+                    if (neighbour.Key == HeightLevel.Ramp01) continue;
+                    if (neighbour.Key == HeightLevel.Ramp12) continue;
+                    if (neighbour.Value == 0) continue;
+
+                    convertTo = neighbour.Key;
+                    break;
+                }
+
+                this.HeightLevels[x, y] = convertTo;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Gets the rules used for smoothing terrain.
