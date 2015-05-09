@@ -1295,7 +1295,7 @@
                             if (mp.HeightLevels[x - 2, y] == west && mp.HeightLevels[x - 2, y + 1] == west
                                 && mp.HeightLevels[x - 3, y] == west && mp.HeightLevels[x - 3, y + 1] == west)
                             {
-                                OccupyArea(x - 3, y - 1, 4, 4, mp);
+                                OccupyArea(x - 2, y - 1, 4, 4, mp);
 
                                 mp.HeightLevels[x - 3, y] = ramp;
                                 mp.HeightLevels[x - 3, y + 1] = ramp;
@@ -1421,99 +1421,151 @@
         /// <returns> The <see cref="bool"/> indicating whether placement was successful. </returns>
         private static bool PlaceHorizontalRamp(int x, int y, Enums.HeightLevel north, Enums.HeightLevel south, Enums.HeightLevel ramp, MapPhenotype mp)
         {
-            // ITODO: Melnyk - Fix ramp so that ground level has extra space
-            if (!mp.InsideTopHalf(x, y + 1) || !mp.InsideTopHalf(x + 1, y + 1) || !mp.InsideTopHalf(x, y - 1) || !mp.InsideTopHalf(x + 1, y - 1))
+            if (!mp.InsideTopHalf(x, y - 1) || !mp.InsideTopHalf(x + 1, y - 1) 
+                || !mp.InsideTopHalf(x, y + 1) || !mp.InsideTopHalf(x + 1, y + 1))
             {
                 return false;
+            }
+
+            var northHigherLevel = false;
+            switch (north)
+            {
+                case Enums.HeightLevel.Height2:
+                    if (south == Enums.HeightLevel.Height1 || south == Enums.HeightLevel.Height0)
+                    {
+                        northHigherLevel = true;
+                    }
+
+                    break;
+
+                case Enums.HeightLevel.Height1:
+                    if (south == Enums.HeightLevel.Height0)
+                    {
+                        northHigherLevel = true;
+                    }
+
+                    break;
             }
 
             if (mp.HeightLevels[x, y + 1] == north && mp.HeightLevels[x + 1, y + 1] == north
                 && mp.HeightLevels[x, y - 1] == south && mp.HeightLevels[x + 1, y - 1] == south)
             {
-                if (mp.InsideTopHalf(x, y - 2) || mp.InsideTopHalf(x + 1, y - 2))
+                if (northHigherLevel)
                 {
-                    if (!IsAreaOccupied(x - 1, y - 2, 4, 4, mp))
+                    if (mp.InsideTopHalf(x, y - 3) || mp.InsideTopHalf(x + 1, y - 3))
                     {
-                        if (mp.HeightLevels[x, y - 2] == south
-                            && mp.HeightLevels[x + 1, y - 2] == south)
+                        if (!IsAreaOccupied(x, y - 3, 2, 1, mp) && !IsAreaOccupied(x - 1, y - 2, 4, 4, mp))
                         {
-                            OccupyArea(x - 1, y - 2, 4, 4, mp);
+                            if (mp.HeightLevels[x, y - 2] == south && mp.HeightLevels[x + 1, y + 2] == south
+                                && mp.HeightLevels[x, y - 3] == south && mp.HeightLevels[x + 1, y + 3] == south)
+                            {
+                                OccupyArea(x - 1, y - 2, 4, 4, mp);
 
-                            mp.HeightLevels[x, y + 1] = ramp;
-                            mp.HeightLevels[x + 1, y + 1] = ramp;
+                                mp.HeightLevels[x, y + 1] = ramp;
+                                mp.HeightLevels[x + 1, y + 1] = ramp;
+                                mp.HeightLevels[x - 1, y + 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 2, y + 1] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x, y] = ramp;
-                            mp.HeightLevels[x + 1, y] = ramp;
-                            mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
-                            mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x, y] = ramp;
+                                mp.HeightLevels[x + 1, y] = ramp;
+                                mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x, y - 1] = ramp;
-                            mp.HeightLevels[x + 1, y - 1] = ramp;
-                            mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
-                            mp.HeightLevels[x + 2, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x, y - 1] = ramp;
+                                mp.HeightLevels[x + 1, y - 1] = ramp;
+                                mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 2, y - 1] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x, y - 2] = ramp;
-                            mp.HeightLevels[x + 1, y - 2] = ramp;
+                                mp.HeightLevels[x, y - 2] = ramp;
+                                mp.HeightLevels[x + 1, y - 2] = ramp;
+                                mp.HeightLevels[x - 1, y - 2] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 2, y - 2] = Enums.HeightLevel.Cliff;
 
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y - 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y - 2));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 2));
+                                mp.HeightLevels[x, y - 3] = ramp;
+                                mp.HeightLevels[x + 1, y - 3] = ramp;
 
-                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y - 1));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y - 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y - 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y - 2));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 2));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y - 3));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 3));
 
-                            return true;
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1,    y + 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2,    y + 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1,    y));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2,    y));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1,    y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2,    y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1,    y - 2));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2,    y - 2));
+
+                                return true;
+                            }
                         }
                     }
                 }
-
-                if (mp.InsideTopHalf(x, y + 2) || mp.InsideTopHalf(x + 1, y + 2))
+                else
                 {
-                    if (!IsAreaOccupied(x - 1, y - 1, 4, 4, mp))
+                    if (mp.InsideTopHalf(x, y + 3) || mp.InsideTopHalf(x + 1, y + 3))
                     {
-                        if (mp.HeightLevels[x, y + 2] == north
-                            && mp.HeightLevels[x + 1, y + 2] == north)
+                        if (!IsAreaOccupied(x - 1, y - 1, 4, 4, mp) && !IsAreaOccupied(x, y + 3, 2, 1, mp))
                         {
-                            OccupyArea(x - 1, y - 1, 4, 4, mp);
+                            if (mp.HeightLevels[x, y + 2] == north && mp.HeightLevels[x + 1, y + 2] == north
+                                && mp.HeightLevels[x, y + 3] == north && mp.HeightLevels[x + 1, y + 3] == north)
+                            {
+                                OccupyArea(x - 1, y - 1, 4, 4, mp);
 
-                            mp.HeightLevels[x, y + 2] = ramp;
-                            mp.HeightLevels[x + 1, y + 2] = ramp;
+                                mp.HeightLevels[x, y + 3] = ramp;
+                                mp.HeightLevels[x + 1, y + 3] = ramp;
 
-                            mp.HeightLevels[x, y + 1] = ramp;
-                            mp.HeightLevels[x + 1, y + 1] = ramp;
-                            mp.HeightLevels[x - 1, y + 1] = Enums.HeightLevel.Cliff;
-                            mp.HeightLevels[x + 2, y + 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x, y + 2] = ramp;
+                                mp.HeightLevels[x + 1, y + 2] = ramp;
+                                mp.HeightLevels[x - 1, y + 2] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 2, y + 2] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x, y] = ramp;
-                            mp.HeightLevels[x + 1, y] = ramp;
-                            mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
-                            mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x, y + 1] = ramp;
+                                mp.HeightLevels[x + 1, y + 1] = ramp;
+                                mp.HeightLevels[x - 1, y + 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 2, y + 1] = Enums.HeightLevel.Cliff;
 
-                            mp.HeightLevels[x, y - 1] = ramp;
-                            mp.HeightLevels[x + 1, y - 1] = ramp;
+                                mp.HeightLevels[x, y] = ramp;
+                                mp.HeightLevels[x + 1, y] = ramp;
+                                mp.HeightLevels[x - 1, y] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 2, y] = Enums.HeightLevel.Cliff;
 
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 2));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 2));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x, y - 1));
-                            mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 1));
+                                mp.HeightLevels[x, y - 1] = ramp;
+                                mp.HeightLevels[x + 1, y - 1] = ramp;
+                                mp.HeightLevels[x - 1, y - 1] = Enums.HeightLevel.Cliff;
+                                mp.HeightLevels[x + 2, y - 1] = Enums.HeightLevel.Cliff;
 
-                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y + 1));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y + 1));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y));
-                            mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y + 3));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 3));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y + 2));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 2));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y + 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x,     y - 1));
+                                mp.CliffPositions.Remove(new Tuple<int, int>(x + 1, y - 1));
 
-                            return true;
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y + 2));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y + 2));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y + 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y + 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y - 1));
+                                mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y - 1));
+
+
+                                return true;
+                            }
                         }
                     }
                 }

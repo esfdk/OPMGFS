@@ -4,8 +4,6 @@ TODO:
 		Remove TODOs from his TODO list if the TODO is not longer TOBEDONE
 		
 	Melnyk
-		Fix ramps
-		Make fix for infinite loop in novelty search initial population
 				
 	Uassigned TODOs
 		Time limit on evolution/novelty search (and figure out what should be limit)
