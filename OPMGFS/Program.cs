@@ -178,13 +178,7 @@
             map.SmoothTerrain(random: new Random(100000));
             map.SaveMapToPngFile("1", heightMap: false);
             map.PlaceCliffs();
-
-            var sw = new Stopwatch();
-            sw.Start();
             map.SmoothCliffs();
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedMilliseconds);
-
             map.UpdateCliffPositions(Enums.Half.Top);
 
             var mapSolution = new MapSolution(new MapSearchOptions(map), new NoveltySearchOptions(), new Random(100000));
@@ -194,10 +188,7 @@
             mapSolution.MapPoints.Add(new MapPoint(0.5, 90, Enums.MapPointType.Base, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.2, 90, Enums.MapPointType.XelNagaTower, Enums.WasPlaced.NotAttempted));
             mapSolution.MapPoints.Add(new MapPoint(0.5, 50, Enums.MapPointType.Ramp, Enums.WasPlaced.No));
-            sw.Restart();
             map = mapSolution.ConvertedPhenotype;
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedMilliseconds + " lol");
 
             map.SaveMapToPngFile("2", heightMap: false);
 
@@ -221,20 +212,20 @@
 
             ////map.SaveMapToPngFile();
 
-            ////var mapFitness = new MapFitness(map, new MapFitnessOptions());
-            ////var sw = new Stopwatch();
-            ////sw.Start();
-            ////var fitness = mapFitness.CalculateFitness();
-            ////sw.Stop();
-            ////Console.WriteLine("Total fitness: {0}", fitness);
-            ////Console.WriteLine("Took {0} millis to calculate.", sw.ElapsedMilliseconds);
+            var mapFitness = new MapFitness(map, new MapFitnessOptions());
+            var sw = new Stopwatch();
+            sw.Start();
+            var fitness = mapFitness.CalculateFitness();
+            sw.Stop();
+            Console.WriteLine("Total fitness: {0}", fitness);
+            Console.WriteLine("Took {0} millis to calculate.", sw.ElapsedMilliseconds);
 
             ////foreach (var pos in mapFitness.pathBetweenStartBases)
             ////{
             ////    map.HeightLevels[pos.Item1, pos.Item2] = Enums.HeightLevel.Marker;
             ////}
 
-            ////map.SaveMapToPngFile("2", heightMap: false);
+            map.SaveMapToPngFile("3", heightMap: false);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]

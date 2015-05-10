@@ -180,6 +180,13 @@
             Console.WriteLine("New Height Reached:                 {0}", fitness - prevFitness);
             prevFitness = fitness;
 
+            var sw = new Stopwatch();
+            sw.Start();
+            fitness += this.ChokePoints();
+            Console.WriteLine("Choke Points:                       {0}, with time {1} millis", fitness - prevFitness, sw.ElapsedMilliseconds);
+            prevFitness = fitness;
+            sw.Stop();
+
             fitness += this.DistanceToNaturalExpansion();
             Console.WriteLine("Distance to Natural Expansions:     {0}", fitness - prevFitness);
             prevFitness = fitness;
@@ -192,21 +199,14 @@
             Console.WriteLine("Expansions Available:               {0}", fitness - prevFitness);
             prevFitness = fitness;
 
-            var sw = new Stopwatch();
-            sw.Start();
-            fitness += this.ChokePoints();
-            Console.WriteLine("Choke Points:                       {0}, with time {1} millis", fitness - prevFitness, sw.ElapsedMilliseconds);
-            prevFitness = fitness;
-            sw.Stop();
-
             fitness += this.XelNagaPlacement();
             Console.WriteLine("Xel'Naga Placement:                 {0}", fitness - prevFitness);
             prevFitness = fitness;
 
             fitness += this.StartBaseOpeness();
             Console.WriteLine("Start Base Openess:                 {0}", fitness - prevFitness);
-
             prevFitness = fitness;
+
             fitness += this.BaseOpeness();
             Console.WriteLine("Base Openess:                       {0}", fitness - prevFitness);
 
@@ -243,6 +243,11 @@
             // ReSharper disable once ConvertToConstant.Local
             var min = 0d;
             var actual = reachable.Count - Math.Pow(5, 2);
+
+            foreach (var tuple in reachable)
+            {
+                this.map.HeightLevels[tuple.Item1, tuple.Item2] = Enums.HeightLevel.Marker;
+            }
 
             // Normalizes the value to between 0.0 and 1.0
             var normalized = (actual - min) / (max - min);
@@ -342,6 +347,115 @@
 
             var normalized = (actual - min) / (max - min);
             return normalized * this.mfo.NewHeightReachedSignificance;
+        }
+
+        /// <summary>
+        /// Figures out how many choke points that are available on the road between the two start bases.
+        /// </summary>
+        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how many choke points that are found. </returns>
+        private double ChokePoints()
+        {
+            var chokePoints = 0d;
+            var chokePointList = new List<Position>();
+
+            var previousHeightLevel =
+                this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
+
+            for (var nodeIndex = 0; nodeIndex < this.pathBetweenStartBases.Count; nodeIndex++)
+            {
+                var node = this.pathBetweenStartBases[nodeIndex];
+
+                if (this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp01
+                     || this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp12)
+                {
+                    //// If we encounter a ramp, perform a choke point check on ramps
+
+                    if (this.map.HeightLevels[node.Item1, node.Item2] == previousHeightLevel) continue;
+                    if (!this.IsRampChokePoint(this.pathBetweenStartBases[nodeIndex + 1], this.mfo.ChokePointsWidth)) continue;
+
+                    chokePoints++;
+                    chokePointList.Add(node);
+                }
+                else if (nodeIndex % this.mfo.ChokePointSearchStep == 0)
+                {
+                    //// Otherwise, only perform a choke point check every x steps.
+
+                    if (!this.IsPositionChokePoint(node, this.mfo.ChokePointsWidth)) continue;
+
+                    chokePoints++;
+                    chokePointList.Add(node);
+                }
+            }
+
+            double max = this.mfo.ChokePointsMax;
+            double min = this.mfo.ChokePointsMin;
+            var actual = (chokePoints > max)
+                            ? max - (chokePoints - max)
+                            : chokePoints;
+            if (actual < min) actual = min;
+
+            var normalized = (actual - min) / (max - min);
+            return normalized * this.mfo.ChokePointsSignificance;
+        }
+
+        /// <summary>
+        /// Figures out how close the closest expansion is to the start base.
+        /// </summary>
+        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how far the nearest expansion is from the start base. </returns>
+        private double DistanceToNaturalExpansion()
+        {
+            // Find the nearest expansion (if any)
+            Position nearestExpansion = null;
+            var closestDistance = 100000;
+            foreach (var @base in this.bases)
+            {
+                var distance = Math.Abs(this.startBasePosition1.Item1 - @base.Item1)
+                               + Math.Abs(this.startBasePosition1.Item2 - @base.Item2);
+
+                if (distance >= closestDistance) continue;
+
+                nearestExpansion = @base;
+                closestDistance = distance;
+            }
+
+            // Attempt to find a path to the expansion.
+            var pathToNearest = this.mapPathfinding.FindPathFromTo(
+                this.startBasePosition1,
+                nearestExpansion,
+                this.mfo.PathfindingIgnoreDestructibleRocks);
+
+            if (pathToNearest.Count == 0)
+                return -100000d;
+
+            // Ground distance
+            var maxGround = (this.xSize * 0.4) + (this.ySize * 0.4);
+            if (maxGround > this.mfo.PathNatMaxGroundDistance) maxGround = this.mfo.PathNatMaxGroundDistance;
+
+            var minGround = (this.xSize * 0.1) + (this.ySize * 0.1);
+            if (minGround > this.mfo.PathNatMinGroundDistance) minGround = this.mfo.PathNatMinGroundDistance;
+
+            var actualGround = (pathToNearest.Count > maxGround)
+                                     ? maxGround - (pathToNearest.Count - maxGround)
+                                     : pathToNearest.Count;
+            if (actualGround < minGround) actualGround = minGround;
+
+            var normalizedGround = (actualGround - minGround) / (maxGround - minGround);
+
+            // Direct distance
+            var maxDirect = (this.xSize * 0.3) + (this.ySize * 0.3);
+            if (maxDirect > this.mfo.PathNatMaxDirectDistance) maxDirect = this.mfo.PathNatMaxDirectDistance;
+
+            var minDirect = (this.xSize * 0.1) + (this.ySize * 0.1);
+            if (minDirect > this.mfo.PathNatMinDirectDistance) minDirect = this.mfo.PathNatMinDirectDistance;
+
+            var actualDirect = (pathToNearest.Count > maxDirect)
+                                     ? maxDirect - (pathToNearest.Count - maxDirect)
+                                     : pathToNearest.Count;
+            if (actualDirect < minDirect) actualDirect = minDirect;
+
+            var normalizedDirect = (actualDirect - minDirect) / (maxDirect - minDirect);
+
+            return ((normalizedGround + normalizedDirect) / 2) * this.mfo.DistanceToNaturalSignificance;
         }
 
         /// <summary>
@@ -476,66 +590,6 @@
         }
 
         /// <summary>
-        /// Figures out how close the closest expansion is to the start base.
-        /// </summary>
-        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how far the nearest expansion is from the start base. </returns>
-        private double DistanceToNaturalExpansion()
-        {
-            // Find the nearest expansion (if any)
-            Position nearestExpansion = null;
-            var closestDistance = 100000;
-            foreach (var @base in this.bases)
-            {
-                var distance = Math.Abs(this.startBasePosition1.Item1 - @base.Item1)
-                               + Math.Abs(this.startBasePosition1.Item2 - @base.Item2);
-
-                if (distance >= closestDistance) continue;
-
-                nearestExpansion = @base;
-                closestDistance = distance;
-            }
-
-            // Attempt to find a path to the expansion.
-            var pathToNearest = this.mapPathfinding.FindPathFromTo(
-                this.startBasePosition1,
-                nearestExpansion,
-                this.mfo.PathfindingIgnoreDestructibleRocks);
-
-            if (pathToNearest.Count == 0)
-                return -100000d;
-
-            // Ground distance
-            var maxGround = (this.xSize * 0.4) + (this.ySize * 0.4);
-            if (maxGround > this.mfo.PathNatMaxGroundDistance) maxGround = this.mfo.PathNatMaxGroundDistance;
-
-            var minGround = (this.xSize * 0.1) + (this.ySize * 0.1);
-            if (minGround > this.mfo.PathNatMinGroundDistance) minGround = this.mfo.PathNatMinGroundDistance;
-
-            var actualGround = (pathToNearest.Count > maxGround)
-                                     ? maxGround - (pathToNearest.Count - maxGround)
-                                     : pathToNearest.Count;
-            if (actualGround < minGround) actualGround = minGround;
-
-            var normalizedGround = (actualGround - minGround) / (maxGround - minGround);
-
-            // Direct distance
-            var maxDirect = (this.xSize * 0.3) + (this.ySize * 0.3);
-            if (maxDirect > this.mfo.PathNatMaxDirectDistance) maxDirect = this.mfo.PathNatMaxDirectDistance;
-
-            var minDirect = (this.xSize * 0.1) + (this.ySize * 0.1);
-            if (minDirect > this.mfo.PathNatMinDirectDistance) minDirect = this.mfo.PathNatMinDirectDistance;
-
-            var actualDirect = (pathToNearest.Count > maxDirect)
-                                     ? maxDirect - (pathToNearest.Count - maxDirect)
-                                     : pathToNearest.Count;
-            if (actualDirect < minDirect) actualDirect = minDirect;
-
-            var normalizedDirect = (actualDirect - minDirect) / (maxDirect - minDirect);
-
-            return ((normalizedGround + normalizedDirect) / 2) * this.mfo.DistanceToNaturalSignificance;
-        }
-
-        /// <summary>
         /// Figures out how many expansions that are available for each start base.
         /// </summary>
         /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how many expansions that are available for every start base. </returns>
@@ -556,55 +610,6 @@
 
             var normalized = (actual - min) / (max - min);
             return normalized * this.mfo.ExpansionsAvailableSignificance;
-        }
-
-        /// <summary>
-        /// Figures out how many choke points that are available on the road between the two start bases.
-        /// </summary>
-        /// <returns> A number between 0.0 and 1.0 multiplied by significance based on how many choke points that are found. </returns>
-        private double ChokePoints()
-        {
-            var chokePoints = 0d;
-            var chokePointList = new List<Position>();
-
-            var previousHeightLevel =
-                this.map.HeightLevels[this.startBasePosition1.Item1, this.startBasePosition1.Item2];
-
-            for (var nodeIndex = 0; nodeIndex < this.pathBetweenStartBases.Count; nodeIndex++)
-            {
-                var node = this.pathBetweenStartBases[nodeIndex];
-
-                if (this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp01
-                     || this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp12)
-                {
-                    //// If we encounter a ramp, perform a choke point check on ramps
-
-                    if (this.map.HeightLevels[node.Item1, node.Item2] == previousHeightLevel) continue;
-                    if (!this.IsRampChokePoint(this.pathBetweenStartBases[nodeIndex + 1], this.mfo.ChokePointsWidth)) continue;
-
-                    chokePoints++;
-                    chokePointList.Add(node);
-                }
-                else if (nodeIndex % this.mfo.ChokePointSearchStep == 0)
-                {
-                    //// Otherwise, only perform a choke point check every x steps.
-
-                    if (!this.IsPositionChokePoint(node, this.mfo.ChokePointsWidth)) continue;
-
-                    chokePoints++;
-                    chokePointList.Add(node);
-                }
-            }
-
-            double max = this.mfo.ChokePointsMax;
-            double min = this.mfo.ChokePointsMin;
-            var actual = (chokePoints > max)
-                            ? max - (chokePoints - max)
-                            : chokePoints;
-            if (actual < min) actual = min;
-
-            var normalized = (actual - min) / (max - min);
-            return normalized * this.mfo.ChokePointsSignificance;
         }
 
         /// <summary>

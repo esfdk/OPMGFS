@@ -15,4 +15,47 @@ We chose a direct fitness function as it was the only one possible. Even had the
 
 In the fitness function, we used two main techniques to calculate fitness: Counting of features and pathfinding between points. For the pathfinding we used Jump Point Search (\textbf{reference https://harablog.wordpress.com/2011/09/07/jump-point-search/ + http://gamedevelopment.tutsplus.com/tutorials/how-to-speed-up-a-pathfinding-with-the-jump-point-search-algorithm--gamedev-5818}) over A* (\textbf{discuss both}).
 
-\textbf{Discuss different parts of fitness function here}
+\textbf{Probably not done. Remember direct distance vs. ground distance}
+
+\subsection{Parts of the fitness function}
+
+Our fitness function consists of 11 parts. They are the things we consider the most important when evaluating a StarCraft map. Every part is calculated individually, normalized (between an optimal and worst-case value that we have determined) and then multiplied by a significance value based on how important we consider the part to be.s
+
+\subsubsection*{Open space around a start base}
+Open space around the start base is needed to place buildings in order to train units. The open space is calculated by selecting the middle point of a start base and Breadth-First Search to find all traversable tiles no further than 10 tiles from the start base.
+
+\subsubsection*{The height level the base is located at}
+The higher the start base is positioned, the easier it is to defend. From analyzing the competitive maps, it is also clear that the start bases are always at the highest level in the map (some maps only have 2 height levels)\footnote{Need analysis somewhere.}. This value is calculated by comparing the hight the start bases are located at to the highest level in the map. 
+
+\subsubsection*{The path between the two start bases}
+The distance from one start base to another heavily influences which strategies that can be utilized. It should be short enough that rushing\footnote{need reference} is possible, but long enough that rushing is not the only possible winning strategy. The fitness value is the distance of the path between the two start bases normalized between $(0.7 * mapWidth) + (0.7 * mapHeight)$ (\footnote{remember default value}) and 0.
+
+If there is no path, the map is not a good one (as many units travel on the ground) and it receives such a huge penalty to its fitness score that it will not recover.
+
+\subsubsection*{How many times a new height is reached on the path between the start bases}
+Defending against an attack from high ground offers a sizable advantage. It is therefore important that there is some variation in height when traveling between the two start bases. The fitness is calculated by counting how many times a new height levels is reached on the path between the two bases.
+
+\subsubsection*{The number of choke points on the path}
+Choke points allow a defender to funnel an attacker's units and prevent the attacker from swarming him. They are important in defenses (and sometimes during attacks), as they can effectively reduce the opponents strength for a while. The fitness value is the number of those points\footnote{size of choke points} that are found on the path between the two start bases.
+
+\subsubsection*{The distance to the natural expansion}
+A natural expansions is the closest base to a start base. The distance to it should not be long, as players want to be able to get to it quick and be able to defend it and their start base well. The fitness value is the distance of the path from the start base to the nearest other base.
+
+If there is no ground path to the natural expansion, a player cannot expand to it by normal means which means the map is bad. It will receive a huge penalty to its fitness score and will not be able to recover.
+
+\subsubsection*{The distance to the non-natural expansions}
+The non-natural expansions should be spread well around the map. If they are grouped too much, it allows a player to defend all of them at once. Expanding to a new base should, apart from with the natural expansion, mean that it is not that safe. The fitness is calculated by finding the distance of the shortest path to each expansion and normalizing the distance depending on what number of expansion it is.
+
+\subsubsection*{The number of expansions available}
+Expansions are necessary for players to continue building their economy. There should be enough expansions that players will not run out of resources too fast, but also enough that they will not have to fight over every expansions because there are too few in the map. The fitness value is the number of expansions divided by the number of start bases.
+
+\subsubsection*{The placement of Xel'Naga towers}
+Xel'Naga towers provide unobstructed vision of an area in a radius of 22 tiles centered on the tower when a player has a unit net to the tower. They should offer a view of the main path between the start bases in order to be a valuable asset early on. The fitness is the number of tiles of the path between the start bases a Xel'Naga tower covers.
+
+\subsubsection*{How open the start bases are}
+How open a base is determines how many directions it can be approached from. A start base should not be completely open, as it would be too difficult to defend properly. The fitness here consists of two parts: How many tiles in an area around the start base that are not blocked, and how many of the compass' directions (north, north-east, etc.) that are open in a direct line.
+
+\subsubsection*{How open the expansions are}
+Expansion openess works the same as start base openess.
+
+%\textbf{Discuss different parts of fitness function here}

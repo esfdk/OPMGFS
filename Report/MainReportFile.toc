@@ -10,4 +10,5 @@
 \contentsline {subsection}{\numberline {4.1}What it is}{3}{subsection.4.1}
 \contentsline {subsection}{\numberline {4.2}Rules}{3}{subsection.4.2}
 \contentsline {section}{\numberline {5}Map Fitness}{3}{section.5}
+\contentsline {subsection}{\numberline {5.1}Parts of the fitness function}{4}{subsection.5.1}
 \contentsfinish 
