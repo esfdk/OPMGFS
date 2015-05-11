@@ -667,6 +667,10 @@
             return ((normalized1 + normalized2) / 2d) * this.mfo.XelNagaPlacementSignificance;
         }
 
+        /// <summary>
+        /// Calculates the fitness value of how open the area surrounding the start base is (considers how much of surrounding area is passable).
+        /// </summary>
+        /// <returns>The fitness that should be added from how open the area surrounding the start base is.</returns>
         private double StartBaseOpeness()
         {
             // Openess
@@ -701,6 +705,10 @@
             return ((normalizedOpenTiles + normalizedOpenDirections) / 2.0) * this.mfo.StartBaseOpenessSignificance;
         }
 
+        /// <summary>
+        /// Calculates the fitness value of how open the areas surrounding the bases on the map are (considers how much of surrounding area is passable).
+        /// </summary>
+        /// <returns>The fitness that should be added from how open the areas surrounding the bases are.</returns>
         private double BaseOpeness()
         {
             if (this.bases.Count == 0)
@@ -730,12 +738,16 @@
             return (fitness / this.bases.Count) * this.mfo.BaseOpenessSignificance;
         }
 
+        /// <summary>
+        /// Checks how many of the 8 directions are open from the center of the start base.
+        /// </summary>
+        /// <returns>The number (between 0 and 8) of open tiles in the 8 directions from the center of the start base.</returns>
         private int OpenDirectionsToStartBase()
         {
             var counter = 0;
 
-            var baseX = startBasePosition2.Item1;
-            var baseY = startBasePosition2.Item2;
+            var baseX = this.startBasePosition2.Item1;
+            var baseY = this.startBasePosition2.Item2;
 
             for (var x = baseX - 12; x <= baseX + 13; x += 25)
             {
@@ -761,12 +773,17 @@
             return counter;
         }
 
+        /// <summary>
+        /// The number of open tiles around a specific base in the list of bases.
+        /// </summary>
+        /// <param name="index">The index of the base to count open tiles for.</param>
+        /// <returns>The number of open tiles surrounding the base.</returns>
         private int FreeTilesAroundBase(int index)
         {
             // HACK: Bugs if base placement is changed
             var counter = 0;
 
-            var baseLocation = bases[index];
+            var baseLocation = this.bases[index];
 
             var modifier = 0;
 
@@ -796,11 +813,15 @@
             return counter;
         }
 
+        /// <summary>
+        /// The number of open tiles around the starting base.
+        /// </summary>
+        /// <returns>The number of open tiles surrounding the starting base.</returns>
         private int FreeTilesAroundStartBase()
         {
             var counter = 0;
 
-            var baseLocation = startBasePosition2;
+            var baseLocation = this.startBasePosition2;
             var bottomLineY = baseLocation.Item2 - 12;
             var upperLineY = baseLocation.Item2 + 13;
             var leftSideX = baseLocation.Item1 - 12;

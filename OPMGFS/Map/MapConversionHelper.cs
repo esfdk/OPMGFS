@@ -250,6 +250,12 @@
             return null;
         }
 
+        /// <summary>
+        /// Attempts to locate the tile of the same type as the input map point, starting at the original location of the map point.
+        /// </summary>
+        /// <param name="mapPoint">The map point to search for.</param>
+        /// <param name="mp">The map phenotype.</param>
+        /// <returns>The position in the format of {x-coordinate, y-coordinate, distance from initial point}.</returns>
         public static Tuple<int, int, int> FindPositionBasedOnMapPoint(MapPoint mapPoint, MapPhenotype mp)
         {
             var maxDistance = MaxDistanceAtDegree(mp.XSize / 2.0, mp.YSize / 2.0, mapPoint.Degree);
@@ -642,56 +648,62 @@
             return newMap;
         }
 
-        public static List<MapPoint> GenerateInitialMapPoints(MapSearchOptions mso, Random r)
+        /// <summary>
+        /// Generates an initial set of map points.
+        /// </summary>
+        /// <param name="mapSearchOptions">The map search options.</param>
+        /// <param name="r">The random object.</param>
+        /// <returns>The list of initial map points.</returns>
+        public static List<MapPoint> GenerateInitialMapPoints(MapSearchOptions mapSearchOptions, Random r)
         {
             var mapPoints = new List<MapPoint>
                                 {
                                     new MapPoint(
                                         (r.NextDouble()
-                                         * (mso.MaximumStartBaseDistance - mso.MinimumStartBaseDistance))
-                                        + mso.MinimumStartBaseDistance,
-                                        (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                                         * (mapSearchOptions.MaximumStartBaseDistance - mapSearchOptions.MinimumStartBaseDistance))
+                                        + mapSearchOptions.MinimumStartBaseDistance,
+                                        (r.NextDouble() * (mapSearchOptions.MaximumDegree - mapSearchOptions.MinimumDegree)) + mapSearchOptions.MinimumDegree,
                                         Enums.MapPointType.StartBase,
                                         Enums.WasPlaced.NotAttempted)
                                 };
 
-            var numberOfBases = r.Next(mso.MinimumNumberOfBases, mso.MaximumNumberOfBases + 1);
+            var numberOfBases = r.Next(mapSearchOptions.MinimumNumberOfBases, mapSearchOptions.MaximumNumberOfBases + 1);
             for (var i = 0; i < numberOfBases; i++)
             {
-                var gold = r.NextDouble() < mso.ChanceToAddGoldBase;
+                var gold = r.NextDouble() < mapSearchOptions.ChanceToAddGoldBase;
                 mapPoints.Add(new MapPoint(
-                    (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
-                    (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                    (r.NextDouble() * (mapSearchOptions.MaximumDistance - mapSearchOptions.MinimumDistance)) + mapSearchOptions.MinimumDistance,
+                    (r.NextDouble() * (mapSearchOptions.MaximumDegree - mapSearchOptions.MinimumDegree)) + mapSearchOptions.MinimumDegree,
                     gold ? Enums.MapPointType.GoldBase : Enums.MapPointType.Base,
                     Enums.WasPlaced.NotAttempted));
             }
 
-            var numberOfXelNaga = r.Next(mso.MinimumNumberOfXelNagaTowers, mso.MaximumNumberOfXelNagaTowers + 1);
+            var numberOfXelNaga = r.Next(mapSearchOptions.MinimumNumberOfXelNagaTowers, mapSearchOptions.MaximumNumberOfXelNagaTowers + 1);
             for (var i = 0; i < numberOfXelNaga; i++)
             {
                 mapPoints.Add(new MapPoint(
-                    (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
-                    (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                    (r.NextDouble() * (mapSearchOptions.MaximumDistance - mapSearchOptions.MinimumDistance)) + mapSearchOptions.MinimumDistance,
+                    (r.NextDouble() * (mapSearchOptions.MaximumDegree - mapSearchOptions.MinimumDegree)) + mapSearchOptions.MinimumDegree,
                     Enums.MapPointType.XelNagaTower,
                     Enums.WasPlaced.NotAttempted));
             }
 
-            var numberOfDestructibleRocks = r.Next(mso.MinimumNumberOfDestructibleRocks, mso.MaximumNumberOfDestructibleRocks + 1);
+            var numberOfDestructibleRocks = r.Next(mapSearchOptions.MinimumNumberOfDestructibleRocks, mapSearchOptions.MaximumNumberOfDestructibleRocks + 1);
             for (var i = 0; i < numberOfDestructibleRocks; i++)
             {
                 mapPoints.Add(new MapPoint(
-                    (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
-                    (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                    (r.NextDouble() * (mapSearchOptions.MaximumDistance - mapSearchOptions.MinimumDistance)) + mapSearchOptions.MinimumDistance,
+                    (r.NextDouble() * (mapSearchOptions.MaximumDegree - mapSearchOptions.MinimumDegree)) + mapSearchOptions.MinimumDegree,
                     Enums.MapPointType.DestructibleRocks,
                     Enums.WasPlaced.NotAttempted));
             }
 
-            var numberOfRamps = r.Next(mso.MinimumNumberOfRamps, mso.MaximumNumberOfRamps + 1);
+            var numberOfRamps = r.Next(mapSearchOptions.MinimumNumberOfRamps, mapSearchOptions.MaximumNumberOfRamps + 1);
             for (var i = 0; i < numberOfRamps; i++)
             {
                 mapPoints.Add(new MapPoint(
-                    (r.NextDouble() * (mso.MaximumDistance - mso.MinimumDistance)) + mso.MinimumDistance,
-                    (r.NextDouble() * (mso.MaximumDegree - mso.MinimumDegree)) + mso.MinimumDegree,
+                    (r.NextDouble() * (mapSearchOptions.MaximumDistance - mapSearchOptions.MinimumDistance)) + mapSearchOptions.MinimumDistance,
+                    (r.NextDouble() * (mapSearchOptions.MaximumDegree - mapSearchOptions.MinimumDegree)) + mapSearchOptions.MinimumDegree,
                     Enums.MapPointType.Ramp,
                     Enums.WasPlaced.NotAttempted));
             }
@@ -949,6 +961,15 @@
             return true;
         }
 
+        /// <summary>
+        /// Checks if destructible rocks can be placed in a specified area.
+        /// </summary>
+        /// <param name="startX">The starting x-coordinate.</param>
+        /// <param name="startY">The starting y-coordinate.</param>
+        /// <param name="lengthX">The length on the x-axis.</param>
+        /// <param name="lengthY">The length on the y-axis.</param>
+        /// <param name="mp">The map phenotype to check.</param>
+        /// <returns>True if all tiles in the area can have destructible rocks placed on them, false if not.</returns>
         private static bool DestructibleRocksPlacableInArea(int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
             for (var x = startX; x <= startX + lengthX; x++)
@@ -968,6 +989,14 @@
             return true;
         }
 
+        /// <summary>
+        /// Places destructible rocks in the specified area.
+        /// </summary>
+        /// <param name="startX">The starting x-coordinate.</param>
+        /// <param name="startY">The starting y-coordinate.</param>
+        /// <param name="lengthX">The length on the x-axis.</param>
+        /// <param name="lengthY">The length on the y-axis.</param>
+        /// <param name="mp">The map phenotype to place destructible rocks on.</param>
         private static void PlaceDestructibleRocks(int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
             for (var x = startX; x <= startX + lengthX; x++)
@@ -1562,7 +1591,6 @@
                                 mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y));
                                 mp.CliffPositions.Add(new Tuple<int, int>(x - 1, y - 1));
                                 mp.CliffPositions.Add(new Tuple<int, int>(x + 2, y - 1));
-
 
                                 return true;
                             }

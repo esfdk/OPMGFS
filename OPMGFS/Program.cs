@@ -93,7 +93,6 @@
             var mf = new MapFitness(map, new MapFitnessOptions());
             mf.CalculateFitness();
             map.SaveMapToPngFile("Enclosed stuff", heightMap: false);
-            // Mapfitness goes here
         }
         
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
@@ -498,10 +497,10 @@
             for (var i = 0; i < evolverTest.Population.Count; i++)
             {
                 Console.Write(i + " has fitness: " + evolverTest.Population[i].Fitness + " [");
-                //foreach (var number in evolvableDoubleArray.Numbers)
-                //{
-                //    Console.Write(number + ", ");
-                //}
+                ////foreach (var number in evolvableDoubleArray.Numbers)
+                ////{
+                ////    Console.Write(number + ", ");
+                ////}
                 Console.Write("]");
                 Console.WriteLine();
             }
@@ -512,6 +511,7 @@
             {
                 Console.Write(number + ", ");
             }
+
             Console.Write("]");
 
             Console.ReadLine();
@@ -745,7 +745,7 @@
         #endregion
 
         #region Search Methods
-        public static void RunEvolution(
+        private static void RunEvolution(
             List<MapPhenotype> maps,
             Random r,
             MapSearchOptions mapSearchOptions = null,
@@ -804,7 +804,7 @@
             }
         }
 
-        public static void RunNoveltySearch(
+        private static void RunNoveltySearch(
             List<MapPhenotype> maps,
             Random r,
             MapSearchOptions mapSearchOptions = null,
@@ -851,7 +851,7 @@
             }
         }
 
-        public static void RunEvolutionWithNoveltyAsBase(
+        private static void RunEvolutionWithNoveltyAsBase(
             List<MapPhenotype> maps,
             Random r,
             MapSearchOptions mapSearchOptions = null,
@@ -961,7 +961,7 @@
             }
         }
 
-        public static List<MapPhenotype> GetBaseMaps(
+        private static List<MapPhenotype> GetBaseMaps(
             int mapSize = 128,
             double oddsOfHeight = 0.5,
             double oddsOfHeight2 = 0.25,

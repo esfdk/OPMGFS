@@ -21,6 +21,7 @@
     <Analyzer AnalyzerId="StyleCop.CSharp.NamingRules">
       <AnalyzerSettings>
         <CollectionProperty Name="Hungarian">
+          <Value>a</Value>
           <Value>ca</Value>
           <Value>cn</Value>
           <Value>x</Value>

@@ -233,7 +233,6 @@ namespace OPMGFS.Map
             ChanceBased
         }
 
-
         /// <summary>
         /// A value that determines how a new population is created.
         /// </summary>

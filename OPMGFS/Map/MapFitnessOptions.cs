@@ -229,20 +229,44 @@
         #endregion
 
         #region Base Openess
+        /// <summary>
+        /// The significance of how open the area surrounding start bases is.
+        /// </summary>
         public readonly int StartBaseOpenessSignificance;
 
+        /// <summary>
+        /// The significance of how open the area surrounding bases is.
+        /// </summary>
         public readonly int BaseOpenessSignificance;
 
+        /// <summary>
+        /// The minimum number of tiles that should be open around a start base.
+        /// </summary>
         public readonly int OpenStartBaseTilesMinimum;
 
+        /// <summary>
+        /// The maximum number of tiles that should be open around a start base.
+        /// </summary>
         public readonly int OpenStartBaseTilesMaximum;
 
+        /// <summary>
+        /// The minimum number of tiles that should be open around a base.
+        /// </summary>
         public readonly int OpenBaseTilesMinimum;
 
+        /// <summary>
+        /// The maximum number of tiles that should be open around a base.
+        /// </summary>
         public readonly int OpenBaseTilesMaximum;
 
+        /// <summary>
+        /// The maximum number of directions that should be open at a start base.
+        /// </summary>
         public readonly int StartBaseApproachDirectionMaximum;
 
+        /// <summary>
+        /// The minimum number of directions that should be open at a start base.
+        /// </summary>
         public readonly int StartBaseApproachDirectionMinimum;
         #endregion
 
@@ -285,8 +309,8 @@
         /// <param name="distanceToXelNaga"> The range before a point is considered within range of the Xel'Naga tower. </param>
         /// <param name="stepsInXelNagaRangeMax"> The maximum number of tiles on the path between start bases the Xel'Naga tower should give vision of. </param>
         /// <param name="stepsInXelNagaRangeMin"> The minimum number of tiles on the path between start bases the Xel'Naga tower should give vision of. </param>
-        /// <param name="startBaseOpenessSignificance">The significance of start base openess.</param>
-        /// <param name="baseOpenessSignificance">The significance of base openess.</param>
+        /// <param name="startBaseOpenessSignificance">The significance of how open the start base is.</param>
+        /// <param name="baseOpenessSignificance">The significance of how open bases are.</param>
         /// <param name="openStartBaseTilesMinimum">The minimum number of tiles that must be open around a start base.</param>
         /// <param name="openStartBaseTilesMaximum">The maximum number of tiles that must be open around a start base.</param>
         /// <param name="openBaseTilesMinimum">The minimum number of tiles that must be open around a base.</param>

@@ -14,8 +14,6 @@ namespace OPMGFS.Evolution
     using System.Linq;
 
     using OPMGFS.Map;
-    using OPMGFS.Map.MapObjects;
-    using OPMGFS.Novelty.MapNoveltySearch;
 
     /// <summary>
     /// The evolver.
@@ -32,8 +30,8 @@ namespace OPMGFS.Evolution
         /// <param name="numberOfChildren">The number of children to create for every generation.</param>
         /// <param name="mutationChance">The chance of mutation happening in the parents.</param>
         /// <param name="r">The random object used in this evolver.</param>
-        /// <param name="initialisationArguments">The arguments used when initialising new objects.</param>
-        public Evolver(int numberOfGenerations, int populationSize, int numberOfParents, int numberOfChildren, double mutationChance, Random r, object[] initialisationArguments = null)
+        /// <param name="initializationArguments">The arguments used when initializing new objects.</param>
+        public Evolver(int numberOfGenerations, int populationSize, int numberOfParents, int numberOfChildren, double mutationChance, Random r, object[] initializationArguments = null)
         {
             this.Random = r;
             this.Population = new List<T>();
@@ -47,7 +45,7 @@ namespace OPMGFS.Evolution
             this.NumberOfParents = numberOfParents;
             this.NumberOfChildren = numberOfChildren;
             this.MutationChance = mutationChance;
-            this.InitialisationArguments = initialisationArguments ?? new object[] { this.MutationChance, this.Random };
+            this.InitializationArguments = initializationArguments ?? new object[] { this.MutationChance, this.Random };
 
             // this.GenerateInitialPopulation();
             // this.EvaluatePopulation();
@@ -79,9 +77,9 @@ namespace OPMGFS.Evolution
         public Enums.PopulationStrategy PopulationStrategy { get; set; }
 
         /// <summary>
-        /// Gets or sets the initialisation arguments.
+        /// Gets or sets the initialization arguments.
         /// </summary>
-        private object[] InitialisationArguments { get; set; }
+        private object[] InitializationArguments { get; set; }
 
         /// <summary>
         /// Gets or sets the number of generations for the evolution.
@@ -142,12 +140,19 @@ namespace OPMGFS.Evolution
             // 4. Return the best result
         }
 
+        /// <summary>
+        /// Initializes and evaluates the initial population.
+        /// </summary>
         public void Initialize()
         {
             this.GenerateInitialPopulation();
             this.EvaluatePopulation();
         }
 
+        /// <summary>
+        /// Initializes and evaluates the initial population.
+        /// </summary>
+        /// <param name="initialPopulation">The initial population to use.</param>
         public void Initialize(IEnumerable<T> initialPopulation)
         {
             this.Population.AddRange(initialPopulation);
@@ -161,7 +166,7 @@ namespace OPMGFS.Evolution
         {
             for (var i = 0; i < this.PopulationSize; i++)
             {
-                var temp = (T)Activator.CreateInstance(typeof(T), this.InitialisationArguments);
+                var temp = (T)Activator.CreateInstance(typeof(T), this.InitializationArguments);
                 temp.InitializeObject();
                 this.Population.Add(temp);
             }
