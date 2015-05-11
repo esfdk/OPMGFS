@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
 
     using Position = System.Tuple<int, int>;
@@ -88,13 +87,14 @@
             this.mfo = mfo;
         }
 
+        public MapFitnessValues FitnessValues { get; private set; }
+
         /// <summary>
         /// Calculates the fitness for the map.
         /// </summary>
         /// <returns> A double representing the fitness of the map. The higher, the better. </returns>
         public double CalculateFitness()
         {
-            var fitness = 0.0d;
             this.bases = new List<Position>();
 
             // Find a startbase. No need to find all start bases, as the other base should be a complete mirror of this base.
@@ -157,60 +157,53 @@
             }
 
             // If no start bases are found, the map is not feasible and running fitness calculations is not worth it.
-            if (this.startBasePosition1 == null || this.startBasePosition2 == null) return -200000;
+            if (this.startBasePosition1 == null || this.startBasePosition2 == null)
+            {
+                this.FitnessValues = new MapFitnessValues(
+                    -100, 
+                    -100, 
+                    -100, 
+                    -200000, 
+                    -100, 
+                    -100, 
+                    -100, 
+                    -100, 
+                    -100, 
+                    -100, 
+                    -100);
+            }
 
             this.pathBetweenStartBases = this.mapPathfinding.FindPathFromTo(
                 this.startBasePosition1,
                 this.startBasePosition2,
                 this.mfo.PathfindingIgnoreDestructibleRocks);
 
-            fitness += this.BaseSpace();
-            Console.WriteLine("Base Space:                         {0}", fitness);
-            var prevFitness = fitness;
+            var baseSpace = this.BaseSpace();
+            var baseHeight = this.BaseHeightLevel();
+            var newHeightReached = this.NewHeightReached();
+            var pathBetweenStartBasesFitness = this.PathBetweenStartBases();
+            var chokePoints = this.ChokePoints();
+            var distanceToNaturalExpansion = this.DistanceToNaturalExpansion();
+            var distanceToNonNaturalExpansions = this.DistanceToNonNaturalExpansions();
+            var expansionsAvailable = this.ExpansionsAvailable();
+            var xelNagaPlacement = this.XelNagaPlacement();
+            var startBaseOpeness = this.StartBaseOpeness();
+            var baseOpeness = this.BaseOpeness();
 
-            fitness += this.BaseHeightLevel();
-            Console.WriteLine("Base Height Level:                  {0}", fitness - prevFitness);
-            prevFitness = fitness;
+            this.FitnessValues = new MapFitnessValues(
+                baseSpace,
+                baseHeight,
+                newHeightReached,
+                pathBetweenStartBasesFitness,
+                chokePoints,
+                distanceToNaturalExpansion,
+                distanceToNonNaturalExpansions,
+                startBaseOpeness,
+                baseOpeness,
+                xelNagaPlacement,
+                expansionsAvailable);
 
-            fitness += this.PathBetweenStartBases();
-            Console.WriteLine("Path Between Start Bases:           {0}", fitness - prevFitness);
-            prevFitness = fitness;
-
-            fitness += this.NewHeightReached();
-            Console.WriteLine("New Height Reached:                 {0}", fitness - prevFitness);
-            prevFitness = fitness;
-
-            var sw = new Stopwatch();
-            sw.Start();
-            fitness += this.ChokePoints();
-            Console.WriteLine("Choke Points:                       {0}, with time {1} millis", fitness - prevFitness, sw.ElapsedMilliseconds);
-            prevFitness = fitness;
-            sw.Stop();
-
-            fitness += this.DistanceToNaturalExpansion();
-            Console.WriteLine("Distance to Natural Expansions:     {0}", fitness - prevFitness);
-            prevFitness = fitness;
-
-            fitness += this.DistanceToNonNaturalExpansions();
-            Console.WriteLine("Distance To Non Natural Expansions: {0}", fitness - prevFitness);
-            prevFitness = fitness;
-
-            fitness += this.ExpansionsAvailable();
-            Console.WriteLine("Expansions Available:               {0}", fitness - prevFitness);
-            prevFitness = fitness;
-
-            fitness += this.XelNagaPlacement();
-            Console.WriteLine("Xel'Naga Placement:                 {0}", fitness - prevFitness);
-            prevFitness = fitness;
-
-            fitness += this.StartBaseOpeness();
-            Console.WriteLine("Start Base Openess:                 {0}", fitness - prevFitness);
-            prevFitness = fitness;
-
-            fitness += this.BaseOpeness();
-            Console.WriteLine("Base Openess:                       {0}", fitness - prevFitness);
-
-            return fitness;
+            return this.FitnessValues.TotalFitness;
         }
 
         /// <summary>
@@ -368,8 +361,7 @@
                 if (this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp01
                      || this.map.HeightLevels[node.Item1, node.Item2] == Enums.HeightLevel.Ramp12)
                 {
-                    //// If we encounter a ramp, perform a choke point check on ramps
-
+                    // If we encounter a ramp, perform a choke point check on ramps
                     if (this.map.HeightLevels[node.Item1, node.Item2] == previousHeightLevel) continue;
                     if (!this.IsRampChokePoint(this.pathBetweenStartBases[nodeIndex + 1], this.mfo.ChokePointsWidth)) continue;
 
@@ -378,8 +370,7 @@
                 }
                 else if (nodeIndex % this.mfo.ChokePointSearchStep == 0)
                 {
-                    //// Otherwise, only perform a choke point check every x steps.
-
+                    // Otherwise, only perform a choke point check every x steps.
                     if (!this.IsPositionChokePoint(node, this.mfo.ChokePointsWidth)) continue;
 
                     chokePoints++;
