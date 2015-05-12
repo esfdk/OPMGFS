@@ -46,9 +46,6 @@ namespace OPMGFS.Evolution
             this.NumberOfChildren = numberOfChildren;
             this.MutationChance = mutationChance;
             this.InitializationArguments = initializationArguments ?? new object[] { this.MutationChance, this.Random };
-
-            // this.GenerateInitialPopulation();
-            // this.EvaluatePopulation();
         }
 
         /// <summary>

@@ -44,6 +44,13 @@ Notes:
 	Start Base Approach openess is VERY naive
 	When we in code use "max" in fitness, we sometimes mean "optimal"
 	Should have included novelty significance factors so that different start base positions are more significant in novelty calculations than difference in destructible rock placement
+
+	MOEA:
+		Keep selecting non-dominated solutions until only dominated solutions are left. 
+		After that, we select solutions based on how many solutions that dominate them.
+		If two (or more) solutions are dominated by the same number, we select the one that dominate the other.
+			If they do not dominate each other, we select based on fitness.
+		TL;DR: Dominance > Fitness
 	
 Old Notes:
 	1-1 representation

@@ -30,6 +30,9 @@
             ////TestFitness();
             ////TestPathfinding();
 
+            TestMOEA();
+            return;
+
             var sw = new Stopwatch();
             sw.Start();
 
@@ -94,7 +97,43 @@
             mf.CalculateFitness();
             map.SaveMapToPngFile("Enclosed stuff", heightMap: false);
         }
-        
+
+        private static void TestMOEA()
+        {
+            const int Height = 128;
+            const int Width = 128;
+
+            var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
+            ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
+
+            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: true, r: new Random(100000), groupPoints: 4);
+            ca.RunGenerations();
+            ca.CreateImpassableTerrain(5);
+
+            var map = new MapPhenotype((Enums.HeightLevel[,])ca.Map.Clone(), new Enums.Item[Width, Height]);
+
+            map.SmoothTerrain(random: new Random(100000));
+            map.SaveMapToPngFile("1", heightMap: false);
+            map.PlaceCliffs();
+            map.SmoothCliffs();
+            map.UpdateCliffPositions(Enums.Half.Top);
+
+            Console.WriteLine("Starting MOEA");
+
+            var moea = new MultiObjectiveEvolver(
+                10,
+                10,
+                3,
+                10,
+                0.3,
+                new Random(0),
+                new MapSearchOptions(map),
+                new MapFitnessOptions());
+
+            moea.Initialize();
+            (moea.Evolve() as EvolvableMap).ConvertedPhenotype.SaveMapToPngFile();
+        }
+
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestPathfinding()
         {

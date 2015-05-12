@@ -60,11 +60,13 @@
     <Compile Include="Map\JPSMapPathfinding.cs" />
     <Compile Include="Map\MapFitness.cs" />
     <Compile Include="Map\MapFitnessOptions.cs" />
+    <Compile Include="Map\MapFitnessValues.cs" />
     <Compile Include="Map\MapHelper.cs" />
     <Compile Include="Map\MapObjects\MapPoint.cs" />
     <Compile Include="Map\MapPathfinding.cs" />
     <Compile Include="Map\MapPhenotype.cs" />
     <Compile Include="Map\MapConversionHelper.cs" />
+    <Compile Include="Evolution\MultiObjectiveEvolver.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerNovelArchive.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerPopulation.cs" />
     <Compile Include="Novelty\IntegerNoveltySearch\IntegerSearcher.cs" />

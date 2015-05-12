@@ -85,6 +85,11 @@
         public MapFitnessOptions MapFitnessOptions { get; private set; }
 
         /// <summary>
+        /// Gets the map fitness values for this individual.
+        /// </summary>
+        public MapFitnessValues MapFitnessValues { get; private set; }
+
+        /// <summary>
         /// Spawns a mutation of this individual.
         /// </summary>
         /// <returns>A newly mutated individual.</returns>
@@ -117,6 +122,7 @@
             var mapFitness = new MapFitness(this.ConvertedPhenotype, this.MapFitnessOptions);
 
             this.Fitness = mapFitness.CalculateFitness();
+            this.MapFitnessValues = mapFitness.FitnessValues;
         }
 
         /// <summary>
@@ -164,6 +170,16 @@
             this.ConvertedPhenotype = map.CreateFinishedMap(Enums.Half.Top, this.MapSearchOptions.MapCompletion);
             this.hasBeenConverted = true;
             return this.ConvertedPhenotype;
+        }
+
+        public bool IsDominatedBy(EvolvableMap other)
+        {
+            return this.MapFitnessValues.IsDominatedBy(other.MapFitnessValues);
+        }
+
+        public bool Dominates(EvolvableMap other)
+        {
+            return this.MapFitnessValues.Dominates(other.MapFitnessValues);
         }
     }
 }
