@@ -73,14 +73,56 @@
 
         public bool IsDominatedBy(MapFitnessValues mfv)
         {
-            // ITODO: Implement IsDominatedBy
-            throw new NotImplementedException();
+            if (this.BaseSpaceFitness > mfv.BaseSpaceFitness) return false;
+            if (this.BaseHeightLevelFitness > mfv.BaseHeightLevelFitness) return false;
+            if (this.PathBetweenStartBasesFitness > mfv.PathBetweenStartBasesFitness) return false;
+            if (this.NewHeightReachedFitness > mfv.NewHeightReachedFitness) return false;
+            if (this.ChokePointFitness > mfv.ChokePointFitness) return false;
+            if (this.DistanceToNaturalExpansionFitness > mfv.DistanceToNaturalExpansionFitness) return false;
+            if (this.DistanceToNonNaturalExpansionFitness > mfv.DistanceToNonNaturalExpansionFitness) return false;
+            if (this.ExpansionsAvailableFitness > mfv.ExpansionsAvailableFitness) return false;
+            if (this.XelNagaPlacementFitness > mfv.XelNagaPlacementFitness) return false;
+            if (this.StartBaseOpenessFitness > mfv.StartBaseOpenessFitness) return false;
+            if (this.BaseOpenessFitness > mfv.BaseOpenessFitness) return false;
+
+            return this.BaseSpaceFitness < mfv.BaseSpaceFitness
+                   || this.BaseHeightLevelFitness < mfv.BaseHeightLevelFitness
+                   || this.PathBetweenStartBasesFitness < mfv.PathBetweenStartBasesFitness
+                   || this.NewHeightReachedFitness < mfv.NewHeightReachedFitness
+                   || this.ChokePointFitness < mfv.ChokePointFitness
+                   || this.DistanceToNaturalExpansionFitness < mfv.DistanceToNaturalExpansionFitness
+                   || this.DistanceToNonNaturalExpansionFitness < mfv.DistanceToNonNaturalExpansionFitness
+                   || this.ExpansionsAvailableFitness < mfv.ExpansionsAvailableFitness
+                   || this.XelNagaPlacementFitness < mfv.XelNagaPlacementFitness
+                   || this.StartBaseOpenessFitness < mfv.StartBaseOpenessFitness
+                   || this.BaseOpenessFitness < mfv.BaseOpenessFitness;
         }
 
         public bool Dominates(MapFitnessValues mfv)
         {
-            // ITODO: Implement IsDominatedBy
-            throw new NotImplementedException();
+            if (this.BaseSpaceFitness < mfv.BaseSpaceFitness) return false;
+            if (this.BaseHeightLevelFitness < mfv.BaseHeightLevelFitness) return false;
+            if (this.PathBetweenStartBasesFitness < mfv.PathBetweenStartBasesFitness) return false;
+            if (this.NewHeightReachedFitness < mfv.NewHeightReachedFitness) return false;
+            if (this.ChokePointFitness < mfv.ChokePointFitness) return false;
+            if (this.DistanceToNaturalExpansionFitness < mfv.DistanceToNaturalExpansionFitness) return false;
+            if (this.DistanceToNonNaturalExpansionFitness < mfv.DistanceToNonNaturalExpansionFitness) return false;
+            if (this.ExpansionsAvailableFitness < mfv.ExpansionsAvailableFitness) return false;
+            if (this.XelNagaPlacementFitness < mfv.XelNagaPlacementFitness) return false;
+            if (this.StartBaseOpenessFitness < mfv.StartBaseOpenessFitness) return false;
+            if (this.BaseOpenessFitness < mfv.BaseOpenessFitness) return false;
+
+            return this.BaseSpaceFitness > mfv.BaseSpaceFitness
+                   || this.BaseHeightLevelFitness > mfv.BaseHeightLevelFitness
+                   || this.PathBetweenStartBasesFitness > mfv.PathBetweenStartBasesFitness
+                   || this.NewHeightReachedFitness > mfv.NewHeightReachedFitness
+                   || this.ChokePointFitness > mfv.ChokePointFitness
+                   || this.DistanceToNaturalExpansionFitness > mfv.DistanceToNaturalExpansionFitness
+                   || this.DistanceToNonNaturalExpansionFitness > mfv.DistanceToNonNaturalExpansionFitness
+                   || this.ExpansionsAvailableFitness > mfv.ExpansionsAvailableFitness
+                   || this.XelNagaPlacementFitness > mfv.XelNagaPlacementFitness
+                   || this.StartBaseOpenessFitness > mfv.StartBaseOpenessFitness
+                   || this.BaseOpenessFitness > mfv.BaseOpenessFitness;
         }
 
         public bool GreaterThan(MapFitnessValues mfv)
@@ -95,8 +137,17 @@
 
         private double CalculateTotalFitness()
         {
-            // ITODO: implement total fitness calculation
-            throw new NotImplementedException();
+            return this.BaseSpaceFitness
+                 + this.BaseHeightLevelFitness
+                 + this.PathBetweenStartBasesFitness
+                 + this.NewHeightReachedFitness
+                 + this.ChokePointFitness
+                 + this.DistanceToNaturalExpansionFitness
+                 + this.DistanceToNonNaturalExpansionFitness
+                 + this.ExpansionsAvailableFitness
+                 + this.XelNagaPlacementFitness
+                 + this.StartBaseOpenessFitness
+                 + this.BaseOpenessFitness;
         }
     }
 }
