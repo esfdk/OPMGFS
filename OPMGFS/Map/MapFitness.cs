@@ -237,11 +237,6 @@
             var min = 0d;
             var actual = reachable.Count - Math.Pow(5, 2);
 
-            foreach (var tuple in reachable)
-            {
-                this.map.HeightLevels[tuple.Item1, tuple.Item2] = Enums.HeightLevel.Marker;
-            }
-
             // Normalizes the value to between 0.0 and 1.0
             var normalized = (actual - min) / (max - min);
             return normalized * this.mfo.BaseSpaceSignificance;
