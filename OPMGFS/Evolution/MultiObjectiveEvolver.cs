@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     using OPMGFS.Map;
@@ -79,6 +80,7 @@
         {
             for (var i = 0; i < this.NumberOfGenerations; i++)
             {
+                Console.WriteLine("Starting generation {0}", i);
                 var candidates = this.SelectParents();
                 this.SpawnChildren(candidates);
                 this.EvaluatePopulation();
@@ -133,6 +135,10 @@
         /// </summary>
         private void EvaluatePopulation()
         {
+            mapsDominatedByDictionary = new Dictionary<EvolvableMap, List<EvolvableMap>>();
+            Console.WriteLine("Starting evaluation of population");
+            var sw = new Stopwatch();
+            sw.Start();
             foreach (var individual in this.Population)
             {
                 individual.CalculateFitness();
@@ -175,6 +181,7 @@
                     }
                 }
             }
+            Console.WriteLine("Finished evaluation. It took {0} milliseconds", sw.ElapsedMilliseconds);
         }
 
         /// <summary>
@@ -183,6 +190,7 @@
         /// <returns>A list containing the candidates.</returns>
         private List<EvolvableMap> SelectParents()
         {
+            Console.WriteLine("Selecting parents");
             return this.SelectLeastDominatedIndividuals(this.NumberOfParents);
         }
 
@@ -192,6 +200,7 @@
         /// <param name="candidates">A list of the candidates to create children from.</param>
         private void SpawnChildren(List<EvolvableMap> candidates)
         {
+            Console.WriteLine("Spawning Children");
             for (var i = 0; i < this.NumberOfChildren; i++)
             {
                 var tempChild = (EvolvableMap)candidates[i % this.NumberOfParents].SpawnMutation();
@@ -205,12 +214,12 @@
         /// </summary>
         private void SelectPopulationForNextGeneration()
         {
+            Console.WriteLine("Selecting population for next generation");
             this.Population = this.SelectLeastDominatedIndividuals(this.PopulationSize);
         }
 
         private List<EvolvableMap> SelectLeastDominatedIndividuals(int amountToFind)
         {
-            mapsDominatedByDictionary = new Dictionary<EvolvableMap, List<EvolvableMap>>();
             var candidates = new List<EvolvableMap>();
 
             while (candidates.Count < amountToFind)
@@ -236,7 +245,7 @@
                     }
                 }
 
-                if (nonDominatedMapFound)
+                if (!nonDominatedMapFound)
                 {
                     break;
                 }
