@@ -43,6 +43,7 @@ Notes:
 	2 tile wide cliffs cover more area than otherwise
 	Start Base Approach openess is VERY naive
 	When we in code use "max" in fitness, we sometimes mean "optimal"
+	Should have included novelty significance factors so that different start base positions are more significant in novelty calculations than difference in destructible rock placement
 	
 Old Notes:
 	1-1 representation
