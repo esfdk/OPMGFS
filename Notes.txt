@@ -1,5 +1,7 @@
 TODO:
 	Grooss
+		Consider using genotype/phenotype to reduce confusion
+		MOEA
 		
 	Melnyk
 		Implement offspring boost (as option?)

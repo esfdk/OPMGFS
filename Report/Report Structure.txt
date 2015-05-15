@@ -10,7 +10,7 @@ Report
 		StarCraft
 		StarCraft and PCG
 
-	Related Work
+	Related Work												(Grooss)
 		Discuss other papers/research/methods
 			Discuss speed, level of abstraction, and approach to balance & feasibility for each approach
 
@@ -45,7 +45,7 @@ Report
 			General Overview
 			Fitness Measures (evaluation functions)
 
-		Multi-Objective Evolution  								(???)
+		Multi-Objective Evolution  								(Melnyk)
 			General Overview
 				Pareto Fronts and Domination
 

@@ -30,7 +30,7 @@
             ////TestFitness();
             ////TestPathfinding();
 
-            TestMOEA();
+            GenerateImages();
             return;
 
             var sw = new Stopwatch();
@@ -96,6 +96,39 @@
             var mf = new MapFitness(map, new MapFitnessOptions());
             mf.CalculateFitness();
             map.SaveMapToPngFile("Enclosed stuff", heightMap: false);
+        }
+
+        private static void GenerateImages()
+        {
+            var random = new Random(0);
+            var maps = GetBaseMaps(caRandomSeeds: new List<int> { 0, 1 });
+            var map = maps[0];
+
+            var mso = new MapSearchOptions(map);
+            var mfo = new MapFitnessOptions();
+            var evolver = new Evolver<EvolvableMap>(
+                5,
+                25,
+                3,
+                5,
+                0.3,
+                random,
+                new object[] { mso, 0.3, random, mfo })
+            {
+                PopulationSelectionStrategy = Enums.SelectionStrategy.HighestFitness,
+                ParentSelectionStrategy = Enums.SelectionStrategy.HighestFitness,
+                PopulationStrategy = Enums.PopulationStrategy.Mutation,
+            };
+
+            evolver.Initialize();
+            var em = (EvolvableMap) evolver.Evolve();
+            em.ConvertedPhenotype.SaveMapToPngFile(heightMap: false);
+
+            map = maps[1];
+            mso = new MapSearchOptions(map);
+            
+            var em1 = new EvolvableMap(mso, 0.3, random, mfo, em.MapPoints);
+            em1.ConvertedPhenotype.SaveMapToPngFile("2nd", heightMap: false);
         }
 
         private static void TestMOEA()

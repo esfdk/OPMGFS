@@ -1,9 +1,5 @@
 \section{Cellular Automata}
 \label{methodology_ca}
-
-\subsection{General Overview}
-\label{methodology_ca_overview}
-
 A cellular automata is a form for model that can simulate artificial life and is often used in computational tasks (e.g. procedual contant generation\cite{togelius2011search}), mathematics and biology. 
 
 Cellular automatas are made from a regular grid of cells, where each cell can have one state out of a finite set of states. A cellular automata also contains a set of fixed rules that determines how a cell's state is affected by the cells around it, known as a cell's \textit{neighbourhood}. The rules are applied to all cells in the grid at once\footnote{Not all cells may have a rule that applies, in which case it keeps its state.} in order to create a new generation. New generations are created either until a certain criteria is reached, or until a chosen number of generations have passed.
@@ -24,7 +20,7 @@ We use a cellular automata to generate the initial heightmap for the phenotype, 
 
 The cellular automata is initialized by randomly seeding the map with one of the different height levels through the use of random number generation. The default odds are the following:
 
-\begin{itemize}
+\begin{my_itemize}
 
 	\item \textbf{Height2}: $odds$ $<$ 0.25
 
@@ -32,7 +28,7 @@ The cellular automata is initialized by randomly seeding the map with one of the
 
 	\item \textbf{Height0}: 0.50 $\le$ $odds$
 
-\end{itemize}
+\end{my_itemize}
 
 Before the seeding process begins, \textbf{x} \textit{focus points} are randomly determined. During seeding, for every cell a random number between 0.0 and 1.0 is generated and the state of the cell is set to the corresponding height-level, as shown above. If the cell is within 15 tiles of any of the \textit{focus points}, the generated number is reduced\footnote{This heightens the odds of a higher height-level occouring} depending on how close the cell is to a focus point. The reduction follows the calculation
 
@@ -60,6 +56,4 @@ The \textit{smoothing ruleset} focuses solely on making areas more uniform. Ever
 \subsubsection{Impassable Terrain Generation}
 \label{methodology_ca_our_impassable}
 
-Impassable terrain is generated after the heightmap has been smoothed out. By default, 4 sections of impassable terrain is generated. For every section, two points are randomly chosen on the map, no further than 50 tiles apart. A direct line is traced and split into 10 points, which are then displaced to avoid robotic-looking areas. Impassable terrain is placed in areas of varying size around every point.
-
-\textbf{needs ending}
+Impassable terrain is generated after the heightmap has been smoothed. By default, four sections of impassable terrain is generated. For every section, two points are randomly chosen on the map, no further than 50 tiles apart. A direct line is traced and split into 10 points, which are then displaced to avoid robotic-looking areas. Impassable terrain is placed in areas of varying size around every point, which creates chasms or large pools of terrain that blocks ground unit movement.
