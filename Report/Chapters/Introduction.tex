@@ -1,2 +1,65 @@
 \chapter{Introduction}
 \label{introduction}
+
+This report is the result of our Master's Thesis at the IT-University of Copenhagen, spring 2015.
+
+The goal of the thesis was to apply both constrained novelty search and multiobjective evolutionary algorithms to do online procedural content generation (PCG) of maps for Starcraft and analyze the quality of the generated maps and compare the trade-offs required in order for each algorithms to generate maps fast enough to be used in online\cite{shaker2015procedural} PCG.
+
+\section{Procedural Content Generation in Games}
+\label{introdution_pcg}
+
+Games are a widespread form for entertainment and they come in many different forms. One thing they have in common is that the content of a game determines how interesting a player thinks the game is. Thus, if there is not enough content (or enough varied content), a player will grow bored with a game and move on from it.
+
+Game content takes a lot of time and resources to develop, however, so there is a limit to how often a development team can push out new content. This is unfortunate, as many players eventually get bored with the existing content and want something new.
+
+One solution to this problem is to let the game generate new content by itself. This method is called "procedural content generation" (henceforth called PCG) and is used in many games today. There exists a multitude of PCG techniques and they are used to different degrees from game to game. In Diablo 3\cite{diablo3}, PCG is used to create weapons and armor (within set parameters) when a player kills enemies and to generate dungeons with new layouts. In Dwarf Fortress\cite{dwarffortress}, PCG is used to create the entire world and most of what happens in it.
+
+\textbf{needs ending}
+
+\section{StarCraft}
+\label{introduction_starcraft}
+
+StarCraft II\cite{starcraft2} is a real-time strategy game developed by Blizzard Entertainment. It is the sequel to the original StarCraft\cite{starcraft} that was released in 1998 and which became a huge success.
+
+StarCraft is set in a military science fiction world, where the player plays the role of a general of one of three races; Protoss, Terran and Zerg. The goal of the game is to build a base, gather resources, raise an army and, in the end, wipe out any opponents that the player is playing against. There is a lot of strategy involved, as each of the three races have access to their own unique buildings and units, with each type of unit having its own strengths and weaknesses. A player must how to predict and counter\footnote{Countering a unit means using a unit of your own that is strong against that unit.} the opponent's choice of units in order to win. StarCraft becomes even more complex when economy and base management is taken into account.
+
+\insertTwoPictures{Starcraft2_02}{Starcraft2_01}{Left: A Terran base. Right: A Terran fleet assaulting a Protoss base.}{Starcraft2_Gameplay}
+
+This level of complexity requires the game to be very well balanced\footnote{Describe: What is balance?}, otherwise one race will dominate the other two, making those two races redundant. The balance comes from tuning the stats of unit's (eg. health, armor and damage), tuning the stats of buildings (e.g. health, build time and what the building provides access to) and from the maps the game is played on.
+
+A map in StarCraft is made from two-sided grid of $n$-by-$m$ tiles (where $n$ and $m$ generally are between 128 and 256) with different features. Some of the most important features are listed here:
+
+\begin{itemize}
+
+	\item Up to three\footnote{Some maps only utilize two.} different \textbf{height levels} that can be traversed by ground units.
+
+	\item \textbf{Ramps} that connect height levels and make it possible for ground units to move from one height level to another.
+
+	\item \textbf{Impassable terrain} that only flying units can traverse. It is usually portrayed as a drop off into nothing, lava or water.
+
+	\item \textbf{Start bases} which decide where the players begin the game.
+
+	\item \textbf{Resources} in the form of \textit{minerals} and \textit{gas} that a player needs to gather in order to build buildings and train units. These resources are usually grouped together (eight mineral depots and two gas depots) in such a way that it is easy to set up a base and harvest them.
+
+	\item \textbf{Destructible objects} that block pathing until removed.
+
+	\item \textbf{Xel'Naga towers} that provide unobstructed vision\footnote{"Unobstructed vision" meaning that nothing can block the vision in any way.} to a player in an area around it while the player has any unit next to the tower.
+
+\end{itemize}
+
+Balance in maps is achieved by considering the layout of the map and keeping the different units in mind. If the start bases are too close, rushing\footnote{Focusing solely on getting a bunch of cheap units out quickly and sending them to destroy the opponent's base before they establish a proper base.} becomes a dominant strategy. If they are separated only by some cliffs, any unit that can traverse cliffs (e.g. Terran's Reapers, Protoss' Stalkers and flying units) suddenly become too powerful. How many directions a base can be attacked from is also important, as it determines how easy it is to defend.
+
+The placement of other groups of resources (generally referred to as an \textit{expansion}) also plays a huge role in balance, as they are where players want to establish new bases in order to gather more resources. If multiple expansions are close to a start base, they will be easy to defend and hard to attack, as the main base can easily provide unit for defense. Generally there is one expansion close to the main base that is easy to defend (referred to as the \textit{natural expansion}), but remaining expansions are harder to defend and adds some risk-vs-reward balance. The map \textit{Daybreak} is a good example of a balanced map (see figure \ref{fig:SC2_Map_Daybreak}).
+
+\insertPicture{0.8}{SC2_Map_Daybreak}{The map "Daybreak". Notice how the start bases (glowing areas) are far from each other and how expansions (the blue minerals) are spread out with only one being close to each start base.}{SC2_Map_Daybreak}
+
+\textbf{Needs some sort of ending?}
+
+\section{StarCraft and PCG}
+\label{introduction_starcraft_pcg}
+
+The StarCraft II Map Editor provides players the tools necessary to create their own maps from the ground-up. These maps can be published to the StarCraft Arcade\footnote{\url{http://us.battle.net/arcade/en/}} and, from there, be played by players around the world. This is a good initiative, as it allows players to get a fresh breath of air, if they have grown bored of the standard maps. The only problem is that new maps require someone to design, create and balance them, which heavily limits the flow of new maps to the pool.
+
+Having a tool that can generate balanced maps would speed this process up and will allow players to have a larger variety of maps to choose from.
+
+\textbf{Needs something more}

@@ -1,0 +1,95 @@
+\section{Map Fitness}
+\label{methodology_mapfitness}
+
+For both our algorithms, we needed some way to determine whether a map was good or not. The novelty search needs some way of evaluating the maps it finds, in order to actually chose a map at the end of a search. The evolutionary algorithm needs some way (often called a fitness function) to work properly in the first place. Without one, there is no way for the evolution to select candidates from (and for) any generation.
+
+The evolutionary algorithm was the algorithm that we considered most when figuring out what was important for the fitness function. During evolution a lot of maps are generated and evaluated, so we needed the fitness function to be fast. Spending even one whole second on evaluating a map would drastically reduce the number of iterations our evolution could run without being too slow (ref to part about speed).
+
+While speed was important, a poor fitness function would be at least as bad as a slow one, as it would impact our two evolutions negatively. Our goal was therefore to create a fitness evaluation that was relatively fast but also covered what we felt was important in a StarCraft map.
+
+There are three main ways of creating a fitness function (Togelius2010Multiobjective): \textit{interactive, simulation-based} and \textit{direct}. An interactive fitness function requires humans to give feedback, which is then used to determine whether a map is good or not. A simulation-based fitness function runs one or more simulations of the game on the map and the result of these simulations are used to judge the map. A direct fitness function purely looks at the phenotype and runs calculations on various parameters in order to determine the fitness.
+
+In order to create an interactive fitness function, we would not only need humans willing to look at maps, we would also go against the intention of the project. So that was not an option. For a simulation-based fitness function, we would need to write an AI to play the game. Writing the AI itself would take a long time, it would most likely not be very good and even if we managed to create a good AI, each simulation would be slow due to the nature of the game.
+
+We chose a direct fitness function as it was the only one possible. Even had the others been possible, we would still have chosen a direct one due to the speed compared to the others. 
+
+In the fitness function, we used two main techniques to calculate fitness: Counting of features and the distance between points. For the distance, we used Jump Point Search\cite{harabor11a, harabor12, Podhraski2013jps} in order to find a ground path and then count the number of tiles that make up the path. When we judge the distance between points, we also consider the direct distance due to the flying units each race has available.
+
+\subsection{Preserving Speed}
+\label{methodology_mapfitness_speed}
+
+As mentioned above, we wanted the fitness function to be fast. We have made some optimizations to the fitness calculations in order to help with this.
+
+When the fitness function is started, it iterates over all cells in the map and saves the position of every start base, other bases and Xel'Naga tower. This process has a time complexity of $O(n\cdot m)$, where $n$ and $m$ is the width and height of the map respectively. Finding these positions at the start saves time later when we need the positions for calculating different parts of the fitness (see section \ref{methodology_mapfitness_parts}).
+
+The path between the two start bases is found, and saved, immediately after as it is used for multiple purposes. We use JPS for the pathfinding \footnote{\textbf{cannot find anything about JPS time complexity}}, which makes the pathfinding take roughly 60 milliseconds\footnote{On our computers.}.
+
+As the map is mirrored, any fitness calculation that involves a start base does not need to be run for both start bases. They will both score the exact same value, so we only run such calculations once. This is mainly important when open space around a start base is calculated, as that part relies on using Breadth-First Search, an inherently slow algorithm.
+
+\subsection{Parts of the fitness function}
+\label{methodology_mapfitness_parts}
+
+Our fitness function consists of eleven separate parts. These eleven parts cover what we consider the most important when evaluating a StarCraft map. Every part is calculated individually, normalized (between an optimal and worst-case value that we have determined) and then multiplied by a significance value based on how important we consider the part to be.
+
+	\subsubsection*{Open space around a start base} 
+	Open space around the start base is needed to place buildings and be able to maneouver units. 
+
+	The fitness is calculated by selecting the middle point of a start base and using Breadth-First Search to find all traversable tiles no further than 10 tiles from the start base.
+
+	\subsubsection*{The height level the base is located at}
+	The higher the start base is positioned, the easier it is to defend. From analyzing the competitive maps, it is also clear that the start bases are always at the highest level in the map (some maps only have 2 height levels)\footnote{Need analysis somewhere.}. 
+
+	The fitness is calculated by comparing the hight the start bases are located at to the highest level in the map. 
+
+	\subsubsection*{The path between the two start bases}
+	The distance from one start base to another heavily influences which strategies that can be utilized. It should be short enough that rushing\footnote{need reference} is possible, but long enough that rushing is not the only possible winning strategy. 
+
+	The fitness value is the distance of the path between the two start bases normalized between $(0.7 * mapWidth) + (0.7 * mapHeight)$ (\footnote{remember default value}) and 0. If there is no path, a penalty is given instead (see section \ref{methodology_mapfitness_penalty}).
+
+	\subsubsection*{How many times a new height is reached on the path between the start bases}
+	Defending against an attack from high ground offers a sizable advantage. It is therefore important that there is some variation in height when traveling between the two start bases. 
+
+	The fitness is calculated by counting how many times a new height levels is reached on the path between the two bases.
+
+	\subsubsection*{The number of choke points on the path}
+	Choke points allow a defender to funnel an attacker's units and prevent the attacker from swarming him. They are important in defenses (and sometimes during attacks), as they can effectively reduce the opponents strength for a while. 
+
+	The fitness value is the number of choke points\footnote{A choke point is any point that is only 3 tiles wide.} that are found on the path between the two start bases.
+
+	\subsubsection*{The distance to the natural expansion}
+	A natural expansions is the closest base to a start base. The distance to it should not be long, as players want to be able to get to it quick and be able to defend it and their start base well. 
+
+	The fitness value is the distance of the path from the start base to the nearest other base. If there is no path, a penalty is given instead (see section \ref{methodology_mapfitness_penalty}).
+
+	\subsubsection*{The distance to the non-natural expansions}
+	The non-natural expansions should be spread well around the map. If they are grouped too much, it allows a player to defend all of them at once. Expanding to a new base should, apart from with the natural expansion, mean that it is not that safe. 
+
+	The fitness is calculated by finding the distance of the shortest path to each expansion and normalizing the distance depending on what number of expansion it is.
+
+	\subsubsection*{The number of expansions available}
+	Expansions are necessary for players to continue building their economy. There should be enough expansions that players will not run out of resources too fast, but also enough that they will not have to fight over every expansions because there are too few in the map. 
+
+	The fitness value is the number of expansions divided by the number of start bases.
+
+	\subsubsection*{The placement of Xel'Naga towers}
+	Xel'Naga towers provide unobstructed vision of an area in a radius of 22 tiles centered on the tower when a player has a unit net to the tower. They should offer a view of the main path between the start bases in order to be a valuable asset early on. 
+
+	The fitness is the number of tiles of the path between the start bases a Xel'Naga tower covers.
+
+	\subsubsection*{How open the start bases and expansions are}
+	How open a base is determines how many directions it can be approached from. A base should not be completely open, as it would be too difficult to defend properly. 
+
+	The fitness here consists of two parts: How many tiles in an area around the start base that are not blocked, and how many of the compass' directions (north, north-east, etc.) that are open in a direct line.
+
+\subsubsection{Penalty function}
+\label{methodology_mapfitness_penalty}
+
+There are some maps that are infeasible for playing, e.g. maps with no ground path between the start bases. Such maps should not dominate the fitness rankings, as it would lead to a lot of infeasible maps being generated. 
+
+We chose to give infeasible maps a penalty that reduces their fitness. We did not want to give give them a \textit{death penalty}\cite{coello2012constraint}, however, as they may have some interesting features if one looks away from what makes them infeasible. Instead, we calculate a penalty for the map as follows.
+
+\begin{equation}
+	penalty := \frac{\langle maxTotalFitness\rangle}{3}
+\end{equation}
+
+This penalty ensures that the map's fitness will not dominate feasible maps, but it may still be chosen over feasible maps that are horrible.
