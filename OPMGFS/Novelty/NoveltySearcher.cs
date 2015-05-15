@@ -7,6 +7,7 @@
     /// </summary>
     public abstract class NoveltySearcher
     {
+        // ITODO: Implement offspring boost
         /// <summary>
         /// Initializes a new instance of the <see cref="NoveltySearcher"/> class.
         /// </summary>

@@ -1,4 +1,6 @@
-\documentclass{article}
+\RequirePackage{filecontents}  
+
+\documentclass{report}
 
 %----------------------------------------------
 % Packages
@@ -28,11 +30,14 @@
 \usepackage{savefnmark}
 \usepackage{verbatim}
 \usepackage{tocloft}
+\usepackage[numbers]{natbib}
 
 
 %----------------------------------------------
 % Chapter and section spacings
 %----------------------------------------------
+\titleformat{\chapter}{\normalfont\Huge\bfseries}{\thechapter}{0.5em}{}
+\titlespacing*{\chapter}{0pt}{-0.5ex}{0.0ex}
 \titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{0.5em}{}
 \titlespacing*{\section}{0pt}{-0.5ex}{0.0ex}
 \titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{0.5em}{}
@@ -69,13 +74,19 @@ breaklines=true}
 %----------------------------------------------
 % Page style
 %----------------------------------------------
-\setlength{\headheight}{15.2pt}
+\setlength{\headheight}{5.2pt}
 \setlength{\topskip}{20pt}
 \pagestyle{fancy}
-\lhead{Jakob Melnyk, Jacob Claidius Grooss}
+\lhead{Jacob Claudius Grooss, Jakob Melnyk}
 %\chead{???}
 \rhead{Online Procedural Content Generation of Starcraft Maps}
 \cfoot{{\thepage} of \pageref{LastPage}}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[C]{\thepage\ of \pageref{LastPage}}%
+  \renewcommand{\headrulewidth}{0pt}% Line at the header invisible
+}
 
 % Table of contents depth
 \settocdepth{section}
@@ -126,7 +137,7 @@ breaklines=true}
 %----------------------------------------------
 % Author
 %----------------------------------------------
-\author{Jakob Melnyk, jmel@itu.dk \\ Jacob Claudius Grooss, jcgr@itu.dk}
+\author{Jacob Claudius Grooss, jcgr@itu.dk \\ Jakob Melnyk, jmel@itu.dk}
 
 \date{June 1, 2015}
 
@@ -134,13 +145,22 @@ breaklines=true}
 
 \thispagestyle{empty}
 \maketitle
-\skippage
 \tableofcontents
-\skippage
+\clearpage
+
 \input{Sections/Intro.tex}
 \input{Sections/MapGeneration.tex}
 \input{Sections/MapRepresentation.tex}
 \input{Sections/CellularAutomata.tex}
 \input{Sections/MapFitness.tex}
+
+\input{Chapters/Introduction.tex}
+\input{Chapters/RelatedWork.tex}
+\input{Chapters/Goals.tex}
+\input{Chapters/Methodology.tex}
+\input{Chapters/Results.tex}
+\input{Chapters/FutureWork.tex}
+\input{Chapters/Conclusion.tex}
+\input{Chapters/References.tex}
 
 \end{document}
