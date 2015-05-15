@@ -82,7 +82,8 @@ Ankh.NoLoad
 *.blg
 *.log
 *.out
-#*.pdf
+Report/*.pdf
+Report/*.toc
 *.synctex.gz
 *.synctex.gz(Busy)
 
