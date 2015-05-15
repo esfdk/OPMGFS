@@ -14,7 +14,7 @@ The distinction between map layout and map elements makes it possible to separat
 \label{methodology_representation_mappoints}
 A map point in the representation is a combining of a distance, an angle, and a type. The distance is a number between zero and one that is relative to the size of the map that the point will be placed on, where zero is the centre of the map and one is edge of the map. The angle is a number between zero and 180 where zero is east, 90 is north, and 180 is west. The type of the map point determines which map element should be placed at the position. Figure \ref{fig:methodology_representation_mappoints_xelnagatower} shows a Xel'Naga tower placed at 45 degrees at 0.5 distance on a size 64 by 64 map.
 
-\textbf{insert picture of a xel'naga tower placed at 45 degree, 0.5 distance}
+\insertPicture{0.8}{XelNagaTowerPlacement}{The placement of a Xel'Naga tower at 45 degrees and 0.5 distance on a 64-by-64 map.}{methodology_representation_mappoints_xelnagatower}
 
 As long as the same base map is being searched, any small change to the degree or distance of a map point will result in small change to the generated map\footnote{With the exception of ramps, as they are placed using a different method than the other map points. This is discussed further in section \ref{methodology_conversion}}. In contrast, changes to the type of a map point or changes to the amount of map points in a representation has potential for large changes in the generated map. This is mainly relevant for bases, as the number of bases and the distance to them from the start base has a large impact on the quality of the map.
 

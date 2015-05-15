@@ -171,6 +171,7 @@
                     -this.mfo.MaxTotalFitness,
                     -this.mfo.MaxTotalFitness,
                     -this.mfo.MaxTotalFitness);
+                return this.FitnessValues.TotalFitness;
             }
 
             this.pathBetweenStartBases = this.mapPathfinding.FindPathFromTo(
