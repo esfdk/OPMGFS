@@ -1,42 +1,50 @@
 
 \save@tocdepth \setcounter {tocdepth}{1}
 \select@language {english}
-\contentsline {chapter}{\numberline {1}Introduction}{2}{chapter.1}
-\contentsline {section}{\numberline {1.1}Procedural Content Generation in Games}{2}{section.1.1}
-\contentsline {section}{\numberline {1.2}StarCraft}{2}{section.1.2}
-\contentsline {subsection}{\numberline {1.2.1}StarCraft and PCG}{4}{subsection.1.2.1}
-\contentsline {chapter}{\numberline {2}Related Work}{6}{chapter.2}
-\contentsline {chapter}{\numberline {3}Goals}{7}{chapter.3}
-\contentsline {section}{\numberline {3.1}Map Balance}{7}{section.3.1}
-\contentsline {section}{\numberline {3.2}Direct Content Generation}{8}{section.3.2}
-\contentsline {section}{\numberline {3.3}Optimal Trade-off}{8}{section.3.3}
-\contentsline {chapter}{\numberline {4}Methodology}{10}{chapter.4}
-\contentsline {section}{\numberline {4.1}Choice of Algorithms}{10}{section.4.1}
-\contentsline {section}{\numberline {4.2}Representation Data Structure}{10}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Map Points}{11}{subsection.4.2.1}
-\contentsline {subsection}{\numberline {4.2.2}Initialization \& Variation}{12}{subsection.4.2.2}
-\contentsline {section}{\numberline {4.3}Map Data Structure}{13}{section.4.3}
-\contentsline {subsection}{\numberline {4.3.1}Functionality of the Structure}{13}{subsection.4.3.1}
-\contentsline {subsubsection}{Cliff Smoothing}{13}{figure.caption.5}
-\contentsline {subsubsection}{Visual Representation}{14}{figure.caption.5}
-\contentsline {section}{\numberline {4.4}Converting Representations To Maps}{14}{section.4.4}
-\contentsline {section}{\numberline {4.5}Cellular Automata}{15}{section.4.5}
-\contentsline {subsection}{\numberline {4.5.1}Our Cellular Automata}{16}{subsection.4.5.1}
-\contentsline {subsubsection}{Initial Seeding}{16}{subsection.4.5.1}
-\contentsline {subsubsection}{Rulesets}{17}{equation.4.5.2}
-\contentsline {subsubsection}{Impassable Terrain Generation}{17}{equation.4.5.2}
-\contentsline {section}{\numberline {4.6}Evolution}{17}{section.4.6}
-\contentsline {section}{\numberline {4.7}Multi-Objective Evolutionary Algorithm}{18}{section.4.7}
-\contentsline {section}{\numberline {4.8}Map Fitness}{18}{section.4.8}
-\contentsline {subsection}{\numberline {4.8.1}Preserving Speed}{19}{subsection.4.8.1}
-\contentsline {subsection}{\numberline {4.8.2}Parts of the fitness function}{20}{subsection.4.8.2}
-\contentsline {subsection}{\numberline {4.8.3}Penalty function}{21}{subsection.4.8.3}
-\contentsline {section}{\numberline {4.9}Constrained Novelty Search}{21}{section.4.9}
-\contentsline {subsection}{\numberline {4.9.1}Distance to Feasibility Measure}{22}{subsection.4.9.1}
-\contentsline {subsection}{\numberline {4.9.2}Novelty Measure}{22}{subsection.4.9.2}
-\contentsline {section}{\numberline {4.10}Initialising Evolution With Novel Individuals}{22}{section.4.10}
+\contentsline {chapter}{\numberline {1}Introduction}{3}{chapter.1}
+\contentsline {section}{\numberline {1.1}Procedural Content Generation in Games}{3}{section.1.1}
+\contentsline {section}{\numberline {1.2}StarCraft}{3}{section.1.2}
+\contentsline {subsection}{\numberline {1.2.1}StarCraft and PCG}{5}{subsection.1.2.1}
+\contentsline {chapter}{\numberline {2}Related Work}{7}{chapter.2}
+\contentsline {chapter}{\numberline {3}Goals}{8}{chapter.3}
+\contentsline {section}{\numberline {3.1}Map Balance}{8}{section.3.1}
+\contentsline {section}{\numberline {3.2}Direct Content Generation}{9}{section.3.2}
+\contentsline {section}{\numberline {3.3}Optimal Trade-off}{9}{section.3.3}
+\contentsline {chapter}{\numberline {4}Methodology}{11}{chapter.4}
+\contentsline {section}{\numberline {4.1}Choice of Algorithms}{11}{section.4.1}
+\contentsline {section}{\numberline {4.2}Representation Data Structure}{11}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Map Points}{12}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Initialization \& Variation}{13}{subsection.4.2.2}
+\contentsline {section}{\numberline {4.3}Map Data Structure}{14}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Functionality of the Structure}{14}{subsection.4.3.1}
+\contentsline {subsubsection}{Cliff Smoothing}{14}{figure.caption.5}
+\contentsline {subsubsection}{Visual Representation}{15}{figure.caption.5}
+\contentsline {section}{\numberline {4.4}Converting Representations To Maps}{15}{section.4.4}
+\contentsline {section}{\numberline {4.5}Cellular Automata}{16}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Our Cellular Automata}{17}{subsection.4.5.1}
+\contentsline {subsubsection}{Initial Seeding}{17}{subsection.4.5.1}
+\contentsline {subsubsection}{Rulesets}{18}{equation.4.5.2}
+\contentsline {subsubsection}{Impassable Terrain Generation}{18}{equation.4.5.2}
+\contentsline {section}{\numberline {4.6}Evolution}{18}{section.4.6}
+\contentsline {section}{\numberline {4.7}Multi-Objective Evolutionary Algorithm}{19}{section.4.7}
+\contentsline {section}{\numberline {4.8}Map Fitness}{19}{section.4.8}
+\contentsline {subsection}{\numberline {4.8.1}Preserving Speed}{20}{subsection.4.8.1}
+\contentsline {subsection}{\numberline {4.8.2}Parts of the Fitness Function}{21}{subsection.4.8.2}
+\contentsline {subsection}{\numberline {4.8.3}Penalty Function}{22}{subsection.4.8.3}
+\contentsline {section}{\numberline {4.9}Constrained Novelty Search}{22}{section.4.9}
+\contentsline {subsection}{\numberline {4.9.1}Distance to Feasibility Measure}{23}{subsection.4.9.1}
+\contentsline {subsection}{\numberline {4.9.2}Novelty Measure}{23}{subsection.4.9.2}
+\contentsline {section}{\numberline {4.10}Initialising Evolution With Novel Individuals}{23}{section.4.10}
 \contentsline {chapter}{\numberline {5}Results}{24}{chapter.5}
+\contentsline {section}{\numberline {5.1}Speed}{24}{section.5.1}
+\contentsline {section}{\numberline {5.2}Quality}{24}{section.5.2}
+\contentsline {section}{\numberline {5.3}Novelty}{24}{section.5.3}
+\contentsline {section}{\numberline {5.4}Subjective Measure}{24}{section.5.4}
 \contentsline {chapter}{\numberline {6}Discussion}{25}{chapter.6}
+\contentsline {section}{\numberline {6.1}Speed}{25}{section.6.1}
+\contentsline {section}{\numberline {6.2}Quality}{25}{section.6.2}
+\contentsline {section}{\numberline {6.3}Novelty}{25}{section.6.3}
+\contentsline {section}{\numberline {6.4}Novelty Search vs Evolution}{25}{section.6.4}
 \contentsline {chapter}{\numberline {7}Future Work}{26}{chapter.7}
 \contentsline {chapter}{\numberline {8}Conclusion}{27}{chapter.8}
 \contentsfinish 
