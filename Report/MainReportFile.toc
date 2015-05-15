@@ -15,19 +15,19 @@
 \contentsline {chapter}{\numberline {2}Related Work}{9}{chapter.2}
 \contentsline {chapter}{\numberline {3}Goals}{10}{chapter.3}
 \contentsline {section}{\numberline {3.1}Map Balance}{10}{section.3.1}
-\contentsline {section}{\numberline {3.2}Direct Representation}{10}{section.3.2}
-\contentsline {section}{\numberline {3.3}Optimal Trade-offs}{10}{section.3.3}
-\contentsline {chapter}{\numberline {4}Methodology}{11}{chapter.4}
-\contentsline {section}{\numberline {4.1}Choice of Algorithms}{11}{section.4.1}
-\contentsline {section}{\numberline {4.2}Representation Data Structure}{11}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Map Points}{12}{subsection.4.2.1}
-\contentsline {subsection}{\numberline {4.2.2}Initialization \& Variation}{12}{subsection.4.2.2}
-\contentsline {section}{\numberline {4.3}Converting Representations To Maps}{13}{section.4.3}
-\contentsline {section}{\numberline {4.4}Constrained Novelty Search}{14}{section.4.4}
-\contentsline {subsection}{\numberline {4.4.1}Distance to Feasibility Measure}{14}{subsection.4.4.1}
-\contentsline {subsection}{\numberline {4.4.2}Novelty Measure}{14}{subsection.4.4.2}
-\contentsline {section}{\numberline {4.5}Initialising Evolution With Novel Individuals}{15}{section.4.5}
-\contentsline {chapter}{\numberline {5}Results}{16}{chapter.5}
-\contentsline {chapter}{\numberline {6}Future Work}{17}{chapter.6}
-\contentsline {chapter}{\numberline {7}Conclusion}{18}{chapter.7}
+\contentsline {section}{\numberline {3.2}One-to-One Content Generation}{10}{section.3.2}
+\contentsline {section}{\numberline {3.3}Optimal Trade-off}{10}{section.3.3}
+\contentsline {chapter}{\numberline {4}Methodology}{12}{chapter.4}
+\contentsline {section}{\numberline {4.1}Choice of Algorithms}{12}{section.4.1}
+\contentsline {section}{\numberline {4.2}Representation Data Structure}{12}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Map Points}{13}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Initialization \& Variation}{13}{subsection.4.2.2}
+\contentsline {section}{\numberline {4.3}Converting Representations To Maps}{14}{section.4.3}
+\contentsline {section}{\numberline {4.4}Constrained Novelty Search}{15}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}Distance to Feasibility Measure}{15}{subsection.4.4.1}
+\contentsline {subsection}{\numberline {4.4.2}Novelty Measure}{15}{subsection.4.4.2}
+\contentsline {section}{\numberline {4.5}Initialising Evolution With Novel Individuals}{16}{section.4.5}
+\contentsline {chapter}{\numberline {5}Results}{17}{chapter.5}
+\contentsline {chapter}{\numberline {6}Future Work}{18}{chapter.6}
+\contentsline {chapter}{\numberline {7}Conclusion}{19}{chapter.7}
 \contentsfinish 
