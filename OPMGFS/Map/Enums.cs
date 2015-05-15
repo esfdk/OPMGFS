@@ -223,14 +223,14 @@ namespace OPMGFS.Map
         public enum SelectionStrategy
         {
             /// <summary>
-            /// Select the individuals with highest fitness.
-            /// </summary>
-            HighestFitness,
-
-            /// <summary>
             /// Select based on chance, with higher fitness resulting in higher chance of being selected.
             /// </summary>
-            ChanceBased
+            ChanceBased = 0,
+
+            /// <summary>
+            /// Select the individuals with highest fitness.
+            /// </summary>
+            HighestFitness
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace OPMGFS.Map
             /// <summary>
             /// Uses mutation to create the new population
             /// </summary>
-            Mutation,
+            Mutation = 0,
 
             /// <summary>
             /// Select based on chance, with higher fitness resulting in higher chance of being selected.

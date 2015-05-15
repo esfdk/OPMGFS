@@ -160,17 +160,17 @@
             if (this.startBasePosition1 == null || this.startBasePosition2 == null)
             {
                 this.FitnessValues = new MapFitnessValues(
-                    -100, 
-                    -100, 
-                    -100, 
-                    -200000, 
-                    -100, 
-                    -100, 
-                    -100, 
-                    -100, 
-                    -100, 
-                    -100, 
-                    -100);
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness,
+                    -this.mfo.MaxTotalFitness);
             }
 
             this.pathBetweenStartBases = this.mapPathfinding.FindPathFromTo(
@@ -264,7 +264,7 @@
         private double PathBetweenStartBases()
         {
             if (this.pathBetweenStartBases.Count <= 0)
-                return -100000d;
+                return -(this.mfo.MaxTotalFitness / 3d);
 
             // Ground path distance
             var maxGround = (this.ySize * 0.70) + (this.xSize * 0.70);
@@ -411,7 +411,7 @@
                 this.mfo.PathfindingIgnoreDestructibleRocks);
 
             if (pathToNearest.Count == 0)
-                return -100000d;
+                return -(this.mfo.MaxTotalFitness / 3d);
 
             // Ground distance
             var maxGround = (this.xSize * 0.4) + (this.ySize * 0.4);

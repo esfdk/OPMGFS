@@ -1,3 +1,5 @@
+\RequirePackage{filecontents}        % loading package filecontents
+
 \documentclass{article}
 
 %----------------------------------------------
@@ -28,6 +30,7 @@
 \usepackage{savefnmark}
 \usepackage{verbatim}
 \usepackage{tocloft}
+\usepackage[numbers]{natbib}
 
 
 %----------------------------------------------
@@ -115,6 +118,36 @@ breaklines=true}
 \end{figure}
 }
 
+\newcommand{\insertTwoPictures}[4]{
+\begin{figure}[ht]
+\begin{minipage}[b]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/#1}
+\end{minipage}
+\begin{minipage}[b]{0.5\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/#2}
+\end{minipage}
+\caption{#3}
+\label{fig:#4}
+\end{figure}
+}
+
+\newcommand{\insertTwoPicturesS}[4]{
+\begin{figure}[ht]
+\begin{minipage}[b]{0.5\linewidth}
+        \centering
+        \includegraphics[scale=1]{Images/#1}
+\end{minipage}
+\begin{minipage}[b]{0.5\linewidth}
+        \centering
+        \includegraphics[scale=1]{Images/#2}
+\end{minipage}
+\caption{#3}
+\label{fig:#4}
+\end{figure}
+}
+
 %----------------------------------------------
 % Title
 %----------------------------------------------
@@ -141,6 +174,9 @@ breaklines=true}
 \input{Sections/MapGeneration.tex}
 \input{Sections/MapRepresentation.tex}
 \input{Sections/CellularAutomata.tex}
+\input{Sections/Evolution.tex}
 \input{Sections/MapFitness.tex}
+
+\input{Sections/Bibliography.tex}
 
 \end{document}

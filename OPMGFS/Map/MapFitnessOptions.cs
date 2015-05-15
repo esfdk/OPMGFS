@@ -8,6 +8,15 @@
     /// </summary>
     public class MapFitnessOptions
     {
+        #region Overall Fitness
+
+        /// <summary>
+        /// The maximum fitness possible.
+        /// </summary>
+        public readonly double MaxTotalFitness;
+
+        #endregion
+
         #region Pathfinding
 
         /// <summary>
@@ -293,9 +302,9 @@
         /// <param name="distanceToExpansionsSignificance"> The significance of how far there is to the nearest expansion. </param>
         /// <param name="pathExpMaxGroundDistance"> The maximum ground distance from a start base to any non-natural expansion. </param>
         /// <param name="pathExpMinGroundDistance"> The minimum ground distance from a start base to any non-natural expansion. </param>
-        /// <param name="pathExpMaxDistances"> The maximum ground distance based on the size of the map to a non-natural expansion based on how many expansions that have been considered already. </param>
         /// <param name="pathExpMaxDirectDistance"> The maximum direct distance from a start base to any non-natural expansion. </param>
         /// <param name="pathExpMinDirectDistance"> The minimum direct distance from a start base to any non-natural expansion. </param>
+        /// <param name="pathExpMaxDistances"> The maximum ground distance based on the size of the map to a non-natural expansion based on how many expansions that have been considered already. </param>
         /// <param name="pathExpDirectDistances"> The maximum direct distance based on the size of the map to a non-natural expansion based on how many expansions that have been considered already.</param>
         /// <param name="expansionsAvailableSignificance"> The significance of how many expansions that are available. </param>
         /// <param name="expansionsAvailableMax"> The maximum number of expansions available. </param>
@@ -384,9 +393,9 @@
             this.DistanceToExpansionsSignificance = distanceToExpansionsSignificance;
             this.PathExpMaxGroundDistance = pathExpMaxGroundDistance;
             this.PathExpMinGroundDistance = pathExpMinGroundDistance;
-            this.ExpansionsAvailableSignificance = expansionsAvailableSignificance;
             this.PathExpMaxDirectDistance = pathExpMaxDirectDistance;
             this.PathExpMinDirectDistance = pathExpMinDirectDistance;
+            this.ExpansionsAvailableSignificance = expansionsAvailableSignificance;
             this.ExpansionsAvailableMax = expansionsAvailableMax;
             this.ExpansionsAvailableMin = expansionsAvailableMin;
             this.ChokePointsSignificance = chokePointsSignificance;
@@ -408,6 +417,19 @@
             this.StartBaseApproachDirectionMaximum = startBaseApproachDirectionMaximum;
             this.PathExpDirectDistances = pathExpDirectDistances;
 
+            this.MaxTotalFitness = 
+                this.BaseSpaceSignificance
+                + this.BaseHeightSignificance
+                + this.PathBetweenStartBasesSignificance
+                + this.NewHeightReachedSignificance
+                + this.DistanceToNaturalSignificance
+                + this.DistanceToExpansionsSignificance
+                + this.ExpansionsAvailableSignificance
+                + this.ChokePointsSignificance
+                + this.XelNagaPlacementSignificance
+                + this.StartBaseOpenessSignificance
+                + this.BaseOpenessSignificance;
+
             if (pathExpMaxDistances == null)
             { 
                 this.PathExpGroundDistances = new List<Tuple<int, double>> 
@@ -417,6 +439,10 @@
                             new Tuple<int, double>(3, 0.7),
                             new Tuple<int, double>(4, 0.9)
                         };
+            }
+            else
+            {
+                this.PathExpGroundDistances = pathExpMaxDistances;
             }
 
             if (pathExpDirectDistances == null)
@@ -428,6 +454,10 @@
                             new Tuple<int, double>(3, 0.65),
                             new Tuple<int, double>(4, 0.85)
                         };
+            }
+            else
+            {
+                this.PathExpDirectDistances = pathExpDirectDistances;
             }
         }
     }

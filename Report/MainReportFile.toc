@@ -2,13 +2,21 @@
 \save@tocdepth \setcounter {tocdepth}{1}
 \select@language {english}
 \contentsline {section}{\numberline {1}Introduction}{1}{section.1}
-\contentsline {section}{\numberline {2}Decisions about map generation}{1}{section.2}
-\contentsline {section}{\numberline {3}Map Representation}{1}{section.3}
-\contentsline {subsection}{\numberline {3.1}Genotype}{1}{subsection.3.1}
-\contentsline {subsection}{\numberline {3.2}Phenotype}{2}{subsection.3.2}
-\contentsline {section}{\numberline {4}Cellular Automata}{3}{section.4}
-\contentsline {subsection}{\numberline {4.1}What it is}{3}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}Rules}{3}{subsection.4.2}
-\contentsline {section}{\numberline {5}Map Fitness}{3}{section.5}
-\contentsline {subsection}{\numberline {5.1}Parts of the fitness function}{4}{subsection.5.1}
+\contentsline {subsection}{\numberline {1.1}Procedural Content Generation in Games}{1}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}StarCraft}{1}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}StarCraft and PCG}{3}{subsection.1.3}
+\contentsline {section}{\numberline {2}Decisions about map generation}{4}{section.2}
+\contentsline {section}{\numberline {3}Map Representation}{4}{section.3}
+\contentsline {subsection}{\numberline {3.1}Genotype}{4}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Map Data Structure}{5}{subsection.3.2}
+\contentsline {section}{\numberline {4}Cellular Automata}{6}{section.4}
+\contentsline {subsection}{\numberline {4.1}General Overview}{6}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Our Cellular Automata}{6}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Initial Seeding}{7}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\numberline {4.2.2}Ruleset}{8}{subsubsection.4.2.2}
+\contentsline {section}{\numberline {5}Evolution}{8}{section.5}
+\contentsline {section}{\numberline {6}Map Fitness}{8}{section.6}
+\contentsline {subsection}{\numberline {6.1}Preserving Speed}{9}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Parts of the fitness function}{10}{subsection.6.2}
+\contentsline {subsubsection}{\numberline {6.2.1}Penalty function}{12}{subsubsection.6.2.1}
 \contentsfinish 

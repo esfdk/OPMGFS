@@ -50,6 +50,8 @@ Notes:
 		If two (or more) solutions are dominated by the same number, we select the one that dominate the other.
 			If they do not dominate each other, we select based on fitness.
 		TL;DR: Dominance > Fitness
+
+	For evolution selection we currently use highest fitness. Should look into using chance based instead.
 	
 Old Notes:
 	1-1 representation
