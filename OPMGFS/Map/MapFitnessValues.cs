@@ -1,6 +1,7 @@
 ﻿namespace OPMGFS.Map
 {
     using System;
+    using System.Collections.Generic;
 
     public class MapFitnessValues
     {
@@ -11,27 +12,27 @@
         public MapFitnessValues(
             double baseSpaceFitness,
             double baseHeightLevelFitness,
-            double newHeightReachedFitness,
             double pathBetweenStartBasesFitness,
-            double chokePointFitness,
+            double newHeightReachedFitness,
             double distanceToNaturalExpansionFitness,
             double distanceToNonNaturalExpansionFitness,
-            double startBaseOpenessFitness,
-            double baseOpenessFitness,
+            double expansionsAvailableFitness,
+            double chokePointFitness,
             double xelNagaPlacementFitness,
-            double expansionsAvailableFitness)
+            double startBaseOpenessFitness,
+            double baseOpenessFitness)
         {
             this.BaseSpaceFitness = baseSpaceFitness;
             this.BaseHeightLevelFitness = baseHeightLevelFitness;
-            this.NewHeightReachedFitness = newHeightReachedFitness;
             this.PathBetweenStartBasesFitness = pathBetweenStartBasesFitness;
-            this.ChokePointFitness = chokePointFitness;
+            this.NewHeightReachedFitness = newHeightReachedFitness;
             this.DistanceToNaturalExpansionFitness = distanceToNaturalExpansionFitness;
             this.DistanceToNonNaturalExpansionFitness = distanceToNonNaturalExpansionFitness;
+            this.ExpansionsAvailableFitness = expansionsAvailableFitness;
+            this.ChokePointFitness = chokePointFitness;
+            this.XelNagaPlacementFitness = xelNagaPlacementFitness;
             this.StartBaseOpenessFitness = startBaseOpenessFitness;
             this.BaseOpenessFitness = baseOpenessFitness;
-            this.XelNagaPlacementFitness = xelNagaPlacementFitness;
-            this.ExpansionsAvailableFitness = expansionsAvailableFitness;
         }
 
         public double TotalFitness
@@ -57,13 +58,13 @@
 
         public double NewHeightReachedFitness { get; private set; }
 
-        public double ChokePointFitness { get; private set; }
-
         public double DistanceToNaturalExpansionFitness { get; private set; }
 
         public double DistanceToNonNaturalExpansionFitness { get; private set; }
 
         public double ExpansionsAvailableFitness { get; private set; }
+
+        public double ChokePointFitness { get; private set; }
 
         public double XelNagaPlacementFitness { get; private set; }
 
@@ -77,10 +78,10 @@
             if (this.BaseHeightLevelFitness > mfv.BaseHeightLevelFitness) return false;
             if (this.PathBetweenStartBasesFitness > mfv.PathBetweenStartBasesFitness) return false;
             if (this.NewHeightReachedFitness > mfv.NewHeightReachedFitness) return false;
-            if (this.ChokePointFitness > mfv.ChokePointFitness) return false;
             if (this.DistanceToNaturalExpansionFitness > mfv.DistanceToNaturalExpansionFitness) return false;
             if (this.DistanceToNonNaturalExpansionFitness > mfv.DistanceToNonNaturalExpansionFitness) return false;
             if (this.ExpansionsAvailableFitness > mfv.ExpansionsAvailableFitness) return false;
+            if (this.ChokePointFitness > mfv.ChokePointFitness) return false;
             if (this.XelNagaPlacementFitness > mfv.XelNagaPlacementFitness) return false;
             if (this.StartBaseOpenessFitness > mfv.StartBaseOpenessFitness) return false;
             if (this.BaseOpenessFitness > mfv.BaseOpenessFitness) return false;
@@ -89,10 +90,10 @@
                    || this.BaseHeightLevelFitness < mfv.BaseHeightLevelFitness
                    || this.PathBetweenStartBasesFitness < mfv.PathBetweenStartBasesFitness
                    || this.NewHeightReachedFitness < mfv.NewHeightReachedFitness
-                   || this.ChokePointFitness < mfv.ChokePointFitness
                    || this.DistanceToNaturalExpansionFitness < mfv.DistanceToNaturalExpansionFitness
                    || this.DistanceToNonNaturalExpansionFitness < mfv.DistanceToNonNaturalExpansionFitness
                    || this.ExpansionsAvailableFitness < mfv.ExpansionsAvailableFitness
+                   || this.ChokePointFitness < mfv.ChokePointFitness
                    || this.XelNagaPlacementFitness < mfv.XelNagaPlacementFitness
                    || this.StartBaseOpenessFitness < mfv.StartBaseOpenessFitness
                    || this.BaseOpenessFitness < mfv.BaseOpenessFitness;
@@ -104,10 +105,10 @@
             if (this.BaseHeightLevelFitness < mfv.BaseHeightLevelFitness) return false;
             if (this.PathBetweenStartBasesFitness < mfv.PathBetweenStartBasesFitness) return false;
             if (this.NewHeightReachedFitness < mfv.NewHeightReachedFitness) return false;
-            if (this.ChokePointFitness < mfv.ChokePointFitness) return false;
             if (this.DistanceToNaturalExpansionFitness < mfv.DistanceToNaturalExpansionFitness) return false;
             if (this.DistanceToNonNaturalExpansionFitness < mfv.DistanceToNonNaturalExpansionFitness) return false;
             if (this.ExpansionsAvailableFitness < mfv.ExpansionsAvailableFitness) return false;
+            if (this.ChokePointFitness < mfv.ChokePointFitness) return false;
             if (this.XelNagaPlacementFitness < mfv.XelNagaPlacementFitness) return false;
             if (this.StartBaseOpenessFitness < mfv.StartBaseOpenessFitness) return false;
             if (this.BaseOpenessFitness < mfv.BaseOpenessFitness) return false;
@@ -116,10 +117,10 @@
                    || this.BaseHeightLevelFitness > mfv.BaseHeightLevelFitness
                    || this.PathBetweenStartBasesFitness > mfv.PathBetweenStartBasesFitness
                    || this.NewHeightReachedFitness > mfv.NewHeightReachedFitness
-                   || this.ChokePointFitness > mfv.ChokePointFitness
                    || this.DistanceToNaturalExpansionFitness > mfv.DistanceToNaturalExpansionFitness
                    || this.DistanceToNonNaturalExpansionFitness > mfv.DistanceToNonNaturalExpansionFitness
                    || this.ExpansionsAvailableFitness > mfv.ExpansionsAvailableFitness
+                   || this.ChokePointFitness > mfv.ChokePointFitness
                    || this.XelNagaPlacementFitness > mfv.XelNagaPlacementFitness
                    || this.StartBaseOpenessFitness > mfv.StartBaseOpenessFitness
                    || this.BaseOpenessFitness > mfv.BaseOpenessFitness;
@@ -135,16 +136,36 @@
             return false;
         }
 
+        public List<double> FitnessList()
+        {
+            var list = new List<double>
+                           {
+                               this.BaseSpaceFitness,
+                               this.BaseHeightLevelFitness,
+                               this.PathBetweenStartBasesFitness,
+                               this.NewHeightReachedFitness,
+                               this.DistanceToNaturalExpansionFitness,
+                               this.DistanceToNonNaturalExpansionFitness,
+                               this.ExpansionsAvailableFitness,
+                               this.ChokePointFitness,
+                               this.XelNagaPlacementFitness,
+                               this.StartBaseOpenessFitness,
+                               this.BaseOpenessFitness
+                           };
+
+            return list;
+        }
+
         private double CalculateTotalFitness()
         {
             return this.BaseSpaceFitness
                  + this.BaseHeightLevelFitness
                  + this.PathBetweenStartBasesFitness
                  + this.NewHeightReachedFitness
-                 + this.ChokePointFitness
                  + this.DistanceToNaturalExpansionFitness
                  + this.DistanceToNonNaturalExpansionFitness
                  + this.ExpansionsAvailableFitness
+                 + this.ChokePointFitness
                  + this.XelNagaPlacementFitness
                  + this.StartBaseOpenessFitness
                  + this.BaseOpenessFitness;

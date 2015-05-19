@@ -29,8 +29,9 @@
             ////TestMapNoveltySearch();
             ////TestFitness();
             ////TestPathfinding();
+            TestMOEA();
 
-            GenerateImages();
+            ////GenerateImages();
             return;
 
             var sw = new Stopwatch();
@@ -163,8 +164,11 @@
                 new MapSearchOptions(map),
                 new MapFitnessOptions());
 
-            moea.Initialize();
-            (moea.Evolve() as EvolvableMap).ConvertedPhenotype.SaveMapToPngFile();
+            var result = moea.RunEvolution();
+            result.ConvertedPhenotype.SaveMapToPngFile();
+
+            ////moea.Initialize();
+            ////(moea.Evolve() as EvolvableMap).ConvertedPhenotype.SaveMapToPngFile();
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]

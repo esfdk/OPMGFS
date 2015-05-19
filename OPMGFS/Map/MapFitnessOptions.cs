@@ -460,5 +460,25 @@
                 this.PathExpDirectDistances = pathExpDirectDistances;
             }
         }
+
+        public List<double> MaxSignificanceList()
+        {
+            var list = new List<double>
+                           {
+                               this.BaseSpaceSignificance,
+                               this.BaseHeightSignificance,
+                               this.PathBetweenStartBasesSignificance,
+                               this.NewHeightReachedSignificance,
+                               this.DistanceToNaturalSignificance,
+                               this.DistanceToNaturalSignificance,
+                               this.ExpansionsAvailableSignificance,
+                               this.ChokePointsSignificance,
+                               this.XelNagaPlacementSignificance,
+                               this.StartBaseOpenessSignificance,
+                               this.BaseOpenessSignificance
+                           };
+
+            return list;
+        }
     }
 }
