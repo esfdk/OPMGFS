@@ -136,11 +136,12 @@
         {
             const int Height = 128;
             const int Width = 128;
+            var random = new Random();
 
             var ruleBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1);
             ruleBasicHeight1.AddCondition(6, Enums.HeightLevel.Height1);
 
-            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: true, r: new Random(100000), groupPoints: 4);
+            var ca = new CellularAutomata(Width, Height, Enums.Half.Top, generateHeight2: true, r: random, groupPoints: 4);
             ca.RunGenerations();
             ca.CreateImpassableTerrain(5);
 
@@ -156,11 +157,11 @@
 
             var moea = new MultiObjectiveEvolver(
                 10,
-                10,
+                25,
                 3,
                 10,
                 0.3,
-                new Random(0),
+                random,
                 new MapSearchOptions(map),
                 new MapFitnessOptions());
 

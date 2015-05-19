@@ -349,7 +349,8 @@
                 this.CrowdingDistanceAssignment(currentFront);
                 currentFront = currentFront.OrderBy(p => p.Rank).ThenByDescending(p => p.Distance).ToList();
 
-                for (var i = 0; i < this.PopulationSize - nextParents.Count; i++)
+                var missingParents = this.PopulationSize - nextParents.Count;
+                for (var i = 0; i < missingParents; i++)
                     nextParents.Add(currentFront[i]);
 
                 parents = nextParents;
@@ -418,7 +419,9 @@
                 // Sort the front by the objective in ascending order
                 front = front.OrderBy(p => p.MapFitnessValuesList[objective]).ToList();
 
-                // TODO: Figure out what that infinite value is supposed to do (see 'crowding-distance-assignment' in http://www.iitk.ac.in/kangal/Deb_NSGA-II.pdf)
+                // Mark boundaries
+                front[0].Distance = double.NegativeInfinity;
+                front[front.Count - 1].Distance = double.PositiveInfinity;
 
                 // Calculate the distance for every solution ('cept boundries).
                 for (var popIndex = 1; popIndex < front.Count - 1; popIndex++)
