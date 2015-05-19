@@ -1,7 +1,6 @@
 ﻿namespace OPMGFS.Novelty.IntegerNoveltySearch
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Searches for novelty in integers.
@@ -68,40 +67,6 @@
 
                 this.NextGeneration();
             }
-        }
-
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
-        protected override void NextGeneration()
-        {
-            var infeasibleIndividuals = FeasiblePopulation.AdvanceGeneration(
-                new NoveltySearchOptions(),
-                InfeasiblePopulation,
-                Archive,
-                Random);
-            var feasibleIndividuals = InfeasiblePopulation.AdvanceGeneration(
-                new NoveltySearchOptions(),
-                FeasiblePopulation,
-                Archive,
-                Random);
-            
-            FeasiblePopulation.CurrentGeneration.AddRange(feasibleIndividuals);
-            InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);
-
-            Console.WriteLine("-----------------");
-            Console.WriteLine("Feasible Population");
-            foreach (var i in FeasiblePopulation.CurrentGeneration)
-            {
-                Console.WriteLine(((IntegerSolution)i).Number + " Novelty: " + i.Novelty);
-            }
-
-            Console.WriteLine("------------------");
-            Console.WriteLine("Infeasible Population");
-            foreach (var i in InfeasiblePopulation.CurrentGeneration)
-            {
-                Console.WriteLine(((IntegerSolution)i).Number);
-            }
-
-            Console.WriteLine("------------------");
         }
     }
 }

@@ -28,11 +28,20 @@
         /// <param name="other"> The other population (infeasible or feasible). </param>
         /// <param name="na"> The novel archive. </param>
         /// <param name="r"> The random used in mutation. </param>
+        /// <param name="numberOfChildren">The number of children to generate.</param>
         /// <returns> The list of solutions in the next generation. </returns>
-        public override List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r)
+        public override List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r, int numberOfChildren)
         {
-            var children = this.CurrentGeneration.Select(individual => (MapSolution)individual.Mutate(r)).ToList();
+            var children = new List<MapSolution>();
 
+            if (this.CurrentGeneration.Count > 0)
+            {
+                for (var i = 0; i < numberOfChildren; i++)
+                {
+                    children.Add((MapSolution)this.CurrentGeneration[i % this.CurrentGeneration.Count].Mutate(r));
+                }
+            }
+            
             var allIndividuals = this.CurrentGeneration.ToList();
             allIndividuals.AddRange(children);
 

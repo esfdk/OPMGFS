@@ -22,7 +22,8 @@
         /// <param name="noveltySearchOptions">
         /// The novelty Search Options.
         /// </param>
-        public MapSearcher(Random r, MapSearchOptions mapSearchOptions, NoveltySearchOptions noveltySearchOptions) : base(r)
+        public MapSearcher(Random r, MapSearchOptions mapSearchOptions, NoveltySearchOptions noveltySearchOptions)
+            : base(r)
         {
             this.MapSearchOptions = mapSearchOptions;
             this.NoveltySearchOptions = noveltySearchOptions;
@@ -104,31 +105,11 @@
         /// </summary>
         /// <param name="generations">Number of generations to run.</param>
         public void RunGenerations(int generations)
-        {   
+        {
             for (var i = 0; i < generations; i++)
             {
                 this.NextGeneration();
             }
-        }
-
-        /// <summary>
-        /// Advances the search to the next generation.
-        /// </summary>
-        protected override void NextGeneration()
-        {
-            var infeasibleIndividuals = FeasiblePopulation.AdvanceGeneration(
-                new NoveltySearchOptions(),
-                InfeasiblePopulation,
-                Archive,
-                Random);
-            var feasibleIndividuals = InfeasiblePopulation.AdvanceGeneration(
-                new NoveltySearchOptions(),
-                FeasiblePopulation,
-                Archive,
-                Random);
-
-            FeasiblePopulation.CurrentGeneration.AddRange(feasibleIndividuals);
-            InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);    
         }
     }
 }

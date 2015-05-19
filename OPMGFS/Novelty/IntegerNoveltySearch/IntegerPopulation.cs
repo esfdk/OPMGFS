@@ -26,9 +26,15 @@
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
-        public override List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r)
+        public override List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r, int numberOfChildren)
         {
-            var children = this.CurrentGeneration.Select(individual => (IntegerSolution)individual.Mutate(r)).ToList();
+            var children = new List<Solution>();
+
+            for (var i = 0; i < numberOfChildren; i++)
+            {
+                children.Add(this.CurrentGeneration[i % this.CurrentGeneration.Count].Mutate(r));
+            }
+            
             var allIndividuals = this.CurrentGeneration.ToList();
             allIndividuals.AddRange(children);
 

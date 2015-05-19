@@ -45,7 +45,8 @@
         /// <param name="other"> The other population.</param>
         /// <param name="na">The Archive of novel solutions.</param>
         /// <param name="r">The random generator to use.</param>
+        /// <param name="numberOfChildren">The number of children to generate.</param>
         /// <returns>The children that are not part of this feasible/infeasible set.</returns>
-        public abstract List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r);
+        public abstract List<Solution> AdvanceGeneration(NoveltySearchOptions nso, Population other, NovelArchive na, Random r, int numberOfChildren);
     }
 }

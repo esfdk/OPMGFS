@@ -29,9 +29,7 @@
             ////TestMapNoveltySearch();
             ////TestFitness();
             ////TestPathfinding();
-
-            GenerateImages();
-            return;
+            ////GenerateImages();
 
             var sw = new Stopwatch();
             sw.Start();
@@ -48,12 +46,14 @@
             Console.WriteLine("------");
             sw.Restart();
             for (var i = 0; i < maps.Count; i++) maps[i].SaveMapToPngFile(string.Format("{0}", i));
-
+            
+            /*
             Console.WriteLine("Starting evolution");
             RunEvolution(maps, new Random(0), numberOfGenerations: 5, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
             Console.WriteLine("Evolution done. It took  {0} milliseconds to perform evolution.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
+            */
 
             Console.WriteLine("Starting novelty search.");
             var nso = new NoveltySearchOptions(

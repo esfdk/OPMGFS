@@ -618,21 +618,27 @@
                         break;
                     case Enums.MapPointType.Ramp:
                         placed = PlaceRamp(xPos, yPos, newMap);
+                        
+                        var cliffPos = newMap.CliffPositions.ToList();
 
-                        var displacementAttempts = 0;
-                        while (!placed)
+                        if (cliffPos.Count > 0)
                         {
-                            var cliffPos = newMap.CliffPositions.ToList();
-                            var hash = Math.Abs((mp.Degree * mp.Distance).GetHashCode());
-                            var index = (hash + displacementAttempts) % cliffPos.Count;
-                            var pos = cliffPos[index];
-                            placed = PlaceRamp(pos.Item1, pos.Item2, newMap);
-                            displacementAttempts += mso.DisplacementAmountPerStep;
-                            if (displacementAttempts > mso.MaximumDisplacement)
+                            var displacementAttempts = 0;
+                            while (!placed)
                             {
-                                break;
+
+                                var hash = Math.Abs((mp.Degree * mp.Distance).GetHashCode());
+                                var index = (hash + displacementAttempts) % cliffPos.Count;
+                                var pos = cliffPos[index];
+                                placed = PlaceRamp(pos.Item1, pos.Item2, newMap);
+                                displacementAttempts += mso.DisplacementAmountPerStep;
+                                if (displacementAttempts > mso.MaximumDisplacement)
+                                {
+                                    break;
+                                }
                             }
                         }
+                        
 
                         mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;
