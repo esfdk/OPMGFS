@@ -136,6 +136,10 @@
             return false;
         }
 
+        /// <summary>
+        /// Gets a list that contains all the fitness values.
+        /// </summary>
+        /// <returns> A list containing the fitness values. </returns>
         public List<double> FitnessList()
         {
             var list = new List<double>

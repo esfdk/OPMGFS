@@ -41,7 +41,6 @@ namespace OPMGFS.Evolution
         {
             this.MutationChance = mutationChance;
             this.Random = r;
-            this.fitnessCalculated = fitnessCalculated;
         }
 
         /// <summary>

@@ -296,7 +296,12 @@
             return candidates;
         }
 
+        #region NSGA-II
 
+        /// <summary>
+        /// Runs the NSGA-II evolution.
+        /// </summary>
+        /// <returns> The best map found. </returns>
         public EvolvableMap RunEvolution()
         {
             var sw = new Stopwatch();
@@ -366,6 +371,10 @@
             return best[0].Map;
         }
 
+        /// <summary>
+        /// Calculates the fitness for every solution in the given population.
+        /// </summary>
+        /// <param name="pop"> The population to evaluate. </param>
         private void EvaluatePopulation(List<MOEASolution> pop)
         {
             foreach (var moeaSolution in pop)
@@ -519,27 +528,15 @@
             return fronts;
         }
 
-
+        /// <summary>
+        /// A class that represents a solution in the multi-objective evolutionary algorithm search.
+        /// </summary>
         private class MOEASolution
         {
-            public int Rank { get; set; }
-
-            public int DominationCount { get; set; }
-
-            public double Distance { get; set; }
-
-            public EvolvableMap Map { get; set; }
-
-            public List<double> MapFitnessValuesList 
-            { 
-                get
-                {
-                    return this.Map.MapFitnessValues.FitnessList();
-                } 
-            }
-
-            public List<MOEASolution> DominatedSolutions { get; set; }
-
+            /// <summary>
+            /// Initializes a new instance of the <see cref="MOEASolution"/> class. 
+            /// </summary>
+            /// <param name="map"> The map to represent. </param>
             public MOEASolution(EvolvableMap map)
             {
                 this.Rank = 0;
@@ -549,15 +546,53 @@
                 this.DominatedSolutions = new List<MOEASolution>();
             }
 
-            public bool IsDominatedBy(MOEASolution other)
-            {
-                return this.Map.IsDominatedBy(other.Map);
+            /// <summary>
+            /// Gets or sets the rank (the front) of the solution.
+            /// </summary>
+            public int Rank { get; set; }
+
+            /// <summary>
+            /// Gets or sets the number of other solutions that dominate this solution.
+            /// </summary>
+            public int DominationCount { get; set; }
+
+            /// <summary>
+            /// Gets or sets the crowding distance of this solution.
+            /// </summary>
+            public double Distance { get; set; }
+
+            /// <summary>
+            /// Gets the map the solution represents.
+            /// </summary>
+            public EvolvableMap Map { get; private set; }
+
+            /// <summary>
+            /// Gets the list of map fitness values.
+            /// </summary>
+            public List<double> MapFitnessValuesList 
+            { 
+                get
+                {
+                    return this.Map.MapFitnessValues.FitnessList();
+                } 
             }
 
+            /// <summary>
+            /// Gets or sets the list of solutions dominated by this solution.
+            /// </summary>
+            public List<MOEASolution> DominatedSolutions { get; set; }
+
+            /// <summary>
+            /// Determines if this solution dominates the other given solution.
+            /// </summary>
+            /// <param name="other"> The solution to check for dominance. </param>
+            /// <returns> True if this solution dominates the other solution; false otherwise. </returns>
             public bool Dominates(MOEASolution other)
             {
                 return this.Map.Dominates(other.Map);
             }
         }
+
+        #endregion
     }
 }
