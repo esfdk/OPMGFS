@@ -27,24 +27,24 @@
 \contentsline {subsubsection}{Impassable Terrain Generation}{18}{equation.4.5.2}
 \contentsline {section}{\numberline {4.6}Evolution}{18}{section.4.6}
 \contentsline {section}{\numberline {4.7}Multi-Objective Evolutionary Algorithm}{19}{section.4.7}
-\contentsline {section}{\numberline {4.8}Map Fitness}{19}{section.4.8}
+\contentsline {section}{\numberline {4.8}Map Fitness}{20}{section.4.8}
 \contentsline {subsection}{\numberline {4.8.1}Preserving Speed}{20}{subsection.4.8.1}
 \contentsline {subsection}{\numberline {4.8.2}Parts of the Fitness Function}{21}{subsection.4.8.2}
 \contentsline {subsection}{\numberline {4.8.3}Penalty Function}{22}{subsection.4.8.3}
-\contentsline {section}{\numberline {4.9}Constrained Novelty Search}{22}{section.4.9}
+\contentsline {section}{\numberline {4.9}Constrained Novelty Search}{23}{section.4.9}
 \contentsline {subsection}{\numberline {4.9.1}Distance to Feasibility Measure}{23}{subsection.4.9.1}
 \contentsline {subsection}{\numberline {4.9.2}Novelty Measure}{23}{subsection.4.9.2}
 \contentsline {section}{\numberline {4.10}Initialising Evolution With Novel Individuals}{23}{section.4.10}
-\contentsline {chapter}{\numberline {5}Results}{24}{chapter.5}
-\contentsline {section}{\numberline {5.1}Speed}{24}{section.5.1}
-\contentsline {section}{\numberline {5.2}Quality}{24}{section.5.2}
-\contentsline {section}{\numberline {5.3}Novelty}{24}{section.5.3}
-\contentsline {section}{\numberline {5.4}Subjective Measure}{24}{section.5.4}
-\contentsline {chapter}{\numberline {6}Discussion}{25}{chapter.6}
-\contentsline {section}{\numberline {6.1}Speed}{25}{section.6.1}
-\contentsline {section}{\numberline {6.2}Quality}{25}{section.6.2}
-\contentsline {section}{\numberline {6.3}Novelty}{25}{section.6.3}
-\contentsline {section}{\numberline {6.4}Novelty Search vs Evolution}{25}{section.6.4}
-\contentsline {chapter}{\numberline {7}Future Work}{26}{chapter.7}
-\contentsline {chapter}{\numberline {8}Conclusion}{27}{chapter.8}
+\contentsline {chapter}{\numberline {5}Results}{25}{chapter.5}
+\contentsline {section}{\numberline {5.1}Speed}{25}{section.5.1}
+\contentsline {section}{\numberline {5.2}Quality}{25}{section.5.2}
+\contentsline {section}{\numberline {5.3}Novelty}{25}{section.5.3}
+\contentsline {section}{\numberline {5.4}Subjective Measure}{25}{section.5.4}
+\contentsline {chapter}{\numberline {6}Discussion}{26}{chapter.6}
+\contentsline {section}{\numberline {6.1}Speed}{26}{section.6.1}
+\contentsline {section}{\numberline {6.2}Quality}{26}{section.6.2}
+\contentsline {section}{\numberline {6.3}Novelty}{26}{section.6.3}
+\contentsline {section}{\numberline {6.4}Novelty Search vs Evolution}{26}{section.6.4}
+\contentsline {chapter}{\numberline {7}Future Work}{27}{chapter.7}
+\contentsline {chapter}{\numberline {8}Conclusion}{28}{chapter.8}
 \contentsfinish 
