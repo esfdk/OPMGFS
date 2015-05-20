@@ -181,12 +181,12 @@
 
             var baseSpace = this.BaseSpace();
             var baseHeight = this.BaseHeightLevel();
-            var newHeightReached = this.NewHeightReached();
             var pathBetweenStartBasesFitness = this.PathBetweenStartBases();
-            var chokePoints = this.ChokePoints();
+            var newHeightReached = this.NewHeightReached();
             var distanceToNaturalExpansion = this.DistanceToNaturalExpansion();
             var distanceToNonNaturalExpansions = this.DistanceToNonNaturalExpansions();
             var expansionsAvailable = this.ExpansionsAvailable();
+            var chokePoints = this.ChokePoints();
             var xelNagaPlacement = this.XelNagaPlacement();
             var startBaseOpeness = this.StartBaseOpeness();
             var baseOpeness = this.BaseOpeness();
@@ -194,15 +194,15 @@
             this.FitnessValues = new MapFitnessValues(
                 baseSpace,
                 baseHeight,
-                newHeightReached,
                 pathBetweenStartBasesFitness,
-                chokePoints,
+                newHeightReached,
                 distanceToNaturalExpansion,
                 distanceToNonNaturalExpansions,
-                startBaseOpeness,
-                baseOpeness,
+                expansionsAvailable,
+                chokePoints,
                 xelNagaPlacement,
-                expansionsAvailable);
+                startBaseOpeness,
+                baseOpeness);
 
             return this.FitnessValues.TotalFitness;
         }

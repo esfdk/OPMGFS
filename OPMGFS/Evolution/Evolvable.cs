@@ -16,6 +16,16 @@ namespace OPMGFS.Evolution
     /// </summary>
     public abstract class Evolvable
     {
+        /// <summary>
+        /// Determines if the fitness has been calculated or not.
+        /// </summary>
+        private bool fitnessCalculated;
+
+        /// <summary>
+        /// The total fitness.
+        /// </summary>
+        private double totalFitness;
+
         #region Constructors
 
         /// <summary>
@@ -47,9 +57,25 @@ namespace OPMGFS.Evolution
         #region Properties
 
         /// <summary>
-        /// Gets or sets the fitness of the object (CalculateFitness() must be called first)
+        /// Gets or sets the fitness of the object (if CalculateFitness() has not been called, it will).
         /// </summary>
-        public double Fitness { get; protected set; }
+        public double Fitness
+        {
+            get
+            {
+                if (this.fitnessCalculated)
+                    return this.totalFitness;
+
+                this.CalculateFitness();
+                this.fitnessCalculated = true;
+                return this.totalFitness;
+            }
+
+            protected set
+            {
+                this.totalFitness = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the chance of mutation happening.

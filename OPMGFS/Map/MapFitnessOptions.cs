@@ -460,5 +460,29 @@
                 this.PathExpDirectDistances = pathExpDirectDistances;
             }
         }
+
+        /// <summary>
+        /// Gets a list that contains the max value for every part.
+        /// </summary>
+        /// <returns> A list containing the max value for every part. </returns>
+        public List<double> MaxSignificanceList()
+        {
+            var list = new List<double>
+                           {
+                               this.BaseSpaceSignificance,
+                               this.BaseHeightSignificance,
+                               this.PathBetweenStartBasesSignificance,
+                               this.NewHeightReachedSignificance,
+                               this.DistanceToNaturalSignificance,
+                               this.DistanceToNaturalSignificance,
+                               this.ExpansionsAvailableSignificance,
+                               this.ChokePointsSignificance,
+                               this.XelNagaPlacementSignificance,
+                               this.StartBaseOpenessSignificance,
+                               this.BaseOpenessSignificance
+                           };
+
+            return list;
+        }
     }
 }
