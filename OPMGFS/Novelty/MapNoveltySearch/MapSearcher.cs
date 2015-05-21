@@ -1,6 +1,8 @@
 ﻿namespace OPMGFS.Novelty.MapNoveltySearch
 {
     using System;
+    using System.Diagnostics;
+    using System.Text;
 
     using OPMGFS.Map;
     using OPMGFS.Map.MapObjects;
@@ -109,6 +111,24 @@
             for (var i = 0; i < generations; i++)
             {
                 this.NextGeneration();
+            }
+        }
+
+        /// <summary>
+        /// Runs a number of generations to search for maps.
+        /// </summary>
+        /// <param name="generations">Number of generations to run.</param>
+        /// <param name="sb">The string builder to append timings to.</param>
+        public void RunGenerations(int generations, StringBuilder sb)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+
+            for (var i = 0; i < generations; i++)
+            {
+                this.NextGeneration();
+                sb.AppendLine(string.Format("\tIt took {0} ms to advance the novelty search to generation {1}.", sw.ElapsedMilliseconds, i + 1));
+                sw.Restart();
             }
         }
     }

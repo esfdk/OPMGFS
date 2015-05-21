@@ -11,7 +11,9 @@ namespace OPMGFS.Evolution
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
+    using System.Text;
 
     using OPMGFS.Map;
 
@@ -126,15 +128,45 @@ namespace OPMGFS.Evolution
             }
 
             return best;
+        }
 
-            // 1. Create initial population
-            // 2. Evaluate each candidate
-            // 3. For each generation:
-            //     a. Select parents
-            //     b. Create children
-            //     c. Evaluate children
-            //     d. Select individuals for next generation
-            // 4. Return the best result
+        /// <summary>
+        /// Starts, and handles, the evolution.
+        /// </summary>
+        /// <param name="sb">The string builder to write time to.</param>
+        /// <returns>The best individual at the end of the evolution.</returns>
+        public Evolvable Evolve(StringBuilder sb)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+
+            for (var i = 0; i < this.NumberOfGenerations; i++)
+            {
+                var candidates = this.SelectParents();
+                this.SpawnChildren(candidates);
+                this.EvaluatePopulation();
+                this.SelectPopulationForNextGeneration();
+
+                sb.AppendLine(string.Format("\tIt took {0} ms to advance the evolution to generation {1}.", sw.ElapsedMilliseconds, i + 1));
+
+                var pop = this.Population.OrderByDescending(s => s.Fitness).ToList();
+                var average = this.Population.Sum(s => s.Fitness) / this.Population.Count;
+                sb.AppendLine(string.Format("\t\t The highest fitness in the population is {0}", pop[0].Fitness));
+                sb.AppendLine(string.Format("\t\t The average fitness in the population is {0}", average));
+                sb.AppendLine(string.Format("\t\t The lowest fitness in the population is {0}", pop[this.Population.Count - 1].Fitness));
+
+                sw.Restart();
+            }
+
+            Evolvable best = null;
+
+            foreach (var individual in this.Population)
+            {
+                if (best == null) best = individual;
+                if (individual.Fitness > best.Fitness) best = individual;
+            }
+
+            return best;
         }
 
         /// <summary>
@@ -149,11 +181,38 @@ namespace OPMGFS.Evolution
         /// <summary>
         /// Initializes and evaluates the initial population.
         /// </summary>
+        /// <param name="sb">The string builder to append time to.</param>
+        public void Initialize(StringBuilder sb)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            this.GenerateInitialPopulation();
+            this.EvaluatePopulation();
+            sb.AppendLine(string.Format("\tIt took {0} ms to generate and evaluate initial population.", sw.ElapsedMilliseconds));
+        }
+
+        /// <summary>
+        /// Initializes and evaluates the initial population.
+        /// </summary>
         /// <param name="initialPopulation">The initial population to use.</param>
         public void Initialize(IEnumerable<T> initialPopulation)
         {
             this.Population.AddRange(initialPopulation);
             this.EvaluatePopulation();
+        }
+
+        /// <summary>
+        /// Initializes and evaluates the initial population.
+        /// </summary>
+        /// <param name="initialPopulation">The initial population to use.</param>
+        /// <param name="sb">The string builder to append time to.</param>
+        public void Initialize(IEnumerable<T> initialPopulation, StringBuilder sb)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            this.Population.AddRange(initialPopulation);
+            this.EvaluatePopulation();
+            sb.AppendLine(string.Format("\tIt took {0} ms to generate and evaluate initial population.", sw.ElapsedMilliseconds));
         }
 
         /// <summary>

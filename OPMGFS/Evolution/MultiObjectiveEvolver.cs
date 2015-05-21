@@ -181,6 +181,7 @@
                     }
                 }
             }
+
             Console.WriteLine("Finished evaluation. It took {0} milliseconds", sw.ElapsedMilliseconds);
         }
 

@@ -626,7 +626,6 @@
                             var displacementAttempts = 0;
                             while (!placed)
                             {
-
                                 var hash = Math.Abs((mp.Degree * mp.Distance).GetHashCode());
                                 var index = (hash + displacementAttempts) % cliffPos.Count;
                                 var pos = cliffPos[index];
@@ -638,7 +637,6 @@
                                 }
                             }
                         }
-                        
 
                         mp.WasPlaced = placed ? Enums.WasPlaced.Yes : Enums.WasPlaced.No;
                         break;

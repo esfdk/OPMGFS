@@ -39,14 +39,14 @@
         {
             get
             {
-                if (!totalFitnessCalculated)
+                if (!this.totalFitnessCalculated)
                 {
-                    totalFitness = this.CalculateTotalFitness();
-                    totalFitnessCalculated = true;
-                    return totalFitness;
+                    this.totalFitness = this.CalculateTotalFitness();
+                    this.totalFitnessCalculated = true;
+                    return this.totalFitness;
                 }
 
-                return totalFitness;
+                return this.totalFitness;
             }
         }
 
