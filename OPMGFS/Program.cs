@@ -29,7 +29,7 @@
             sw.Start();
 
             var list = new List<int>();
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i < 10; i++)
             {
                 list.Add(i);
             }
@@ -42,7 +42,7 @@
             Console.WriteLine("------");
             sw.Restart();
             for (var i = 0; i < maps.Count; i++) maps[i].SaveMapToPngFile(string.Format("{0}", i), itemMap: false);
-            
+
             Console.WriteLine("Starting evolution");
             RunEvolution(maps, random, numberOfGenerations: 1, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
             Console.WriteLine("Evolution done. It took  {0} milliseconds to perform evolution.", sw.ElapsedMilliseconds);
@@ -466,8 +466,8 @@
 
         public static List<MapPhenotype> GetBaseMaps(
             int mapSize = 128,
-            double oddsOfHeight = 0.5,
-            double oddsOfHeight2 = 0.25,
+            double oddsOfHeight = 0.4,
+            double oddsOfHeight2 = 0.2,
             int maxRangeToGroupPoints = 15,
             int groupPoints = 3,
             bool generateHeight2 = true,
@@ -532,6 +532,7 @@
                     ca.CreateImpassableTerrain(sections, maxLength, placementIntervals, maxPathNoiseDisplacement, maxWidth);
 
                     ca.RunGenerations(caGenerations, generateHeight2ThroughRules);
+                    
                     var map = new MapPhenotype(ca.Map, new Enums.Item[mapSize, mapSize]);
                     map.SmoothTerrain(smoothingNormalNeighbourhood, smoothingExtNeighbourhood, smoothingGenerations, smoothingRuleSet, random);
                     map.PlaceCliffs();

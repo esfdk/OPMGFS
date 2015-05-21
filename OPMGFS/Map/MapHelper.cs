@@ -269,7 +269,7 @@ namespace OPMGFS.Map
         public static int ClosestTo(Position pos, IEnumerable<Position> positions, int range = 3)
         {
             var closestRange = 100000;
-            foreach (var position in positions.Where(position => CloseTo(pos, position)))
+            foreach (var position in positions.Where(position => CloseTo(pos, position, range)))
             {
                 if (Math.Abs(pos.Item1 - position.Item1) < closestRange) closestRange = Math.Abs(pos.Item1 - position.Item1);
                 if (Math.Abs(pos.Item2 - position.Item2) < closestRange) closestRange = Math.Abs(pos.Item2 - position.Item2);
