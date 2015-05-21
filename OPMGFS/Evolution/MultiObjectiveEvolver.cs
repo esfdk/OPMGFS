@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Text;
 
     using OPMGFS.Map;
 
@@ -14,8 +15,6 @@
         public MultiObjectiveEvolver(
             int numberOfGenerations,
             int populationSize,
-            int numberOfParents,
-            int numberOfChildren,
             double mutationChance,
             Random r,
             MapSearchOptions mso,
@@ -28,8 +27,6 @@
 
             this.NumberOfGenerations = numberOfGenerations;
             this.PopulationSize = populationSize;
-            this.NumberOfParents = numberOfParents;
-            this.NumberOfChildren = numberOfChildren;
             this.MutationChance = mutationChance;
         }
 
@@ -54,16 +51,6 @@
         private int PopulationSize { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of parents to choose for populating a new generation.
-        /// </summary>
-        private int NumberOfParents { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of children to spawn during evolution.
-        /// </summary>
-        private int NumberOfChildren { get; set; }
-
-        /// <summary>
         /// Gets or sets the chance of mutation happening.
         /// </summary>
         private double MutationChance { get; set; }
@@ -72,248 +59,24 @@
 
         private MapFitnessOptions MapFitnessOptions { get; set; }
 
-        /// <summary>
-        /// Starts, and handles, the evolution.
-        /// </summary>
-        /// <returns>The best individual at the end of the evolution.</returns>
-        public Evolvable Evolve()
-        {
-            for (var i = 0; i < this.NumberOfGenerations; i++)
-            {
-                Console.WriteLine("Starting generation {0}", i);
-                var candidates = this.SelectParents();
-                this.SpawnChildren(candidates);
-                this.EvaluatePopulation();
-                this.SelectPopulationForNextGeneration();
-            }
-
-            Evolvable best = null;
-
-            foreach (var individual in this.Population)
-            {
-                if (best == null) best = individual;
-                if (individual.Fitness > best.Fitness) best = individual;
-            }
-
-            return best;
-        }
-
-        /// <summary>
-        /// Initializes and evaluates the initial population.
-        /// </summary>
-        public void Initialize()
-        {
-            this.GenerateInitialPopulation();
-            this.EvaluatePopulation();
-        }
-
-        /// <summary>
-        /// Initializes and evaluates the initial population.
-        /// </summary>
-        /// <param name="initialPopulation">The initial population to use.</param>
-        public void Initialize(IEnumerable<EvolvableMap> initialPopulation)
-        {
-            this.Population.AddRange(initialPopulation);
-            this.EvaluatePopulation();
-        }
-
-        /// <summary>
-        /// Generates the initial population for the evolution.
-        /// </summary>
-        private void GenerateInitialPopulation()
-        {
-            for (var i = 0; i < this.PopulationSize; i++)
-            {
-                var temp = new EvolvableMap(this.MapSearchOptions, this.MutationChance, this.Random, this.MapFitnessOptions);
-                temp.InitializeObject();
-                this.Population.Add(temp);
-            }
-        }
-
-        /// <summary>
-        /// Evaluates every individual in the population.
-        /// </summary>
-        private void EvaluatePopulation()
-        {
-            mapsDominatedByDictionary = new Dictionary<EvolvableMap, List<EvolvableMap>>();
-            Console.WriteLine("Starting evaluation of population");
-            var sw = new Stopwatch();
-            sw.Start();
-            foreach (var individual in this.Population)
-            {
-                individual.CalculateFitness();
-            }
-
-            for (var i = 0; i < this.Population.Count; i++)
-            {
-                var map1 = this.Population[i];
-                List<EvolvableMap> map1List;
-
-                if (!this.mapsDominatedByDictionary.TryGetValue(map1, out map1List))
-                {
-                    map1List = new List<EvolvableMap>();
-                    this.mapsDominatedByDictionary[map1] = map1List;
-                }
-
-                for (var j = i; j < this.Population.Count; j++)
-                {
-                    if (i == j)
-                    {
-                        continue;
-                    }
-
-                    var map2 = this.Population[j];
-                    List<EvolvableMap> map2List;
-
-                    if (!this.mapsDominatedByDictionary.TryGetValue(map2, out map2List))
-                    {
-                        map2List = new List<EvolvableMap>();
-                        this.mapsDominatedByDictionary[map2] = map2List;
-                    }
-
-                    if (map1.IsDominatedBy(map2))
-                    {
-                        map1List.Add(map2);
-                    }
-                    else if (map2.IsDominatedBy(map1))
-                    {
-                        map2List.Add(map1);
-                    }
-                }
-            }
-            Console.WriteLine("Finished evaluation. It took {0} milliseconds", sw.ElapsedMilliseconds);
-        }
-
-        /// <summary>
-        /// Selects the candidates to spawn children from.
-        /// </summary>
-        /// <returns>A list containing the candidates.</returns>
-        private List<EvolvableMap> SelectParents()
-        {
-            Console.WriteLine("Selecting parents");
-            return this.SelectLeastDominatedIndividuals(this.NumberOfParents);
-        }
-
-        /// <summary>
-        /// Spawns children from the candidates chosen and adds them directly to the population.
-        /// </summary>
-        /// <param name="candidates">A list of the candidates to create children from.</param>
-        private void SpawnChildren(List<EvolvableMap> candidates)
-        {
-            Console.WriteLine("Spawning Children");
-            for (var i = 0; i < this.NumberOfChildren; i++)
-            {
-                var tempChild = (EvolvableMap)candidates[i % this.NumberOfParents].SpawnMutation();
-
-                this.Population.Add(tempChild);
-            }
-        }
-
-        /// <summary>
-        /// Selects the population for the next generation from among the current population.
-        /// </summary>
-        private void SelectPopulationForNextGeneration()
-        {
-            Console.WriteLine("Selecting population for next generation");
-            this.Population = this.SelectLeastDominatedIndividuals(this.PopulationSize);
-        }
-
-        private List<EvolvableMap> SelectLeastDominatedIndividuals(int amountToFind)
-        {
-            var candidates = new List<EvolvableMap>();
-
-            while (candidates.Count < amountToFind)
-            {
-                var nonDominatedMapFound = false;
-                foreach (var map in this.mapsDominatedByDictionary.Where(map => map.Value.Count == 0))
-                {
-                    candidates.Add(map.Key);
-                    if (candidates.Count >= amountToFind)
-                    {
-                        return candidates;
-                    }
-
-                    nonDominatedMapFound = true;
-                }
-
-                foreach (var parent in candidates)
-                {
-                    this.mapsDominatedByDictionary.Remove(parent);
-                    foreach (var map in this.mapsDominatedByDictionary)
-                    {
-                        map.Value.Remove(parent);
-                    }
-                }
-
-                if (!nonDominatedMapFound)
-                {
-                    break;
-                }
-            }
-
-            while (candidates.Count < amountToFind)
-            {
-                var numberOfDominaters = this.PopulationSize + 1;
-                EvolvableMap leastDominatedMap = null;
-                var fitness = double.NegativeInfinity;
-
-                foreach (var map in this.mapsDominatedByDictionary)
-                {
-                    var dominators = map.Value.Count;
-
-                    if (dominators < numberOfDominaters)
-                    {
-                        leastDominatedMap = map.Key;
-                        fitness = map.Key.Fitness;
-                        numberOfDominaters = dominators;
-                    }
-
-                    if (dominators == numberOfDominaters)
-                    {
-                        if (map.Key.Fitness > fitness)
-                        {
-                            leastDominatedMap = map.Key;
-                            fitness = map.Key.Fitness;
-                            numberOfDominaters = dominators;
-                        }
-                    }
-                }
-
-                if (leastDominatedMap == null)
-                {
-                    throw new Exception("Could not find a least dominated map.");
-                }
-
-                candidates.Add(leastDominatedMap);
-
-                this.mapsDominatedByDictionary.Remove(leastDominatedMap);
-                foreach (var map in this.mapsDominatedByDictionary)
-                {
-                    map.Value.Remove(leastDominatedMap);
-                }
-            }
-
-            return candidates;
-        }
-
         #region NSGA-II
 
         /// <summary>
         /// Runs the NSGA-II evolution.
         /// </summary>
         /// <returns> The best map found. </returns>
-        public EvolvableMap RunEvolution()
+        public EvolvableMap RunEvolution(StringBuilder sb = null)
         {
             var sw = new Stopwatch();
             sw.Start();
 
-            Console.WriteLine("Creating initial populations");
             var parents = this.CreateInitialPopulation();
             this.EvaluatePopulation(parents);
             var offspringPopulation = this.MakeNewPopulation(parents);
             this.EvaluatePopulation(offspringPopulation);
-            Console.WriteLine("Initial population took {0} ms to create and evaluate", sw.ElapsedMilliseconds);
-            Console.WriteLine("----------------------");
+
+            if (sb != null) sb.AppendLine(string.Format("\tInitial population took {0} ms to create and evaluate", sw.ElapsedMilliseconds));
+            if (sb != null) sb.AppendLine();
 
             List<MOEASolution> combinedPopulation;
             List<List<MOEASolution>> nonDominatedFronts;
@@ -322,7 +85,7 @@
             for (var generation = 0; generation < this.NumberOfGenerations; generation++)
             {
                 sw.Restart();
-                Console.WriteLine("Starting generation {0}", generation);
+
                 // Combine the parents and offspring
                 combinedPopulation = new List<MOEASolution>();
                 combinedPopulation.AddRange(parents);
@@ -355,15 +118,32 @@
 
                 parents = nextParents;
                 offspringPopulation = this.MakeNewPopulation(parents);
+
+                var generationTime = sw.ElapsedMilliseconds;
+
                 this.EvaluatePopulation(offspringPopulation);
-                Console.WriteLine("Generation {0} took {1} ms to run", generation, sw.ElapsedMilliseconds);
-                Console.WriteLine("----------------------");
+
+                if (sb != null) sb.AppendLine(string.Format("\tGeneration {0} took {1} ms to run. {2} ms was spent on evaluating new offspring, {3} on the evolution itself.", generation, sw.ElapsedMilliseconds, sw.ElapsedMilliseconds - generationTime, generationTime));
+                var fitnessValues = new List<double>();
+                fitnessValues.AddRange(parents.Select(x => x.Map.Fitness));
+                fitnessValues.AddRange(offspringPopulation.Select(x => x.Map.Fitness));
+                fitnessValues = fitnessValues.OrderByDescending(x => x).ToList();
+
+                if (sb != null) sb.AppendLine(string.Format("\t\tHighest Fitness: {0}", fitnessValues[0]));
+                if (sb != null) sb.AppendLine(string.Format("\t\tAverage Fitness: {0}", fitnessValues.Sum(x => x) / fitnessValues.Count));
+                if (sb != null) sb.AppendLine(string.Format("\t\tLowest Fitness:  {0}", fitnessValues[fitnessValues.Count - 1]));
+                if (sb != null) sb.AppendLine();
             }
 
             //// Select best result
             combinedPopulation = new List<MOEASolution>();
             combinedPopulation.AddRange(parents);
             combinedPopulation.AddRange(offspringPopulation);
+
+            foreach (var moeaSolution in combinedPopulation)
+            {
+                this.Population.Add(moeaSolution.Map);
+            }
 
             // Sort the combination
             nonDominatedFronts = this.FastNonDominatedSearch(combinedPopulation);

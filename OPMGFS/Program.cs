@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
+    using System.Text;
 
     using OPMGFS.Evolution;
     using OPMGFS.Map;
@@ -32,7 +33,7 @@
             ////TestMOEA();
 
             ////GenerateImages();
-            return;
+            ////return;
 
             var sw = new Stopwatch();
             sw.Start();
@@ -58,6 +59,15 @@
             sw.Restart();
             */
 
+            
+            Console.WriteLine("Starting multiobjective evolution");
+            RunMultiobjectiveEvolution(maps, new Random(0), numberOfGenerations: 10, populationSize: 25);
+            Console.WriteLine("Multiobjective evolution done. It took {0} milliseconds.", sw.ElapsedMilliseconds);
+            Console.WriteLine("------");
+            sw.Restart();
+            
+
+            /*
             Console.WriteLine("Starting novelty search.");
             var nso = new NoveltySearchOptions(
                 addToArchive: 5,
@@ -67,6 +77,7 @@
             Console.WriteLine("Novelty search done. It took {0} milliseconds to perform novelty search.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
+             * */
 
             ////var baseMaps = GetBaseMaps(groupPoints: 4, caGenerations: 0, smoothingGenerations: 0, caRandomSeeds: new List<int> { 100001 });
             ////baseMaps[0].SaveMapToPngFile("baseMap1", "bm", itemMap: false);
@@ -160,8 +171,6 @@
             var moea = new MultiObjectiveEvolver(
                 10,
                 25,
-                3,
-                10,
                 0.3,
                 random,
                 new MapSearchOptions(map),
@@ -881,6 +890,66 @@
 
                 baseMapCounter++;
             }
+        }
+        private static void RunMultiobjectiveEvolution(
+            List<MapPhenotype> maps,
+            Random r,
+            MapSearchOptions mapSearchOptions = null,
+            MapFitnessOptions mapFitnessOptions = null,
+            int numberOfGenerations = 10,
+            int populationSize = 10,
+            double mutationChance = 0.3,
+            string folderName = "MapMultiObjectiveEvolution",
+            string fileToWriteTo = "MultiObjectiveEvolutionGenerationTimes.txt",
+            double lowestFitnessLevelForPrint = double.MinValue)
+        {
+            var sb = new StringBuilder();
+            var sw = new Stopwatch();
+
+            var mso = mapSearchOptions ?? new MapSearchOptions(null);
+            var mfo = mapFitnessOptions ?? new MapFitnessOptions();
+            var baseMapCounter = 0;
+            foreach (var map in maps)
+            {
+                sw.Restart();
+                sb.AppendLine(string.Format("Starting evolution for base map number {0}", baseMapCounter));
+
+                var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
+                var items = map.MapItems.Clone() as Enums.Item[,];
+                var baseMap = new MapPhenotype(heightLevels, items);
+                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
+                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
+
+                mso = new MapSearchOptions(map, mso);
+                var evolver = new MultiObjectiveEvolver(
+                    numberOfGenerations,
+                    populationSize,
+                    mutationChance,
+                    r,
+                    mso,
+                    mfo);
+                
+                evolver.RunEvolution(sb);
+
+                var variationValue = 0;
+
+                foreach (var individual in evolver.Population)
+                {
+                    variationValue++;
+                    if (individual.Fitness >= lowestFitnessLevelForPrint)
+                    {
+                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Base Map {0}_Map {1}_Fitness {2}", baseMapCounter, variationValue, individual.Fitness), folderName, false);
+                    }
+                }
+
+                sb.AppendLine(string.Format("Evolution for base map number {0} took {1} ms", baseMapCounter, sw.ElapsedMilliseconds));
+                baseMapCounter++;
+            }
+
+            // TODO: Needs to write to file
+
+            Console.WriteLine(sb.ToString());
+
         }
 
         private static void RunNoveltySearch(
