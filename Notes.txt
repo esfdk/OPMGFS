@@ -49,6 +49,8 @@ Notes:
 	Seed evolution with both most novel solutions and novel solutions that have the highest fitness
 	Novelty evaluation of final maps is done by comparing tile by tile
 	Discuss reduction in number of objectives (potentially combining them ?)
+	Xel'Naga Tower objective score is difficult to measure because there are many parts and there is no single specific value that makes for "better placement", only "different"
+	Consider bell curve for some fitness measures (e.g. path distance, direct distance, number of expansions)
 
 	MOEA:
 		Keep selecting non-dominated solutions until only dominated solutions are left. 

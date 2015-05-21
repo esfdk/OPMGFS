@@ -44,7 +44,7 @@
             for (var i = 0; i < maps.Count; i++) maps[i].SaveMapToPngFile(string.Format("{0}", i), itemMap: false);
             
             Console.WriteLine("Starting evolution");
-            RunEvolution(maps, random, numberOfGenerations: 5, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
+            RunEvolution(maps, random, numberOfGenerations: 1, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
             Console.WriteLine("Evolution done. It took  {0} milliseconds to perform evolution.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
@@ -88,9 +88,9 @@
             MapSearchOptions mapSearchOptions = null,
             MapFitnessOptions mapFitnessOptions = null,
             int numberOfGenerations = 10,
-            int populationSize = 10,
-            int numberOfParents = 3,
-            int numberOfChildren = 8,
+            int populationSize = 20,
+            int numberOfParents = 6,
+            int numberOfChildren = 16,
             double mutationChance = 0.3,
             Enums.SelectionStrategy selectionStrategy = Enums.SelectionStrategy.HighestFitness,
             Enums.SelectionStrategy parentSelectionStrategy = Enums.SelectionStrategy.HighestFitness,
@@ -159,7 +159,7 @@
             MapSearchOptions mapSearchOptions = null,
             MapFitnessOptions mapFitnessOptions = null,
             int numberOfGenerations = 10,
-            int populationSize = 10,
+            int populationSize = 25,
             double mutationChance = 0.3,
             string folderName = "MapMultiObjectiveEvolution",
             string fileToWriteTo = "MultiObjectiveEvolutionGenerationTimes.txt",
@@ -280,11 +280,11 @@
             int numberOfNoveltyGenerations = 10,
             int numberOfEvolutionGenerations = 10,
             int numberOfMOEAGenerations = 10,
-            int evolutionPopulationSize = 10,
-            int numberOfParents = 3,
-            int numberOfChildren = 8,
+            int evolutionPopulationSize = 20,
+            int numberOfParents = 6,
+            int numberOfChildren = 16,
             double evolutionMutationChance = 0.3,
-            int moeaPopulationSize = 10,
+            int moeaPopulationSize = 25,
             double moeaMutationChance = 0.3,
             Enums.SelectionStrategy selectionStrategy = Enums.SelectionStrategy.HighestFitness,
             Enums.SelectionStrategy parentSelectionStrategy = Enums.SelectionStrategy.HighestFitness,
@@ -332,7 +332,7 @@
 
             if (selectHighestFitness)
             {
-                stringToWrite.AppendLine(string.Format("Sorting initial population based by highest fitness.", baseMapCounter));
+                stringToWrite.AppendLine(string.Format("Sorting initial population based by highest fitness."));
                 foreach (var map in maps)
                 {
                     var evolvableMaps = new List<EvolvableMap>();
@@ -356,7 +356,7 @@
             }
             else
             {
-                stringToWrite.AppendLine(string.Format("Sorting initial population based by highest novelty.", baseMapCounter));
+                stringToWrite.AppendLine(string.Format("Sorting initial population based by highest novelty."));
                 foreach (var map in maps)
                 {
                     var evolvableMaps = new List<EvolvableMap>();
@@ -469,11 +469,11 @@
             double oddsOfHeight = 0.5,
             double oddsOfHeight2 = 0.25,
             int maxRangeToGroupPoints = 15,
-            int groupPoints = 0,
+            int groupPoints = 3,
             bool generateHeight2 = true,
             List<int> caRandomSeeds = null,
             List<Rule> caRuleset = null,
-            int sections = 0, 
+            int sections = 4, 
             int maxLength = 50, 
             double placementIntervals = 0.1, 
             int maxPathNoiseDisplacement = 3, 

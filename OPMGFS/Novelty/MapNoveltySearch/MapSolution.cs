@@ -302,7 +302,7 @@
             {
                 foreach (var targetPoint in target.MapPoints)
                 {
-                    dist += Math.Abs(mapPoint.Degree - targetPoint.Degree);
+                    dist += Math.Abs(((mapPoint.Degree - targetPoint.Degree) - MapSearchOptions.MinimumDegree) / (MapSearchOptions.MaximumDegree - MapSearchOptions.MinimumDegree));
                     dist += Math.Abs(mapPoint.Distance - targetPoint.Distance);
                 }
             }

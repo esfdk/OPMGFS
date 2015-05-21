@@ -328,51 +328,50 @@
         /// <param name="startBaseApproachDirectionMaximum"> The maximum number of directions that are open to approach for the start base </param>
         public MapFitnessOptions(
             bool pathfindingIgnoreDestructibleRocks = true,
-            int baseSpaceSignificance = 5, 
-            bool baseSpaceIgnoreDestructibleRocks = true,
-            int baseHeightSignificance = 5,
-            int pathBetweenStartBasesSignificance = 5, 
-            int pathStartMaxGroundDistance = 90, 
-            int pathStartMinGroundDistance = 20, 
-            int pathStartMaxDirectDistance = 80, 
-            int pathStartMinDirectDistance = 20,
-            int newHeightReachedSignificance = 5, 
-            int newHeightReachedMax = 6, 
+            int baseSpaceSignificance = 8, 
+            bool baseSpaceIgnoreDestructibleRocks = false,
+            int baseHeightSignificance = 9,
+            int pathBetweenStartBasesSignificance = 10, 
+            int pathStartMaxGroundDistance = 125, 
+            int pathStartMinGroundDistance = 90, 
+            int pathStartMaxDirectDistance = 90, 
+            int pathStartMinDirectDistance = 30,
+            int newHeightReachedSignificance = 3, 
+            int newHeightReachedMax = 4, 
             int newHeightReachedMin = 0,
-            int distanceToNaturalSignificance = 5,
+            int distanceToNaturalSignificance = 8,
             int pathNatMaxGroundDistance = 40,
-            int pathNatMinGroundDistance = 0,
+            int pathNatMinGroundDistance = 20,
             int pathNatMaxDirectDistance = 30, 
-            int pathNatMinDirectDistance = 0, 
+            int pathNatMinDirectDistance = 15, 
             int distanceToExpansionsSignificance = 5,
-            int pathExpMaxGroundDistance = 90,
-            int pathExpMinGroundDistance = 20,
+            int pathExpMaxGroundDistance = 110,
+            int pathExpMinGroundDistance = 50,
             List<Tuple<int, double>> pathExpMaxDistances = null,
-            int pathExpMaxDirectDistance = 80,
-            int pathExpMinDirectDistance = 20,
+            int pathExpMaxDirectDistance = 90,
+            int pathExpMinDirectDistance = 45,
             List<Tuple<int, double>> pathExpDirectDistances = null,
-            int expansionsAvailableSignificance = 5, 
+            int expansionsAvailableSignificance = 4, 
             int expansionsAvailableMax = 4, 
             int expansionsAvailableMin = 1,
-            int chokePointsSignificance = 5, 
+            int chokePointsSignificance = 6, 
             int chokePointsMax = 18, 
-            int chokePointsMin = 0, 
-            int chokePointsWidth = 2,
+            int chokePointsMin = 2, 
+            int chokePointsWidth = 3,
             int chokePointSearchStep = 1, 
             int xelNagaPlacementSignificance = 5, 
             int distanceToXelNaga = 22, 
             int stepsInXelNagaRangeMax = 30, 
             int stepsInXelNagaRangeMin = 0, 
-            int startBaseOpenessSignificance = 5, 
+            int startBaseOpenessSignificance = 6, 
             int baseOpenessSignificance = 3, 
-            int openStartBaseTilesMinimum = 10, 
-            int openStartBaseTilesMaximum = 85, 
+            int openStartBaseTilesMinimum = 15, 
+            int openStartBaseTilesMaximum = 50, 
             int openBaseTilesMinimum = 16, 
-            int openBaseTilesMaximum = 56, 
+            int openBaseTilesMaximum = 45, 
             int startBaseApproachDirectionMinimum = 1, 
             int startBaseApproachDirectionMaximum = 3)
         {
-            // TODO: Figure out good default values for this thing.
             this.PathfindingIgnoreDestructibleRocks = pathfindingIgnoreDestructibleRocks;
             this.BaseSpaceSignificance = baseSpaceSignificance;
             this.BaseSpaceIgnoreDestructibleRocks = baseSpaceIgnoreDestructibleRocks;
@@ -434,10 +433,10 @@
             { 
                 this.PathExpGroundDistances = new List<Tuple<int, double>> 
                         {
-                            new Tuple<int, double>(1, 0.3),
-                            new Tuple<int, double>(2, 0.5),
-                            new Tuple<int, double>(3, 0.7),
-                            new Tuple<int, double>(4, 0.9)
+                            new Tuple<int, double>(1, 0.25),
+                            new Tuple<int, double>(2, 0.40),
+                            new Tuple<int, double>(3, 0.55),
+                            new Tuple<int, double>(4, 0.70)
                         };
             }
             else
@@ -449,10 +448,10 @@
             {
                 this.PathExpDirectDistances = new List<Tuple<int, double>> 
                         {
-                            new Tuple<int, double>(1, 0.25),
-                            new Tuple<int, double>(2, 0.45),
-                            new Tuple<int, double>(3, 0.65),
-                            new Tuple<int, double>(4, 0.85)
+                            new Tuple<int, double>(1, 0.20),
+                            new Tuple<int, double>(2, 0.35),
+                            new Tuple<int, double>(3, 0.50),
+                            new Tuple<int, double>(4, 0.65)
                         };
             }
             else
