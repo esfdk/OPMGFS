@@ -19,7 +19,8 @@
         /// <param name="infeasibleSize">
         /// The infeasible size.
         /// </param>
-        public IntegerSearcher(Random r, int feasibleSize, int infeasibleSize) : base(r)
+        /// <param name="noveltySearchOptions">The options for this search.</param>
+        public IntegerSearcher(Random r, int feasibleSize, int infeasibleSize, NoveltySearchOptions noveltySearchOptions) : base(r, noveltySearchOptions)
         {
             this.FeasiblePopulation = new IntegerPopulation(true, feasibleSize);
             this.InfeasiblePopulation = new IntegerPopulation(false, infeasibleSize);

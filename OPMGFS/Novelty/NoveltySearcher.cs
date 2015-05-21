@@ -14,9 +14,11 @@
         /// <param name="random">
         /// The random object to use.
         /// </param>
-        protected NoveltySearcher(Random random)
+        /// <param name="noveltySearchOptions">The options for this novelty search.</param>
+        protected NoveltySearcher(Random random, NoveltySearchOptions noveltySearchOptions)
         {
             this.Random = random;
+            this.NoveltySearchOptions = noveltySearchOptions;
         }
 
         /// <summary>
@@ -40,51 +42,56 @@
         public NovelArchive Archive { get; protected set; }
 
         /// <summary>
+        /// Gets the options for this search.
+        /// </summary>
+        public NoveltySearchOptions NoveltySearchOptions { get; private set; }
+
+        /// <summary>
         /// Advances the search to the next generation.
         /// </summary>
         protected void NextGeneration()
         {
-            int totalPopulation = FeasiblePopulation.CurrentGeneration.Count
-                                  + InfeasiblePopulation.CurrentGeneration.Count;
-            int halfPopulationSize = totalPopulation % 2 == 0 ? (totalPopulation / 2) : (totalPopulation / 2) + 1;
+            var totalPopulation = this.FeasiblePopulation.CurrentGeneration.Count
+                                  + this.InfeasiblePopulation.CurrentGeneration.Count;
+            var halfPopulationSize = totalPopulation % 2 == 0 ? (totalPopulation / 2) : (totalPopulation / 2) + 1;
 
             List<Solution> feasibleIndividuals;
             List<Solution> infeasibleIndividuals;
 
             // If the feasible population is smaller than the infeasible population, apply the offspring boost mechanism.
-            if (FeasiblePopulation.CurrentGeneration.Count < InfeasiblePopulation.CurrentGeneration.Count)
+            if (this.FeasiblePopulation.CurrentGeneration.Count < this.InfeasiblePopulation.CurrentGeneration.Count)
             {
-                infeasibleIndividuals = FeasiblePopulation.AdvanceGeneration(
-                    new NoveltySearchOptions(), 
-                    InfeasiblePopulation, 
-                    Archive, 
-                    Random, 
+                infeasibleIndividuals = this.FeasiblePopulation.AdvanceGeneration(
+                    this.NoveltySearchOptions, 
+                    this.InfeasiblePopulation, 
+                    this.Archive, 
+                    this.Random, 
                     halfPopulationSize);
-                feasibleIndividuals = InfeasiblePopulation.AdvanceGeneration(
-                    new NoveltySearchOptions(), 
-                    FeasiblePopulation, 
-                    Archive, 
-                    Random, 
+                feasibleIndividuals = this.InfeasiblePopulation.AdvanceGeneration(
+                    this.NoveltySearchOptions, 
+                    this.FeasiblePopulation, 
+                    this.Archive, 
+                    this.Random, 
                     totalPopulation / 2);
             }
             else
             {
-                infeasibleIndividuals = FeasiblePopulation.AdvanceGeneration(
-                    new NoveltySearchOptions(), 
-                    InfeasiblePopulation, 
-                    Archive, 
-                    Random, 
-                    FeasiblePopulation.CurrentGeneration.Count);
-                feasibleIndividuals = InfeasiblePopulation.AdvanceGeneration(
-                    new NoveltySearchOptions(), 
-                    FeasiblePopulation, 
-                    Archive, 
-                    Random, 
-                    InfeasiblePopulation.CurrentGeneration.Count);
+                infeasibleIndividuals = this.FeasiblePopulation.AdvanceGeneration(
+                    this.NoveltySearchOptions, 
+                    this.InfeasiblePopulation, 
+                    this.Archive, 
+                    this.Random, 
+                    this.FeasiblePopulation.CurrentGeneration.Count);
+                feasibleIndividuals = this.InfeasiblePopulation.AdvanceGeneration(
+                    this.NoveltySearchOptions, 
+                    this.FeasiblePopulation, 
+                    this.Archive, 
+                    this.Random, 
+                    this.InfeasiblePopulation.CurrentGeneration.Count);
             }
 
-            FeasiblePopulation.CurrentGeneration.AddRange(feasibleIndividuals);
-            InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);
+            this.FeasiblePopulation.CurrentGeneration.AddRange(feasibleIndividuals);
+            this.InfeasiblePopulation.CurrentGeneration.AddRange(infeasibleIndividuals);
         }
     }
 }

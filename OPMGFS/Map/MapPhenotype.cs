@@ -618,6 +618,8 @@ namespace OPMGFS.Map
         {
             if (this.HeightLevels[x, y] != HeightLevel.Cliff)
             {
+                if (this.MapItems[x, y] != Item.None) return null;
+
                 var neighbours = MapHelper.GetNeighbours(x, y, this.HeightLevels, RuleEnums.Neighbourhood.VonNeumann);
                 if (neighbours[this.HeightLevels[x, y]] <= 1)
                 {

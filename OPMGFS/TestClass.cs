@@ -14,7 +14,7 @@
 
     using Position = System.Tuple<int, int>;
 
-    class TestClass
+    public class TestClass
     {
         #region Test Methods
         private static void TestEnclosedArea()
@@ -97,8 +97,6 @@
             var moea = new MultiObjectiveEvolver(
                 10,
                 25,
-                3,
-                10,
                 0.3,
                 random,
                 new MapSearchOptions(map),
@@ -137,8 +135,8 @@
 
             ////map.SmoothTerrain();
 
-            var start = new Tuple<int,int>(32, 32);
-            var end = new Tuple<int,int>(96, 96);
+            var start = new Tuple<int, int>(32, 32);
+            var end = new Tuple<int, int>(96, 96);
 
             map.SaveMapToPngFile();
 
@@ -759,6 +757,5 @@
             ////ms.RunGenerations(1);
         }
         #endregion
-
     }
 }

@@ -25,10 +25,9 @@
         /// The novelty Search Options.
         /// </param>
         public MapSearcher(Random r, MapSearchOptions mapSearchOptions, NoveltySearchOptions noveltySearchOptions)
-            : base(r)
+            : base(r, noveltySearchOptions)
         {
             this.MapSearchOptions = mapSearchOptions;
-            this.NoveltySearchOptions = noveltySearchOptions;
             this.FeasiblePopulation = new MapPopulation(true, noveltySearchOptions.FeasiblePopulationSize);
             this.InfeasiblePopulation = new MapPopulation(false, noveltySearchOptions.InfeasiblePopulationSize);
             this.Archive = new MapNovelArchive();
@@ -96,11 +95,6 @@
         /// Gets the options for this search.
         /// </summary>
         public MapSearchOptions MapSearchOptions { get; private set; }
-
-        /// <summary>
-        /// Gets the options for this search.
-        /// </summary>
-        public NoveltySearchOptions NoveltySearchOptions { get; private set; }
 
         /// <summary>
         /// Runs a number of generations to search for maps.
