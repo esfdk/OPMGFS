@@ -1,14 +1,11 @@
 TODO:
 	Grooss
 		Consider using genotype/phenotype to reduce confusion
-		MOEA
 		
 	Melnyk
-		Implement offspring boost (as option?)
 
 	Uassigned TODOs
 		Time limit on evolution/novelty search (and figure out what should be limit)
-		Figure out best values for ground map distances and other fitness values
 	
 	Low prio TODOs
 		Number of choke points seen by Xel'Naga towers

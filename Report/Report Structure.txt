@@ -86,7 +86,8 @@ Report
 	Discussion
 		Speed (is it fast enough?)
 			does it really have to be as fast as we demand? part of player skill in StarCraft is understanding the map
-		Quality (are the maps good enoguh?)
+		Quality (are the maps good enough?)
+			Compare to actual maps (e.g. Daybreak?)
 		Novelty (are generated maps novel compared to each other? Does the tool create too similar maps?)
 		Compare Novelty Search vs Evolution (their pros and cons and the benefits of using them together)
 
