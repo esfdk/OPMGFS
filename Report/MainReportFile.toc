@@ -53,5 +53,12 @@
 \contentsline {section}{\numberline {6.3}Novelty}{27}{section.6.3}
 \contentsline {section}{\numberline {6.4}Comparison of Approaches}{27}{section.6.4}
 \contentsline {chapter}{\numberline {7}Future Work}{28}{chapter.7}
-\contentsline {chapter}{\numberline {8}Conclusion}{29}{chapter.8}
+\contentsline {section}{\numberline {7.1}Complete Compatibility}{28}{section.7.1}
+\contentsline {subsubsection}{Layout Constraints}{28}{section.7.1}
+\contentsline {subsubsection}{File Format}{29}{figure.caption.7}
+\contentsline {section}{\numberline {7.2}Map Making Guidelines}{29}{section.7.2}
+\contentsline {section}{\numberline {7.3}Fitness Function Improvements}{29}{section.7.3}
+\contentsline {section}{\numberline {7.4}Feasibility Function Improvements}{29}{section.7.4}
+\contentsline {section}{\numberline {7.5}Pre-processing Base Maps}{30}{section.7.5}
+\contentsline {chapter}{\numberline {8}Conclusion}{31}{chapter.8}
 \contentsfinish 
