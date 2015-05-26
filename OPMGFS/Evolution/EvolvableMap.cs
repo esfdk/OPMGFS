@@ -119,6 +119,8 @@
         /// </summary>
         public override void CalculateFitness()
         {
+            if (this.FitnessCalculated) return;
+
             var mapFitness = new MapFitness(this.ConvertedPhenotype, this.MapFitnessOptions);
 
             this.Fitness = mapFitness.CalculateFitness();

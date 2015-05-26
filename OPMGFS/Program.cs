@@ -435,6 +435,7 @@
                 baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
                 baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
 
+                // ITODO: Shouldn't we use baseMap instead of map as parameter here? Same for normal evolution?
                 mso = new MapSearchOptions(map, mso);
                 var evolver = new MultiObjectiveEvolver(
                     numberOfMOEAGenerations,

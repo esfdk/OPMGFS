@@ -74,6 +74,23 @@ namespace OPMGFS.Evolution
             protected set
             {
                 this.totalFitness = value;
+                this.fitnessCalculated = true;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the fitness has been calculated or not.
+        /// </summary>
+        protected bool FitnessCalculated
+        {
+            get
+            {
+                return this.fitnessCalculated;
+            }
+
+            set
+            {
+                this.fitnessCalculated = value;
             }
         }
 
