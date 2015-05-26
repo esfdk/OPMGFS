@@ -137,8 +137,7 @@
                 var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
                 var items = map.MapItems.Clone() as Enums.Item[,];
                 var baseMap = new MapPhenotype(heightLevels, items);
-                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
-                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
+                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn).SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
 
                 mso = new MapSearchOptions(map, mso);
                 var evolver = new Evolver<EvolvableMap>(
@@ -208,8 +207,7 @@
                 var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
                 var items = map.MapItems.Clone() as Enums.Item[,];
                 var baseMap = new MapPhenotype(heightLevels, items);
-                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
-                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
+                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn).SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
 
                 mso = new MapSearchOptions(map, mso);
                 var evolver = new MultiObjectiveEvolver(
@@ -273,8 +271,7 @@
                 var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
                 var items = map.MapItems.Clone() as Enums.Item[,];
                 var baseMap = new MapPhenotype(heightLevels, items);
-                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
-                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
+                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn).SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
 
                 mso = new MapSearchOptions(map, mso);
                 var searcher = new MapSearcher(r, mso, nso);
@@ -351,8 +348,7 @@
                 var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
                 var items = map.MapItems.Clone() as Enums.Item[,];
                 var baseMap = new MapPhenotype(heightLevels, items);
-                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
-                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
+                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Turn).SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
 
                 mso = new MapSearchOptions(map, mso);
                 var searcher = new MapSearcher(r, mso, nso);
