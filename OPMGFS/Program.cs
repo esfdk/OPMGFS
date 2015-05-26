@@ -29,7 +29,7 @@
             sw.Start();
 
             var list = new List<int>();
-            for (var i = 0; i < 10; i++)
+            for (var i = 150; i < 160; i++)
             {
                 list.Add(i);
             }
@@ -37,42 +37,62 @@
             var random = new Random(0);
 
             Console.WriteLine("Generating base maps.");
-            var maps = GetBaseMaps(caRandomSeeds: list);
+            var maps = GetBaseMaps(caRandomSeeds: list, baseMapFolder: string.Empty, fileToWriteTo: "baseMap-seeds(150-159).txt");
             Console.WriteLine("It took {0} milliseconds to generate base maps.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
-            for (var i = 0; i < maps.Count; i++) maps[i].SaveMapToPngFile(string.Format("{0}", i), itemMap: false);
 
             Console.WriteLine("Starting evolution");
-            RunEvolution(maps, random, numberOfGenerations: 1, populationSize: 50, numberOfParents: 6, numberOfChildren: 18);
+            RunEvolution(maps, random, numberOfGenerations: 50, populationSize: 10, numberOfParents: 2, numberOfChildren: 8, folderName: "Evolution-gen50-pop10-par2-child8");
             Console.WriteLine("Evolution done. It took  {0} milliseconds to perform evolution.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
 
             Console.WriteLine("Starting multiobjective evolution");
-            RunMultiobjectiveEvolution(maps, random, numberOfGenerations: 10, populationSize: 25);
+            RunMultiobjectiveEvolution(maps, random, numberOfGenerations: 50, populationSize: 10, folderName: "MOEA-gen50-pop10");
             Console.WriteLine("Multiobjective evolution done. It took {0} milliseconds.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
 
             Console.WriteLine("Starting novelty search.");
-            var nso = new NoveltySearchOptions(
-                addToArchive: 5,
-                feasiblePopulationSize: 50,
-                infeasiblePopulationSize: 50);
-            RunNoveltySearch(maps, random, numberOfGenerations: 5, noveltySearchOptions: nso);
+            var nso = new NoveltySearchOptions(feasiblePopulationSize: 30, infeasiblePopulationSize: 30, numberOfNeighbours: 5, addToArchive: 2);
+            RunNoveltySearch(maps, random, numberOfGenerations: 100, noveltySearchOptions: nso, folderName: "NoveltySearch-gen-100-feas30-infeas30-neighbors5-addtoarch2");
             Console.WriteLine("Novelty search done. It took {0} milliseconds to perform novelty search.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
 
             Console.WriteLine("Starting evolution with highest fitness novel maps.");
-            RunEvolutionWithNoveltyAsBase(maps, random);
+            nso = new NoveltySearchOptions(feasiblePopulationSize: 90, infeasiblePopulationSize: 90);
+            RunEvolutionWithNoveltyAsBase(
+                maps,
+                random,
+                numberOfNoveltyGenerations: 50,
+                numberOfEvolutionGenerations: 50,
+                numberOfMOEAGenerations: 50,
+                noveltySearchOptions: nso,
+                evolutionPopulationSize: 10,
+                moeaPopulationSize: 10,
+                numberOfParents: 2,
+                numberOfChildren: 8,
+                folderName: "NoEvHighFitness-feas90-infeas90-evopop10-moeapop10-noveltygen50-evogen50-moeagen50-evopar2-evochild8");
             Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
 
             Console.WriteLine("Starting evolution with highest novelty maps.");
-            RunEvolutionWithNoveltyAsBase(maps, random, selectHighestFitness: false);
+            RunEvolutionWithNoveltyAsBase(
+                maps,
+                random,
+                numberOfNoveltyGenerations: 50,
+                numberOfEvolutionGenerations: 50,
+                numberOfMOEAGenerations: 50,
+                noveltySearchOptions: nso,
+                evolutionPopulationSize: 10,
+                moeaPopulationSize: 10,
+                numberOfParents: 4,
+                numberOfChildren: 8,
+                folderName: "NoEvHighNovelty-feas90-infeas90-evopop10-moeapop10-noveltygen50-evogen50-moeagen50-evopar2-evochild8",
+                selectHighestFitness: false);
             Console.WriteLine("Evolution with highest novelty maps. It took {0} milliseconds to perform evolution with highest novelty maps.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
@@ -341,6 +361,7 @@
                     foreach (var solution in archive)
                     {
                         var ms = (MapSolution)solution;
+                        mso = new MapSearchOptions(map, mso);
                         var evolvableMap = new EvolvableMap(mso, evolutionMutationChance, r, mfo, ms.MapPoints);
                         evolvableMap.CalculateFitness();
                         evolvableMaps.Add(evolvableMap);
@@ -367,6 +388,7 @@
                     foreach (var solution in tempArchive)
                     {
                         var ms = (MapSolution)solution;
+                        mso = new MapSearchOptions(map, mso);
                         var evolvableMap = new EvolvableMap(mso, evolutionMutationChance, r, mfo, ms.MapPoints);
                         evolvableMap.CalculateFitness();
                         evolvableMaps.Add(evolvableMap);

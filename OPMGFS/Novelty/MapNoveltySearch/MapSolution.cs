@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Odbc;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
@@ -210,6 +211,11 @@
 
             for (var i = 0; i < numberOfNeighbours; i++)
             {
+                if (distanceValues.Count <= i)
+                {
+                    break;
+                }
+
                 novelty += distanceValues[i].Item1;
             }
 
