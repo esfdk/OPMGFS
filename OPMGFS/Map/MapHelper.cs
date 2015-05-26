@@ -15,6 +15,7 @@ namespace OPMGFS.Map
     using System.IO;
     using System.Linq;
 
+    using OPMGFS.Evolution;
     using OPMGFS.Map.CellularAutomata;
 
     using Position = System.Tuple<int, int>;
@@ -389,6 +390,213 @@ namespace OPMGFS.Map
                                 };
 
             return tileDic;
+        }
+
+        /// <summary>
+        /// Creates a greyscale map that shows novelty, based on how different every tile is in each of the given maps.
+        /// </summary>
+        /// <param name="maps"> The maps to create a greyscale novelty map from. </param>
+        /// <param name="fileNameAddition"> An extra part to add to the file name, when generating maps during testing.  </param>
+        /// <param name="folder"> Save the map to a special folder in Images/Finished Maps. NOTE: Just give the name of the folder to create/save in, no extra characters such as \.  </param>
+        /// <param name="heightMap"> Whether the height map should be printed. </param>
+        /// <param name="itemMap"> Whether the item map should be printed. </param>
+        /// <param name="combinedMap"> Whether the combined map should be printed. </param>
+        public static void SaveGreyscaleNoveltyMap(
+            List<EvolvableMap> maps,
+            string fileNameAddition = "",
+            string folder = "",
+            bool heightMap = true,
+            bool itemMap = true,
+            bool combinedMap = true)
+        {
+            var mapList = maps.Select(map => map.ConvertedPhenotype).ToList();
+            SaveGreyscaleNoveltyMap(mapList, fileNameAddition, folder, heightMap, itemMap, combinedMap);
+        }
+
+        /// <summary>
+        /// Creates a greyscale map that shows novelty, based on how different every tile is in each of the given maps.
+        /// </summary>
+        /// <param name="maps"> The maps to create a greyscale novelty map from. </param>
+        /// <param name="fileNameAddition"> An extra part to add to the file name, when generating maps during testing.  </param>
+        /// <param name="folder"> Save the map to a special folder in Images/Finished Maps. NOTE: Just give the name of the folder to create/save in, no extra characters such as \.  </param>
+        /// <param name="heightMap"> Whether the height map should be printed. </param>
+        /// <param name="itemMap"> Whether the item map should be printed. </param>
+        /// <param name="combinedMap"> Whether the combined map should be printed. </param>
+        public static void SaveGreyscaleNoveltyMap(List<MapPhenotype> maps, string fileNameAddition = "", string folder = "", bool heightMap = true, bool itemMap = true, bool combinedMap = true)
+        {
+            if (maps == null) return;
+            if (maps.Count <= 0) return;
+
+            // Map size
+            var xSize = maps[0].HeightLevels.GetLength(0);
+            var ySize = maps[0].HeightLevels.GetLength(1);
+
+            // The dictionaries and bitmap.
+            var bm = new Bitmap((xSize * SizeOfMapTiles) + 1, (ySize * SizeOfMapTiles) + 1);
+
+            // The file names
+            var currentTime = string.Format("{0}.{1}_{2}.{3}", DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute);
+            currentTime = currentTime.Replace("/", ".");
+            currentTime = currentTime.Replace(":", ".");
+            currentTime = currentTime.Replace(" ", "_");
+
+            var mapDir = Path.Combine(GetImageDirectory(), @"Finished Maps");
+
+            // If the folder parameter is not empty, create a folder.
+            if (!folder.Equals(string.Empty))
+                mapDir = Path.Combine(mapDir, folder);
+
+            // IF there is no file name addition, don't add an underscore.
+            fileNameAddition = !fileNameAddition.Equals(string.Empty) ? "_" + fileNameAddition : fileNameAddition;
+
+            Directory.CreateDirectory(mapDir);
+
+            var mapHeightFile = @"Map_" + currentTime + fileNameAddition + ".png";
+            var mapItemFile = @"Map_" + currentTime + fileNameAddition + "_Items" + ".png";
+            var combinedFile = @"Map_" + currentTime + fileNameAddition + "_Combined" + ".png";
+
+            var greyHeightmap = new double[xSize, ySize];
+            var greyItemmap = new double[xSize, ySize];
+            var greyCombined = new double[xSize, ySize];
+
+            for (var y = ySize - 1; y >= 0; y--)
+            {
+                for (var x = 0; x < xSize; x++)
+                {
+                    var heightDict = new Dictionary<Enums.HeightLevel, int>();
+                    var itemDict = new Dictionary<Enums.Item, int>();
+                    var combinedDict = new Dictionary<Tuple<Enums.HeightLevel, Enums.Item>, int>();
+
+                    // Ensure that all keys are in the dictionary
+                    foreach (var heightlevel in Enum.GetValues(typeof(Enums.HeightLevel)))
+                    {
+                        heightDict[(Enums.HeightLevel)heightlevel] = 0;
+
+                        foreach (var item in Enum.GetValues(typeof(Enums.Item)))
+                        {
+                            itemDict[(Enums.Item)item] = 0;
+
+                            combinedDict[new Tuple<Enums.HeightLevel, Enums.Item>(
+                                (Enums.HeightLevel)heightlevel,
+                                    (Enums.Item)item)] = 0;
+                        }
+                    }
+
+                    // Count the occourance of every item for the specific position in each map.
+                    foreach (var mapPhenotype in maps)
+                    {
+                        heightDict[mapPhenotype.HeightLevels[x, y]] += 1;
+
+                        // If a tile is occupied, count it as none
+                        if (mapPhenotype.MapItems[x, y] == Enums.Item.Occupied)
+                        {
+                            var tuple = new Tuple<Enums.HeightLevel, Enums.Item>(
+                                mapPhenotype.HeightLevels[x, y],
+                                Enums.Item.None);
+
+                            itemDict[Enums.Item.None] += 1;
+                            combinedDict[tuple] += 1;
+                        }
+                        else
+                        {
+                            var tuple = new Tuple<Enums.HeightLevel, Enums.Item>(
+                                mapPhenotype.HeightLevels[x, y],
+                                mapPhenotype.MapItems[x, y]);
+
+                            itemDict[mapPhenotype.MapItems[x, y]] += 1;
+                            combinedDict[tuple] += 1;
+                        }
+
+                        if (mapPhenotype.DestructibleRocks[x, y]) itemDict[Enums.Item.DestructibleRocks] += 1;
+                    }
+
+                    var normalizedHeights = heightDict.Select(tuple => ((tuple.Value - 0d) / (maps.Count - 0d))).ToList();
+                    var normalizedItems = itemDict.Select(tuple => ((tuple.Value - 0d) / (maps.Count - 0d))).ToList();
+                    var normalizedCombined = combinedDict.Select(tuple => ((tuple.Value - 0d) / (maps.Count - 0d))).ToList();
+
+                    greyHeightmap[x, y] = normalizedHeights.Max(value => value);
+                    greyItemmap[x, y] = normalizedItems.Max(value => value);
+                    greyCombined[x, y] = normalizedCombined.Max(value => value);
+                }
+            }
+
+            // Creating heightmap
+            using (var g = Graphics.FromImage(bm))
+            {
+                g.FillRectangle(new SolidBrush(Color.White), 0, 0, bm.Width, bm.Height);
+
+                for (var y = ySize - 1; y >= 0; y--)
+                {
+                    var drawY = ((bm.Height - 1) - (y * SizeOfMapTiles) + 1) - SizeOfMapTiles;
+
+                    for (var x = 0; x < xSize; x++)
+                    {
+                        var drawX = (x * SizeOfMapTiles) + 1;
+
+                        var newColor = Color.FromArgb((int)(greyHeightmap[x, y] * 255), Color.Black);
+                        g.FillRectangle(new SolidBrush(newColor), drawX, drawY, SizeOfMapTiles, SizeOfMapTiles);
+                    }
+                }
+            }
+
+            if (heightMap)
+            {
+                // Saving map
+                bm.Save(Path.Combine(mapDir, mapHeightFile));
+            }
+
+            // Creating heightmap
+            using (var g = Graphics.FromImage(bm))
+            {
+                g.FillRectangle(new SolidBrush(Color.White), 0, 0, bm.Width, bm.Height);
+
+                for (var y = ySize - 1; y >= 0; y--)
+                {
+                    var drawY = ((bm.Height - 1) - (y * SizeOfMapTiles) + 1) - SizeOfMapTiles;
+
+                    for (var x = 0; x < xSize; x++)
+                    {
+                        var drawX = (x * SizeOfMapTiles) + 1;
+
+                        var newColor = Color.FromArgb((int)(greyItemmap[x, y] * 255), Color.Black);
+                        g.FillRectangle(new SolidBrush(newColor), drawX, drawY, SizeOfMapTiles, SizeOfMapTiles);
+                    }
+                }
+            }
+
+            if (heightMap)
+            {
+                // Saving map
+                bm.Save(Path.Combine(mapDir, mapItemFile));
+            }
+
+            // Creating heightmap
+            using (var g = Graphics.FromImage(bm))
+            {
+                g.FillRectangle(new SolidBrush(Color.White), 0, 0, bm.Width, bm.Height);
+
+                for (var y = ySize - 1; y >= 0; y--)
+                {
+                    var drawY = ((bm.Height - 1) - (y * SizeOfMapTiles) + 1) - SizeOfMapTiles;
+
+                    for (var x = 0; x < xSize; x++)
+                    {
+                        var drawX = (x * SizeOfMapTiles) + 1;
+
+                        var drawValue = greyCombined[x, y];
+                        var newColor = Color.FromArgb((int)(drawValue * 255), Color.Black);
+                        g.FillRectangle(new SolidBrush(newColor), drawX, drawY, SizeOfMapTiles, SizeOfMapTiles);
+                    }
+                }
+            }
+
+            if (combinedMap)
+            {
+                // Saving map
+                bm.Save(Path.Combine(mapDir, combinedFile));
+            }
+
+            bm.Dispose();
         }
 
         #endregion
