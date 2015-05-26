@@ -32,11 +32,17 @@ The fitness function presented in this paper does not take into account rules 3,
 
 \section{Fitness Function Improvements}
 \label{futurework_fitness}
+Designing a perfect fitness function is generally extremely challenging for problems of high complexity. In the case of evaluating the quality of a strategy map, there are many factors to consider. Besides the points that we consider in the fitness function presented in section \ref{methodology_mapfitness}, there are many other potential measures of quality. 
+
+In its current iteration, the fitness function only considers the length of the shortest distance between main bases. While this distance is extremely important to optimise in order to balance rush strategies, it does not take into consideration that alternate attack paths may increase the viability of strategies that involve high mobile units. If a map has only a single attack path, the entirety of the attack path becomes a choke point in itself because a defending player must simply treat a single part of the path as the only location that must be defended. Adding a measurement of number of alternate attack paths to the fitness function would likely improve the quality of the generated maps. However, it would almost certainly reduce the speed of the evaluation function significantly, as the additional paths would have to be located and only be treated as separate paths if they are significantly different from the shortest path between bases.
+
+\textbf{Needs more!}
+%include unit-specific elements
+
 
 %more advanced openness detection
-%consider more than just 1 path between bases
-%include unit-specific elements
-%consider bell curve
+%consider bell curve0
+
 \section{Feasibility Function Improvements}
 \label{futurework_feasibility}
 The constrained novelty search approach presented in this paper requires solutions to be decoded from their genotype to the corresponding phenotype in order to calculate their distance to feasibility. While the conversion process is not slow, it is by far the slowest part of the constrained novelty search process, and any approach that does not require conversion from genotype to phenotype would likely provide large increase in runtime 
