@@ -59,7 +59,7 @@
 
             Console.WriteLine("Starting novelty search.");
             var nso = new NoveltySearchOptions(feasiblePopulationSize: 30, infeasiblePopulationSize: 30, numberOfNeighbours: 5, addToArchive: 2);
-            RunNoveltySearch(maps, random, numberOfGenerations: 100, noveltySearchOptions: nso, folderName: "NoveltySearch-gen-100-feas30-infeas30-neighbors5-addtoarch2");
+            RunNoveltySearch(maps, random, numberOfGenerations: 100, noveltySearchOptions: nso, folderName: "NoveltySearch-gen100-feas30-infeas30-neighbors5-addtoarch2");
             Console.WriteLine("Novelty search done. It took {0} milliseconds to perform novelty search.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
@@ -366,6 +366,8 @@
             }
 
             baseMapCounter = 0;
+
+            sw.Restart();
             var solutions = new List<List<EvolvableMap>>();
 
             if (selectHighestFitness)
@@ -471,7 +473,6 @@
                 MapHelper.SaveGreyscaleNoveltyMap(bestMaps, string.Format("Evo_Best Maps NoveltyMap"), folderName);
             }
             
-
             // MOEA
             if (runMOEA)
             {
