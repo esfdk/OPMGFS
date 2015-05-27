@@ -40,10 +40,10 @@
             var maps = GetBaseMaps(caRandomSeeds: list, baseMapFolder: string.Empty, fileToWriteTo: "baseMap-seeds(150-159).txt");
             Console.WriteLine("It took {0} milliseconds to generate base maps.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
-            sw.Restart();
 
             var mapList = maps.Select(x => x.CreateFinishedMap(Enums.Half.Top, Enums.MapFunction.Turn)).ToList();
             MapHelper.SaveGreyscaleNoveltyMap(mapList, " BaseMaps", "NoveltyMaps");
+            sw.Restart();
 
             Console.WriteLine("Starting evolution");
             RunEvolution(maps, random, numberOfGenerations: 50, populationSize: 10, numberOfParents: 2, numberOfChildren: 8, folderName: "Evolution-gen50-pop10-par2-child8");
@@ -329,7 +329,9 @@
             string folderName = "MapNoveltyEvolution",
             string fileToWriteTo = "NoveltyEvolutionHighestFitnessSearchGenerationTimes.txt",
             bool selectHighestFitness = true,
-            double lowestFitnessLevelForPrint = double.MinValue)
+            double lowestFitnessLevelForPrint = double.MinValue,
+            bool runEvo = true,
+            bool runMOEA = true)
         {
             var stringToWrite = new StringBuilder();
             var mso = mapSearchOptions ?? new MapSearchOptions(null);
@@ -420,98 +422,105 @@
             }
             
             // Evolution
-            sw.Restart();
-            var bestMaps = new List<EvolvableMap>();
-            baseMapCounter = 0;
-            foreach (var map in maps)
+            if (runEvo)
             {
                 sw.Restart();
-                stringToWrite.AppendLine(string.Format("Performing evolution on base map number {0}.", baseMapCounter));
-                mso = new MapSearchOptions(map, mso);
-                var evolver = new Evolver<EvolvableMap>(
-                    numberOfEvolutionGenerations,
-                    evolutionPopulationSize,
-                    numberOfParents,
-                    numberOfChildren,
-                    evolutionMutationChance,
-                    r,
-                    new object[] { mso, evolutionMutationChance, r, mfo })
-                                  {
-                                        PopulationSelectionStrategy = selectionStrategy,
-                                        ParentSelectionStrategy = parentSelectionStrategy,
-                                        PopulationStrategy = populationStrategy
-                };
-
-                evolver.Initialize(solutions[baseMapCounter].Take(evolutionPopulationSize), stringToWrite);
-                evolver.Evolve(stringToWrite);
-                var variationValue = 0;
-
-                foreach (var individual in evolver.Population)
+                var bestMaps = new List<EvolvableMap>();
+                baseMapCounter = 0;
+                foreach (var map in maps)
                 {
-                    variationValue++;
-                    if (individual.Fitness >= lowestFitnessLevelForPrint)
+                    sw.Restart();
+                    stringToWrite.AppendLine(string.Format("Performing evolution on base map number {0}.", baseMapCounter));
+                    mso = new MapSearchOptions(map, mso);
+                    var evolver = new Evolver<EvolvableMap>(
+                        numberOfEvolutionGenerations,
+                        evolutionPopulationSize,
+                        numberOfParents,
+                        numberOfChildren,
+                        evolutionMutationChance,
+                        r,
+                        new object[] { mso, evolutionMutationChance, r, mfo })
                     {
-                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Evo_Base Map {0}_Map {1}_Fitness {2}", baseMapCounter, variationValue, individual.Fitness), folderName, false);
+                        PopulationSelectionStrategy = selectionStrategy,
+                        ParentSelectionStrategy = parentSelectionStrategy,
+                        PopulationStrategy = populationStrategy
+                    };
+
+                    evolver.Initialize(solutions[baseMapCounter].Take(evolutionPopulationSize), stringToWrite);
+                    evolver.Evolve(stringToWrite);
+                    var variationValue = 0;
+
+                    foreach (var individual in evolver.Population)
+                    {
+                        variationValue++;
+                        if (individual.Fitness >= lowestFitnessLevelForPrint)
+                        {
+                            individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("Evo_Base Map {0}_Map {1}_Fitness {2}", baseMapCounter, variationValue, individual.Fitness), folderName, false);
+                        }
                     }
+
+                    stringToWrite.AppendLine(string.Format("It took {0} ms to perform evolution on base map number {1}.", sw.ElapsedMilliseconds, baseMapCounter));
+                    stringToWrite.AppendLine();
+
+                    bestMaps.Add(evolver.Population.OrderByDescending(evoMap => evoMap.Fitness).ToList()[0]);
+                    MapHelper.SaveGreyscaleNoveltyMap(evolver.Population, string.Format("Evo_Base Map {0} NoveltyMap", baseMapCounter), folderName);
+
+                    baseMapCounter++;
                 }
 
-                stringToWrite.AppendLine(string.Format("It took {0} ms to perform evolution on base map number {1}.", sw.ElapsedMilliseconds, baseMapCounter));
-                stringToWrite.AppendLine();
-
-                bestMaps.Add(evolver.Population.OrderByDescending(evoMap => evoMap.Fitness).ToList()[0]);
-                MapHelper.SaveGreyscaleNoveltyMap(evolver.Population, string.Format("Evo_Base Map {0} NoveltyMap", baseMapCounter), folderName);
-
-                baseMapCounter++;
+                MapHelper.SaveGreyscaleNoveltyMap(bestMaps, string.Format("Evo_Best Maps NoveltyMap"), folderName);
             }
-
-            MapHelper.SaveGreyscaleNoveltyMap(bestMaps, string.Format("Evo_Best Maps NoveltyMap"), folderName);
+            
 
             // MOEA
-            baseMapCounter = 0;
-            bestMaps = new List<EvolvableMap>();
-            foreach (var map in maps)
+            if (runMOEA)
             {
-                sw.Restart();
-                stringToWrite.AppendLine(string.Format("Performing multi objective evolution for base map number {0}", baseMapCounter));
-
-                var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
-                var items = map.MapItems.Clone() as Enums.Item[,];
-                var baseMap = new MapPhenotype(heightLevels, items);
-                baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
-                baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
-
-                mso = new MapSearchOptions(map, mso);
-                var evolver = new MultiObjectiveEvolver(
-                    numberOfMOEAGenerations,
-                    moeaPopulationSize,
-                    moeaMutationChance,
-                    r,
-                    mso,
-                    mfo);
-
-                evolver.RunEvolution(stringToWrite, solutions[baseMapCounter].Take(moeaPopulationSize));
-
-                var variationValue = 0;
-
-                foreach (var individual in evolver.Population)
+                baseMapCounter = 0;
+                var bestMaps = new List<EvolvableMap>();
+                foreach (var map in maps)
                 {
-                    variationValue++;
-                    if (individual.Fitness >= lowestFitnessLevelForPrint)
+                    sw.Restart();
+                    stringToWrite.AppendLine(string.Format("Performing multi objective evolution for base map number {0}", baseMapCounter));
+
+                    var heightLevels = map.HeightLevels.Clone() as Enums.HeightLevel[,];
+                    var items = map.MapItems.Clone() as Enums.Item[,];
+                    var baseMap = new MapPhenotype(heightLevels, items);
+                    baseMap.CreateCompleteMap(Enums.Half.Top, Enums.MapFunction.Mirror);
+                    baseMap.SaveMapToPngFile(string.Format("Base Map {0}", baseMapCounter), folderName, false);
+
+                    mso = new MapSearchOptions(map, mso);
+                    var evolver = new MultiObjectiveEvolver(
+                        numberOfMOEAGenerations,
+                        moeaPopulationSize,
+                        moeaMutationChance,
+                        r,
+                        mso,
+                        mfo);
+
+                    evolver.RunEvolution(stringToWrite, solutions[baseMapCounter].Take(moeaPopulationSize));
+
+                    var variationValue = 0;
+
+                    foreach (var individual in evolver.Population)
                     {
-                        individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("MOEA_Base Map {0}_Map {1}_Fitness {2}", baseMapCounter, variationValue, individual.Fitness), folderName, false);
+                        variationValue++;
+                        if (individual.Fitness >= lowestFitnessLevelForPrint)
+                        {
+                            individual.ConvertedPhenotype.SaveMapToPngFile(string.Format("MOEA_Base Map {0}_Map {1}_Fitness {2}", baseMapCounter, variationValue, individual.Fitness), folderName, false);
+                        }
                     }
+
+                    stringToWrite.AppendLine(string.Format("It took {0} ms to perform multi objective evolution on base map number {1}", sw.ElapsedMilliseconds, baseMapCounter));
+                    stringToWrite.AppendLine();
+
+                    bestMaps.Add(evolver.Population.OrderByDescending(evoMap => evoMap.Fitness).ToList()[0]);
+                    MapHelper.SaveGreyscaleNoveltyMap(evolver.Population, string.Format("MOEA_Base Map {0} NoveltyMap", baseMapCounter), folderName);
+
+                    baseMapCounter++;
                 }
 
-                stringToWrite.AppendLine(string.Format("It took {0} ms to perform multi objective evolution on base map number {1}", sw.ElapsedMilliseconds, baseMapCounter));
-                stringToWrite.AppendLine();
-
-                bestMaps.Add(evolver.Population.OrderByDescending(evoMap => evoMap.Fitness).ToList()[0]);
-                MapHelper.SaveGreyscaleNoveltyMap(evolver.Population, string.Format("MOEA_Base Map {0} NoveltyMap", baseMapCounter), folderName);
-
-                baseMapCounter++;
+                MapHelper.SaveGreyscaleNoveltyMap(bestMaps, string.Format("MOEA_Best Maps NoveltyMap"), folderName);
             }
-
-            MapHelper.SaveGreyscaleNoveltyMap(bestMaps, string.Format("MOEA_Best Maps NoveltyMap"), folderName);
 
             WriteToTextFile(stringToWrite.ToString(), fileToWriteTo, folderName);
         }

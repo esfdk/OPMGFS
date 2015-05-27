@@ -36,6 +36,7 @@ Designing a perfect fitness function is generally extremely challenging for prob
 
 In its current iteration, the fitness function only considers the length of the shortest distance between main bases. While this distance is extremely important to optimise in order to balance rush strategies, it does not take into consideration that alternate attack paths may increase the viability of strategies that involve high mobile units. If a map has only a single attack path, the entirety of the attack path becomes a choke point in itself because a defending player must simply treat a single part of the path as the only location that must be defended. Adding a measurement of number of alternate attack paths to the fitness function would likely improve the quality of the generated maps. However, it would almost certainly reduce the speed of the evaluation function significantly, as the additional paths would have to be located and only be treated as separate paths if they are significantly different from the shortest path between bases.
 
+StarCraft II features a large number of units 
 \textbf{Needs more!}
 %include unit-specific elements
 

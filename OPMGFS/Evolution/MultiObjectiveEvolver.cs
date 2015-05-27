@@ -115,14 +115,32 @@
                     currentFront = nonDominatedFronts[frontCounter];
                 }
 
-                // Get eventual remaining parents from the next front
-                currentFront = nonDominatedFronts[frontCounter];
-                this.CrowdingDistanceAssignment(currentFront);
-                currentFront = currentFront.OrderBy(p => p.Rank).ThenByDescending(p => p.Distance).ToList();
+                if (nextParents.Count > 0)
+                {
+                    // Get eventual remaining parents from the next front
+                    currentFront = nonDominatedFronts[frontCounter];
+                    this.CrowdingDistanceAssignment(currentFront);
+                    currentFront = currentFront.OrderBy(p => p.Rank).ThenByDescending(p => p.Distance).ToList();
 
-                var missingParents = this.PopulationSize - nextParents.Count;
-                for (var i = 0; i < missingParents; i++)
-                    nextParents.Add(currentFront[i]);
+                    var missingParents = this.PopulationSize - nextParents.Count;
+                    for (var i = 0; i < missingParents; i++)
+                        nextParents.Add(currentFront[i]);
+                }
+                else
+                {
+                    // If there are more nondominated, select the highest fitness candidate and then select based on distance
+                    currentFront = nonDominatedFronts[frontCounter];
+                    this.CrowdingDistanceAssignment(currentFront);
+                    var highest = currentFront.OrderBy(p => p.Rank).ThenByDescending(p => p.Map.Fitness).First();
+                    nextParents.Add(highest);
+
+                    currentFront.Remove(highest);
+                    currentFront = currentFront.OrderBy(p => p.Rank).ThenByDescending(p => p.Distance).ToList();
+
+                    var missingParents = this.PopulationSize - nextParents.Count;
+                    for (var i = 0; i < missingParents; i++)
+                        nextParents.Add(currentFront[i]);
+                }
 
                 parents = nextParents;
                 offspringPopulation = this.MakeNewPopulation(parents);
@@ -330,7 +348,7 @@
             /// <param name="map"> The map to represent. </param>
             public MOEASolution(EvolvableMap map)
             {
-                this.Rank = 0;
+                this.Rank = 1000;
                 this.DominationCount = 0;
                 this.Distance = 0;
                 this.Map = map;
