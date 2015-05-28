@@ -36,13 +36,11 @@ Designing a perfect fitness function is generally extremely challenging for prob
 
 In its current iteration, the fitness function only considers the length of the shortest distance between main bases. While this distance is extremely important to optimise in order to balance rush strategies, it does not take into consideration that alternate attack paths may increase the viability of strategies that involve high mobile units. If a map has only a single attack path, the entirety of the attack path becomes a choke point in itself because a defending player must simply treat a single part of the path as the only location that must be defended. Adding a measurement of number of alternate attack paths to the fitness function would likely improve the quality of the generated maps. However, it would almost certainly reduce the speed of the evaluation function significantly, as the additional paths would have to be located and only be treated as separate paths if they are significantly different from the shortest path between bases.
 
-StarCraft II features a large number of units 
-\textbf{Needs more!}
-%include unit-specific elements
+StarCraft II features fifty different multi-player units of which twenty are air-based and thirty are ground-based. Many of these units possess special abilities, such as blinking (short-range teleports), cliff-walking, underground movement, long-range siege capabilities, and flying transport of other units. These units (and their abilities) have a large impact on the quality of a map. In the case of cliff-walking and blinking, the shortest path between bases can change significantly, which is likely to have a large impact on how the defending player must approach setting up their defence and which parts of the maps must be controlled in order to prevent successful aggression from the attacking player. The fitness function presented in this paper would be significantly improved (and become more specialised for StarCraft II) if it were to incorporate measures for these abilities.
 
+Another improvement to the fitness function would be to change the evaluation function of distances, base space, and base openness from a linear function to a bell curve function. It is not always desirable to aim for an exact value, e.g. for shortest path between bases. It is far more important that the path is of approximately optimal length in order to ensure interesting maps.
 
-%more advanced openness detection
-%consider bell curve0
+The current implementation of base openness detection is somewhat naive. A base may be far less open than the detection may suggest, because it only detects the openness of tiles immediately outside the base area. If a tile is blocked in the second row of tiles outside of the base, it is still a "closed" tile surrounding the base. More advanced and precise methods for base openness detection will likely slow down the evaluation function, but will provide a more accurate evaluation of map quality.
 
 \section{Feasibility Function Improvements}
 \label{futurework_feasibility}
