@@ -1,44 +1,138 @@
 \section{Evolution}
 \label{results_evolution}
 
+% Testede 10 forskellige base maps med forskellige indstillinger. Tallene er average af de bedste resultater for hvert base map.
+
 \begin{table}
-\begin{center}
-\renewcommand{\arraystretch}{1}
-\caption{Results of evolution with a standard genetic algorithm.}
-\label{tab:results_evolution_results}
-\begin{tabular}{|p{1cm} | p{1.1cm}  | p{1.1 cm} | p{1.3cm} ? p{1.3cm} | p{1cm} | p{1.1cm} | p{1cm}  | p{1cm} | c |}
-\hline
-Gene-rations & Popu-lation & Parents & Children & Mutation Chance & Max fitness & Average fitness & Min fitness & Conver-gence & Time\\
-\hline
-5 & 5 & 1 & 4 & 30\% & 
-\hline
-\end{tabular}
-\end{center}
+	\begin{center}
+	\renewcommand{\arraystretch}{1}
+	\caption{The settings used in the standard genetic algorithm and MOEA. \textit{Parents} and \textit{Children} are only relevant for the genetic algorithm, as the MOEA does not have such parameters.}
+	\label{tab:results_evolution_combinations}
+		\begin{tabular}{| c | c | c | c | c |}
+		\hline
+		Settings Label & Generations & Population & Parents & Children \\
+		\hline
+		A & 5 & 5 & 1 & 4 \\
+		\hline
+		B & 15 & 15 & 3 & 12 \\
+		\hline
+		C & 45 & 5 & 3 & 12 \\
+		\hline
+		D & 25 & 10 & 3 & 8 \\
+		\hline
+		E & 10 & 25 & 6 & 18 \\
+		\hline
+		F & 30 & 20 & 4 & 16 \\
+		\hline
+		G & 5 & 50 & 12 & 36 \\
+		\hline
+		H & 50 & 5 & 1 & 4 \\
+		\hline
+		I & 50 & 10 & 2 & 8 \\
+		\hline
+		J & 10 & 5 & 1 & 4 \\
+
+
+
+
+		\hline
+		 &  &  &  &  \\
+		\hline
+		\end{tabular}
+	\end{center}
 \end{table}
 
-
 \begin{table}
-\begin{center}
-\renewcommand{\arraystretch}{1}
-\caption{Results of standard genetic algorithm seeded with highest fitness novel individuals.}
-\label{tab:results_novelevolutionhighfitness}
-\begin{tabular}{| c ? c | c  | c | c | c | }
-\hline
-Combination & Max fitness & Average fitness & Min fitness & Convergence & Time\\
-\hline
-\end{tabular}
-\end{center}
+	\begin{center}
+	\renewcommand{\arraystretch}{1}
+	\caption{Results of evolution with a standard genetic algorithm.}
+	\label{tab:results_evolution_results}
+		\begin{tabular}{| c ? c | c | c | p{1.9cm} | p{1.9cm} | p{1cm} |}
+		\hline
+		Settings & Max fitness & Average fitness & Min fitness & Convergence (average) & Convergence (mode) &  Time \\
+		\hline
+		A & 31.26 & 22.89 & 18.13 & 3.90 & 3 & 12.98 \\
+		\hline
+		B & 35.05 & 31.67 & 29.59 & 12.60 & 13 & 102.94 \\
+		\hline
+		C & 38.70 & 38.36 & 38.04 & 36.00 & 41 & 105.06 \\
+		\hline
+		D & 27.85 & 26.87 & 26.14 & 22.60 & 25 & 148.60 \\
+		\hline
+		E & 43.71 & 37.46 & 32.08 & 8.90 & 10 & 132.05 \\
+		\hline
+		F & 43.11 & 39.05 & 37.88 & 10.70 & 11 & 109.79 \\
+		\hline
+		G & 43.38 & 37.10 & 32.01 & 5.00 & 5 & 140.76 \\
+		\hline
+		H & 39.11 & 38.70 & 38.22 & 42.40 & 50 & 108.91 \\
+		\hline
+		I & 44.60 & 43.66 & 43.04 & 44.20 & 50 & 238.73 \\
+
+
+		\hline
+		 & & & & & & \\
+		\hline
+		\end{tabular}
+	\end{center}
 \end{table}
 
 \begin{table}
-\begin{center}
-\renewcommand{\arraystretch}{1}
-\caption{Results of standard genetic algorithm seeded with highest novelty novel individuals.}
-\label{tab:results_novelevolutionhighnovelty}
-\begin{tabular}{| c ? c | c  | c | c | c | }
-\hline
-Combination & Max fitness & Average fitness & Min fitness & Convergence & Time\\
-\hline
-\end{tabular}
-\end{center}
+	\begin{center}
+	\renewcommand{\arraystretch}{1}
+	\caption{Results of standard genetic algorithm seeded with highest fitness novel individuals.}
+	\label{tab:results_novelevolutionhighfitness}
+		\begin{tabular}{| K ? S | S | S | L | L | K | K |}
+		\hline
+		Settings Combination & Max fitness & Average fitness & Min fitness & Convergence (average) & Convergence (mode) & Evolution Time & Novelty Time \\
+		\hline
+		E + IV & 45.46 & 42.17 & 40.30 & 7.40 & 10 & 161.50 & 196.07 \\
+		\hline
+		F + I & 47.55 & 46.24 & 45.39 & 6.90 & 9 & 106.59 & 169.54 \\
+		\hline
+		G + VIII & 46.73 & 42.80 & 40.85 & 7.00 & 5 & 302.31 & 225.15 \\
+		\hline
+		J + V & 42.85 & 42.02 & 41.10 & 8.00 & 8 & 28.54 & 350.07 \\
+		\hline
+		H + VI & 46.02 & 45.40 & 44.79 & 44.00 & 45 & 128.86 & 826.30 \\
+		\hline
+		I + VII & 47.20 & 46.53 & 45.91 & 44.70 & 47 & 234.93 & 1,304.77 \\
+		\hline
+		D + II &  47.57 & 46.59 & 45.97 & 24.00 & 24 & 211.80 & 190.45 \\
+
+
+		\hline
+		 &  &  &  &  &  &  &  \\
+		\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\begin{table}
+	\begin{center}
+	\renewcommand{\arraystretch}{1}
+	\caption{Results of standard genetic algorithm seeded with highest novelty novel individuals.}
+	\label{tab:results_novelevolutionhighnovelty}
+		\begin{tabular}{| K ? S | S | S | L | L | K | K |}
+		\hline
+		Settings Combination & Max fitness & Average fitness & Min fitness & Convergence (average) & Convergence (mode) & Evolution Time & Novelty Time \\
+		\hline
+		E + IV &  43.93 & 40.23 & 38.41 & 8.10 & 8 & 154.48 & 176.70 \\
+		\hline
+		F + I &  44.65 & 43.84 & 43.21 & 9.40 & 7 & 114.38 & 171.12 \\
+		\hline
+		G + VIII &  46.46 & 42.13 & 39.93 & 8.80 & 8 & 289.78 & 194.96 \\
+		\hline
+		J + V &  33.06 & 31.23 & 30.03 & 8.20 & 9 & 23.96 & 335.58 \\
+		\hline
+		H + VI &  42.62 & 42.21 & 41.85 & 42.90 & 48 & 100.05 & 836.89 \\
+		\hline
+		I + VII &  41.90 & 41.04 & 40.43 & 48.60 & 48 & 202.50 & 1,330.37 \\
+		\hline
+		D + II &  45.67 & 44.54 & 43.73 & 23.10 & 25 & 203.34 & 185.62 \\
+
+
+		\hline
+		\end{tabular}
+	\end{center}
 \end{table}
