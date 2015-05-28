@@ -1,17 +1,106 @@
 \chapter{Discussion}
-\label{discussion}
+\label{discussion_quality}
 
 \section{Speed}
+\label{discussion_speed}
 % is it fast enough for 2min and 5min
 % mention those that are close with higher fitness
+
 \section{Quality}
-% discuss quality of fitness function by using high and low fitness maps as examples
+\label{discussion_quality}
+
+\subsection{Base Maps}
+\label{discussion_quality_basemaps}
 % discuss quality of base maps and the importance of the base maps being of high quality
+
+\subsection{Fitness function}
+\label{discussion_quality_fitnessfunction}
+
+\insertPicture{0.8}{EvolutionHighFitnessMap}{A map with a fairly high (47.09) fitness score.}{discussion_quality_highfitnessmap}
+
+\insertPicture{0.8}{EvolutionLowFitnessMap}{A map with a fairly low (17.83) fitness score.}{discussion_quality_highfitnessmap}
+
+% discuss quality of fitness function by using high and low fitness maps as examples
+
 \section{Novelty}
+\label{discussion_novelty}
 %refer to examples from results section
 %discuss how novel each method is
+
+\subsection{Base Maps}
+\label{discussion_novelty_basemaps}
 %discuss how many potentially novel base maps exist - maybe with example
+
+\subsection{Final Maps}
+\label{discussion_novelty_finalmaps}
+
+\insertPicture{0.5}{Discussion_NoveltySearch_IndividualNoveltyMap}{Novelty map for a search using the constrained novelty search algorithm on an individual base map.}{discussion_novelty_EvolutionIndividualNoveltyMap}
+
+\insertPicture{0.5}{Discussion_Evolution_CollectiveNoveltyMap}{Novelty map for a search using the standard genetic algorithm on 10 different base maps.}{discussion_novelty_EvolutionCollectiveNoveltyMap}
+\insertPicture{0.5}{Discussion_Evolution_IndividualNoveltyMap}{Novelty map for a search using the standard genetic algorithm on an individual base map.}{discussion_novelty_EvolutionIndividualNoveltyMap}
+
+\insertPicture{0.5}{Discussion_MOEA_CollectiveNoveltyMap}{Novelty map for a multi-objective evolutionary search on 10 different base maps.}{discussion_novelty_MOEACollectiveNoveltyMap}
+\insertPicture{0.5}{Discussion_MOEA_IndividualNoveltyMap}{Novelty map for a multi-objective evolutionary search on an individual base map.}{discussion_novelty_MOEAIndividualNoveltyMap}
+
 \section{Comparison of Approaches}
-% discuss tradeoff
+\label{discussion_comparison}
 % discuss pros and cons of each method
-%suggest optimal method 
+\subsection{Genetic Algorithm}
+\label{discussion_comparison_geneticalgorithm}
+
+Pros:
+\begin{my_itemize}
+\item
+\item
+\end{my_itemize}
+Cons:
+\begin{my_itemize}
+\item
+\item
+\end{my_itemize}
+
+\subsection{Multi-objective evolutionary algorithm}
+\label{discussion_comparison_moea}
+Pros:
+\begin{my_itemize}
+\item
+\item
+\end{my_itemize}
+Cons:
+\begin{my_itemize}
+\item
+\item
+\end{my_itemize}
+
+\subsection{Constrained Novelty Search}
+\label{discussion_comparison_constrainednoveltysearch}
+Pros:
+\begin{my_itemize}
+\item
+\item
+\end{my_itemize}
+Cons:
+\begin{my_itemize}
+\item
+\item
+\end{my_itemize}
+
+\subsection{Optimal Trade-off}
+% discuss tradeoff and which method offers the best balance/speed ratio
+% discuss close alternatives
+
+\subsection{Suggested Method}
+There is no singular optimal method for generating maps for all types of StarCraft players. 
+
+\subsubsection{Player Archetypes}
+Below three archetypes are defined as guideline in order to provide a context for the suggestions. Players can be more than one archetype at a time, but they will likely tend towards one more than the others.
+
+\paragraph{The Competitor:} Players who either compete at the highest level (both in tournaments and on the ladder) or aspire to do so rely on studying a map beforehand and practising different strategies in order to squeeze out the best possible performance. These players value balance and fairness above interestingness, novelty, and generation speed. It is likely that these players will spend far longer practising a single strategy on a generated map than the generator will take to create it.
+
+\paragraph{The Hardcore Non-Competitor:} Players who play a lot of StarCraft (and games in general), but does so with a non-competitive approach and mindset. While high levels of balance and fairness is welcome for these players, they put much value on an interesting and novel experience when playing the game. As such, the hardcore non-competitor will value interestingness/novelty above balance/fairness. It is likely, however, that generated maps will be discarded more quickly by this type of player as they seek the next novel experience. This means that map generation speed will be very important for the hardcore non-competitor.
+
+\paragraph{The Casual:} Players who want to have a few matches every couple of days. While the casual player is not as focused on perfect balance, they still want to experience matches that are challenging, but not impossible. Because they do not dedicate a lot of time to play, the casual player will likely value map generation speed highly in order to play more matches in their limited time. The casual player values balance/fairness and interestingness/novelty equally, but prioritises map generation speed.
+
+\subsubsection{}
+
+%suggest optimal method for each archetype
