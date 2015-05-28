@@ -87,6 +87,9 @@
             this.mfo = mfo;
         }
 
+        /// <summary>
+        /// Gets the fitness values of this map.
+        /// </summary>
         public MapFitnessValues FitnessValues { get; private set; }
 
         /// <summary>

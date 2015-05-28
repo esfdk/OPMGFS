@@ -14,9 +14,11 @@
 
     using Position = System.Tuple<int, int>;
 
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
     public class TestClass
     {
         #region Test Methods
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestEnclosedArea()
         {
             const int Height = 128;
@@ -38,6 +40,7 @@
             map.SaveMapToPngFile("Enclosed stuff", heightMap: false);
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void GenerateImages()
         {
             var random = new Random(0);
@@ -71,6 +74,7 @@
             em1.ConvertedPhenotype.SaveMapToPngFile("2nd", heightMap: false);
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static void TestMOEA()
         {
             const int Height = 128;

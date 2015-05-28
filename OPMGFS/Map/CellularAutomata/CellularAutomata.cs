@@ -315,6 +315,9 @@ namespace OPMGFS.Map.CellularAutomata
 
         #region Private Methods
 
+        /// <summary>
+        /// Loads the standard ruleset.
+        /// </summary>
         private void LoadRuleset()
         {
             var ruleExtBasicHeight1 = new RuleDeterministic(Enums.HeightLevel.Height1, Enums.HeightLevel.Height0)

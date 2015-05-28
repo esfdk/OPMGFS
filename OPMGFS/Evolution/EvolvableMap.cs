@@ -174,11 +174,21 @@
             return this.ConvertedPhenotype;
         }
 
+        /// <summary>
+        /// Checks if this map is dominated by another map.
+        /// </summary>
+        /// <param name="other">The potentially dominating map.</param>
+        /// <returns>True if this map is dominated by the other map, false if not.</returns>
         public bool IsDominatedBy(EvolvableMap other)
         {
             return this.MapFitnessValues.IsDominatedBy(other.MapFitnessValues);
         }
 
+        /// <summary>
+        /// Checks if this map is dominates another map.
+        /// </summary>
+        /// <param name="other">The potentially dominated map.</param>
+        /// <returns>True if this map dominates the other map, false if not.</returns>
         public bool Dominates(EvolvableMap other)
         {
             return this.MapFitnessValues.Dominates(other.MapFitnessValues);

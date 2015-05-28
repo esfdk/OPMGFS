@@ -58,6 +58,26 @@ Notes:
 
 	For evolution selection we currently use highest fitness. Should look into using chance based instead.
 	
+	Number of units:
+		Protoss: 18
+			Air: 9
+			Ground: 9
+			Special:
+				Collussus (cliff-walking)
+				Stalker (teleport)
+		Terran: 16
+			Air: 5
+			Ground: 11
+			Special:
+				Reaper (cliff-walking)
+				Siege Tank (siege-mode)
+		Zerg:16
+			Air: 6
+			Ground: 10
+			Special:
+		Total: 50
+			Air: 20
+			Ground: 30
 Old Notes:
 	1-1 representation
 	Radial

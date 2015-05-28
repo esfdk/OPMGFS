@@ -8,8 +8,21 @@
 
     using OPMGFS.Map;
 
+    /// <summary>
+    /// A multi-objective evolver based on the NSGA-II algorithm.
+    /// </summary>
     public class MultiObjectiveEvolver
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MultiObjectiveEvolver"/> class. 
+        /// The multi objective evolver.
+        /// </summary>
+        /// <param name="numberOfGenerations"> The number Of Generations. </param>
+        /// <param name="populationSize"> The population Size. </param>
+        /// <param name="mutationChance"> The mutation Chance. </param>
+        /// <param name="r"> The random. </param> 
+        /// <param name="mso"> The map search options. </param> 
+        /// <param name="mfo"> The map fitness options. </param>
         public MultiObjectiveEvolver(
             int numberOfGenerations,
             int populationSize,
@@ -53,8 +66,14 @@
         /// </summary>
         private double MutationChance { get; set; }
 
+        /// <summary>
+        /// Gets or sets the map search options.
+        /// </summary>
         private MapSearchOptions MapSearchOptions { get; set; }
 
+        /// <summary>
+        /// Gets or sets the map fitness options.
+        /// </summary>
         private MapFitnessOptions MapFitnessOptions { get; set; }
 
         #region NSGA-II
