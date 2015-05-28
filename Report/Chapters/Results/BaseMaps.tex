@@ -1,6 +1,22 @@
 \section{Base Map Generation}
 \label{results_basemapgeneration}
 
+The base maps we create are, as mentioned in section \ref{methodology_ca}, made through the use of a cellular automata. Due to the random seeding we utilize, the quality of the base maps can vary greatly, though most of them are good enough to create StarCraft II maps from.
+
+Shown in figure \ref{fig:results_basemapgeneration_goodbad} are two base maps generated through the cellular automata. The one to the left features four sizable areas of height-level two that all lead down to areas of height-level one. Assuming a start base is placed on either of these areas, the base will be pretty well-defended, as the map requires an attacker to head down to height-level zero to even get to the other side of the map. Any expansion bases are likely to be defendable as well, due to the same properties.
+
+The map on the right is a good example of a bad base map. It has a few small areas of height-level two, all of which connect very poorly to areas of height-level one. This means that start-bases on height-level two will often result in an infeasible map, as it is difficult to create ramps that would result in a path between the two start bases. Start-bases on lower height-levels are less desirable, but not the largest problem this base map has. 
+
+The largest problem is creating a path that links start-bases together almost no matter how they are placed. There are very few places where it is possible to place ramps in such a way that they would connect the top half of the map with the lower half, which greatly reduces the amount of places a start-base can be placed.
+
+\insertTwoPictures{BaseMap_Good}{BaseMap_Bad}{A good (left) and a bad (right) base map.}{results_basemapgeneration_goodbad}
+
+The two base maps shown are very different from each other, a trait which runs true for all the base maps we create. Figure \ref{fig:results_basemapgeneration_novelty} shows how different the generated base maps are. It shows the difference in height-level for every tile for every map. A tile is dark if a specific height-level was encountered on that tile on many maps. The less times the same height-level shows up in the same tile, the lighter the tile is.
+
+\insertPicture{0.8}{BaseMap_Novelty}{A novelty map made based on ten generated base maps.}{results_basemapgeneration_novelty}
+
+From the novelty map, it is easy to see that the base maps generated did not often share the same height-level in the same position.
+
 %do they work?
 
 %show 1 good
