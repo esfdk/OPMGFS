@@ -1,12 +1,25 @@
 \chapter{Discussion}
 \label{discussion_quality}
 
-\section{Speed}
+\section{Generation Speed}
 \label{discussion_speed}
-% is it fast enough for 2min and 5min
-% mention those that are close with higher fitness
+When discussing the results of our tests, it is important to note that it is does not take into account the time it would take to convert the output of the generator to the StarCraft II map file format. The arguments presented in this section are based on the assumption that the conversion time is irrelevant for the time limit. If the conversion time of any method developed in future research is longer than a few seconds, it would be necessary to re-evaluate the different approaches.
 
-\section{Quality}
+All of the three approaches tested in this paper is able to produce maps with a high fitness well within both the two and five minute time limits discussed in section\ref{goals_tradeoffs}. This is positive news for online balanced map generation, as the extra time available allows for a slow conversion process and/or improvements to the fitness function.
+
+All five constrained novelty search tests (table \ref{tab:results_novelty_combinations}) produces results within the five minute time limit, one of them being within the two minute time limit. This makes constrained novelty search a viable option for map generation, at least in terms of speed.
+
+\textbf{Needs rewrite after new test data!}
+\\When initialised with random seeds (table \ref{tab:results_evolution_results}), the genetic algorithm using the highest fitness selection process generally stays within the two minute time limit with only one combination of settings significantly exceeding the two minute limit and three settings slightly exceeding the time limit. In two out of three cases, the stochastic selection process (table \ref{tab:results_evolution_stochastic}) is much faster which may indicate that it is preferable in the case that fast generation is desired. 
+\\\textbf{Needs rewrite after new test data!}
+
+If the genetic algorithm is seeded with solutions from a constrained novelty search (tables \ref{tab:results_novelevolutionhighfitness}, \ref{tab:results_novelevolutionhighnovelty}, \ref{tab:results_novelevolutionhighfitness_stochastic} \& \ref{tab:results_novelevolutionhighnovelty_stochastic}), the evolution time stays about the same, but performing the constrained novelty search and selecting the individuals for seeding is a significant slowdown for the algorithm. None of the tests of the seeded genetic algorithm had a novelty time (search + selection) below two minutes, which means that the approach is impractical for cases where fast generation is a high priority. Even though some of the tests exceed five minutes, it is still a viable approach to generating maps if generation speed is not the highest priority.
+
+Only one of the tests of the NSGA-II algorithm with random seeds (table \ref{tab:results_moea_results}) exceeded the two minute time limit and that was only by a slight amount. This makes randomly seeded NSGA-II viable for both fast map generation and for more precisely balanced map generation. As with the genetic algorithm, the additional time would be well spent on an improved fitness function.
+
+Much like the genetic algorithm, NSGA-II has slightly slower evolution speed when seeded with solutions found with constrained novelty search, but the run time of the algorithm is dominated by the time it takes to perform the constrained novelty search and select individuals for seeding. There is no significant difference in speed between seeding with highest novelty individuals and seeding with highest fitness individuals. As with the genetic algorithm, there are none of the test results indicate that seeded NSGA-II will be able to generate maps in less than two. There are a few tests that do not exceed the five minute limit, which makes seeding NSGA-II viable for map generation except in high-speed generation cases.
+
+\section{Map Quality}
 \label{discussion_quality}
 
 \subsection{Base Maps}
@@ -20,9 +33,20 @@
 
 \insertPicture{0.8}{EvolutionLowFitnessMap}{A map with a fairly low (17.83) fitness score.}{discussion_quality_highfitnessmap}
 
+Suggested improvements to the fitness function are described in section \ref{futurework_fitnessfunction} on page \pageref{futurework_fitnessfunction}.
+
 % discuss quality of fitness function by using high and low fitness maps as examples
 
-\section{Novelty}
+\subsection{Search Methods}
+\label{discussion_quality_searchmethods}
+
+%Novelty search quality
+
+%Evolution quality
+
+%MOEA quality
+
+\section{Map Novelty}
 \label{discussion_novelty}
 %refer to examples from results section
 %discuss how novel each method is
@@ -101,6 +125,6 @@ Below three archetypes are defined as guideline in order to provide a context fo
 
 \paragraph{The Casual:} Players who want to have a few matches every couple of days. While the casual player is not as focused on perfect balance, they still want to experience matches that are challenging, but not impossible. Because they do not dedicate a lot of time to play, the casual player will likely value map generation speed highly in order to play more matches in their limited time. The casual player values balance/fairness and interestingness/novelty equally, but prioritises map generation speed.
 
-\subsubsection{}
+\subsubsection{Which method for which player?}
 
 %suggest optimal method for each archetype
