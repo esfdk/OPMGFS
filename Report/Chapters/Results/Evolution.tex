@@ -1,9 +1,27 @@
 \section{Evolution}
 \label{results_evolution}
 
+% Average værdier oer okay, men base maps giver stor variance.
+
 % Testede 10 forskellige base maps med forskellige indstillinger. Tallene er average af de bedste resultater for hvert base map.
 
-\begin{table}
+For the standard genetic algorithm, we ran three different kinds of tests:
+
+\begin{my_itemize}
+
+	\item Genetic algorithm using a random initial population. The settings used for this test are shown in table \ref{tab:results_evolution_combinations}). The results are shown in table \ref{tab:results_evolution_results}. The chance of mutation was set to 30\% and was never changed.
+
+	\item Genetic algorithm using an initial population made from the highest fitness maps created by constrained novelty search. These tests uses one of the set of settings shown in table \ref{tab:results_novelty_combinations} for the constrained novelty search in conjunction with one of the set of settings shown in table \ref{tab:results_evolution_combinations}. The settings and results are shown in table \ref{tab:results_novelevolutionhighfitness}.
+
+	\item Genetic algorithm using an initial population made from the highest novelty maps created by constrained novelty search. These tests have been made in the same way as the tests seeding with the highest fitness maps. The combinations and results are shown in table \ref{tab:results_novelevolutionhighnovelty}.
+
+\end{my_itemize}
+
+Like the results in the novelty search section, all numbers in the result tables are the average of running the algorithm with settings on ten different base maps. \textit{Convergence} shows the generation at which there was no change in neither maximum nor minimum fitness for three consecutive generations. It is not necessarily the same as the generation at which the values in the tables was reached.
+
+We have attempted to keep the parents:children ratio close to 1:4 with 1 parent per 5 population size.
+
+\begin{table}[!h]
 	\begin{center}
 	\renewcommand{\arraystretch}{1}
 	\caption{The settings used in the standard genetic algorithm and MOEA. \textit{Parents} and \textit{Children} are only relevant for the genetic algorithm, as the MOEA does not have such parameters.}
@@ -12,127 +30,137 @@
 		\hline
 		Settings Label & Generations & Population & Parents & Children \\
 		\hline
-		A & 5 & 5 & 1 & 4 \\
+		A 	& 5 	& 5 	& 1 	& 4 \\
 		\hline
-		B & 15 & 15 & 3 & 12 \\
+		B 	& 15 	& 15 	& 3 	& 12 \\
 		\hline
-		C & 45 & 5 & 3 & 12 \\
+		C 	& 45 	& 5 	& 1 	& 4 \\
 		\hline
-		D & 25 & 10 & 3 & 8 \\
+		D 	& 25 	& 10 	& 2 	& 8 \\
 		\hline
-		E & 10 & 25 & 6 & 18 \\
+		E 	& 10 	& 25 	& 6 	& 18 \\
 		\hline
-		F & 30 & 20 & 4 & 16 \\
+		F 	& 30 	& 20 	& 4 	& 16 \\
 		\hline
-		G & 5 & 50 & 12 & 36 \\
+		G 	& 5 	& 50 	& 12 	& 36 \\
 		\hline
-		H & 50 & 5 & 1 & 4 \\
+		H 	& 50 	& 5 	& 1 	& 4 \\
 		\hline
-		I & 50 & 10 & 2 & 8 \\
+		I 	& 50 	& 10 	& 2 	& 8 \\
 		\hline
-		J & 10 & 5 & 1 & 4 \\
-
-
-
-
-		\hline
-		 &  &  &  &  \\
+		J 	& 10 	& 5 	& 1 	& 4 \\
+%		\hline
+%		 &  &  &  &  \\
 		\hline
 		\end{tabular}
 	\end{center}
 \end{table}
 
-\begin{table}
+\begin{table}[!h]
 	\begin{center}
 	\renewcommand{\arraystretch}{1}
-	\caption{Results of evolution with a standard genetic algorithm.}
+	\caption{Results of evolution with a standard genetic algorithm using highest fitness selection.}
 	\label{tab:results_evolution_results}
-		\begin{tabular}{| c ? c | c | c | p{1.9cm} | p{1.9cm} | p{1cm} |}
+		\begin{tabular}{| c ? K | K | K | L | L | K |}
 		\hline
-		Settings & Max fitness & Average fitness & Min fitness & Convergence (average) & Convergence (mode) &  Time \\
+		Settings & Max Fitness & Average Fitness & Min Fitness & Convergence (average) & Convergence (mode) &  Time (seconds) \\
 		\hline
-		A & 31.26 & 22.89 & 18.13 & 3.90 & 3 & 12.98 \\
+		A & 29.27 & 21.50 & 10.28 & 3.30 & 4 & 5.94 \\
 		\hline
-		B & 35.05 & 31.67 & 29.59 & 12.60 & 13 & 102.94 \\
+		B  & 40.66 & 34.63 & 22.16 & 12.20 & 15 & 38.03 \\
 		\hline
-		C & 38.70 & 38.36 & 38.04 & 36.00 & 41 & 105.06 \\
+		C & 40.65 & 36.78 & 32.90 & 25.10 & 1 & 35.22 \\
 		\hline
-		D & 27.85 & 26.87 & 26.14 & 22.60 & 25 & 148.60 \\
+		D & 42.65 & 37.73 & 27.10 & 7.50 & 4 & 41.97 \\
 		\hline
-		E & 43.71 & 37.46 & 32.08 & 8.90 & 10 & 132.05 \\
+		E & 43.37 & 30.81 & 5.66 & 7.00 & 10 & 47.56 \\
 		\hline
-		F & 43.11 & 39.05 & 37.88 & 10.70 & 11 & 109.79 \\
+		F & 42.91 & 37.43 & 26.20 & 10.30 & 6 & 112.76 \\
 		\hline
-		G & 43.38 & 37.10 & 32.01 & 5.00 & 5 & 140.76 \\
+		G & 44.86 & 11.93 & -24.40 & 3.40 & 5 & 57.61 \\
 		\hline
-		H & 39.11 & 38.70 & 38.22 & 42.40 & 50 & 108.91 \\
+		H & 41.66 & 38.48 & 31.70 & 6.10 & 3 & 38.87 \\
 		\hline
-		I & 44.60 & 43.66 & 43.04 & 44.20 & 50 & 238.73 \\
-
-
-		\hline
-		 & & & & & & \\
+		I & 44.19 & 38.93 & 26.01 & 6.80 & 4 & 83.39 \\
+%		\hline
+%		 & & & & & & \\
 		\hline
 		\end{tabular}
 	\end{center}
 \end{table}
 
-\begin{table}
+The results in table \ref{tab:results_evolution_results} make one thing immediately clear: Having both a low number of generations and a small population is not good for the search. The one set ($A$) that has low values in both has also scored a far worse fitness than any of the other sets. While the difference is not as high, other sets with a low population, but higher number of generations, have also performed worse than their higher-population counterparts. This is shown by sets $C$ and $H$, that both have a population of five.
+
+An interesting thing to note is that $H$ has scored significantly lower than $H$, even though the only difference between them is that their values for generations and population size has been switched around (and parents/children been changed to match). This is likely due to the fact that $H$ is forced to use the same parent (it only chooses one candidate to be the parent for the next generation, just like $A$ and $C$) when creating children for the next generation. All children it generates will be similar to that one parent, which means that any diversity in a generation is ignored in favor of the properties that one parent has. With only one parent, it becomes close to impossible to get out of a local optima.
+
+According to our tests, it appears that a combination of generations and population size such that $\langle generations \rangle \times \langle populationSize \rangle = 250$, assuming $parents >= 2$, appears to be the best when considering how much extra benefit more time gives. $D$, $E$ and $G$ all have this and have scored fairly high considering they have not used more than one minute for their search. The interesting thing is that $G$ has scored the highest fitness of these three, even though it has the fewest number of generations. This suggests that it is more important to have a high population size and a high number of parents per generation than a high number of generations.
+
+The large difference between maximum and minimum fitness tells the same story as with novelty search: The base map has a large influence in the quality of the map that can be generated. Some base maps will be very difficult to generate high quality maps from.
+
+\begin{table}[!h]
 	\begin{center}
 	\renewcommand{\arraystretch}{1}
-	\caption{Results of standard genetic algorithm seeded with highest fitness novel individuals.}
+	\caption{Results of the standard genetic algorithm seeded with highest fitness novel individuals.}
 	\label{tab:results_novelevolutionhighfitness}
-		\begin{tabular}{| K ? S | S | S | L | L | K | K |}
+		\begin{tabular}{| K ? S | S | K | S | K | K | K | K |}
 		\hline
-		Settings Combination & Max fitness & Average fitness & Min fitness & Convergence (average) & Convergence (mode) & Evolution Time & Novelty Time \\
+		Settings Combination & Max Fitness & Average Fitness & Min Fitness & Conver-gence (average) & Conver-gence (mode) & Evolution Time (seconds) & Novelty Time (seconds) & Total Time (seconds) \\
 		\hline
-		E + IV & 45.46 & 42.17 & 40.30 & 7.40 & 10 & 161.50 & 196.07 \\
+		E + IV    & 46.34 & 33.92 & -1.60 & 5.80 & 8 & 41.82 & 170.88 & 212.70 \\
 		\hline
-		F + I & 47.55 & 46.24 & 45.39 & 6.90 & 9 & 106.59 & 169.54 \\
+		F + I     & 46.99 & 40.67 & 15.14 & 19.10 & 25 & 101.89 & 172.18 & 274.07 \\
 		\hline
-		G + VIII & 46.73 & 42.80 & 40.85 & 7.00 & 5 & 302.31 & 225.15 \\
+		G + VIII & 45.23 & 33.94 & -6.19 & 3.50 & 5 & 48.83 & 344.08 & 392.91 \\
 		\hline
-		J + V & 42.85 & 42.02 & 41.10 & 8.00 & 8 & 28.54 & 350.07 \\
+		J + V     & 45.79 & 40.96 & 35.45 & 6.00 & 1 & 8.18 & 335.56 & 343.74 \\
 		\hline
-		H + VI & 46.02 & 45.40 & 44.79 & 44.00 & 45 & 128.86 & 826.30 \\
+		H + VI   & 47.70 & 45.09 & 38.84 & 40.10 & 37 & 39.94 & 788.76 & 828.70 \\
 		\hline
-		I + VII & 47.20 & 46.53 & 45.91 & 44.70 & 47 & 234.93 & 1,304.77 \\
+		I + VII   & 48.62 & 44.52 & 29.10 & 28.70 & 42 & 76.44 & 1291.80 & 1368.24 \\
 		\hline
-		D + II &  47.57 & 46.59 & 45.97 & 24.00 & 24 & 211.80 & 190.45 \\
-
-
-		\hline
-		 &  &  &  &  &  &  &  \\
+		D + II    & 47.09 & 41.62 & 23.37 & 19.30 & 23 & 39.15 & 166.25 & 205.40 \\
 		\hline
 		\end{tabular}
 	\end{center}
 \end{table}
 
-\begin{table}
+\begin{table}[!h]
 	\begin{center}
 	\renewcommand{\arraystretch}{1}
-	\caption{Results of standard genetic algorithm seeded with highest novelty novel individuals.}
+	\caption{Results of the standard genetic algorithm seeded with highest novelty novel individuals.}
 	\label{tab:results_novelevolutionhighnovelty}
-		\begin{tabular}{| K ? S | S | S | L | L | K | K |}
+		\begin{tabular}{| K ? S | S | K | S | K | K | K | K |}
 		\hline
-		Settings Combination & Max fitness & Average fitness & Min fitness & Convergence (average) & Convergence (mode) & Evolution Time & Novelty Time \\
+		Settings Combination & Max Fitness & Average Fitness & Min Fitness & Conver-gence (average) & Conver-gence (mode) & Evolution Time (seconds) & Novelty Time (seconds) & Total Time (seconds) \\
 		\hline
-		E + IV &  43.93 & 40.23 & 38.41 & 8.10 & 8 & 154.48 & 176.70 \\
+		E + IV    & 46.34 & 33.92 & -1.60 & 5.50 & 10 & 44.96 & 162.28 & 207.24 \\
 		\hline
-		F + I &  44.65 & 43.84 & 43.21 & 9.40 & 7 & 114.38 & 171.12 \\
+		F + I     & 47.45 & 39.46 & 12.48 & 5.70 & 6 & 108.90 & 160.56 & 269.46 \\
 		\hline
-		G + VIII &  46.46 & 42.13 & 39.93 & 8.80 & 8 & 289.78 & 194.96 \\
+		G + VIII & 46.29 & 34.53 & -3.56 & 2.70 & 3 & 54.08 & 342.74 & 396.83 \\
 		\hline
-		J + V &  33.06 & 31.23 & 30.03 & 8.20 & 9 & 23.96 & 335.58 \\
+		J + V     & 38.85 & 34.80 & 26.40 & 2.90 & 2 & 11.64 & 385.92 & 397.56 \\
 		\hline
-		H + VI &  42.62 & 42.21 & 41.85 & 42.90 & 48 & 100.05 & 836.89 \\
+		H + VI   & 43.29 & 41.24 & 37.12 & 6.10 & 2 & 42.55 & 878.03 & 920.58 \\
 		\hline
-		I + VII &  41.90 & 41.04 & 40.43 & 48.60 & 48 & 202.50 & 1,330.37 \\
+		I + VII   & 43.55 & 37.96 & 21.40 & 4.80 & 5 & 78.41 & 1369.11 & 1447.53 \\
 		\hline
-		D + II &  45.67 & 44.54 & 43.73 & 23.10 & 25 & 203.34 & 185.62 \\
-
-
+		D + II    & 42.78 & 38.14 & 26.52 & 7.20 & 4 & 44.69 & 182.48 & 227.17 \\
 		\hline
 		\end{tabular}
 	\end{center}
 \end{table}
+
+The results of seeding the genetic algorithm with maps found by novelty search show the same: There is a clear increase in fitness, no matter if it is seeded with highest novelty or highest fitness individuals. This comes at the cost of having to run the novelty search, however, which at the very least triples the total time needed for a search. The results also show that using the highest fitness individuals is the better choice for most combinations.
+
+There do no seem to be any real correlation between the time novelty search uses and the final fitness scores, no matter which of the two seedings one look at. Judging from this, it seems that running a "short" novelty search is fine for most seeding purposes.
+
+\subsection*{Novelty of Genetic Algorithm Maps}
+
+Like the novelty search, the maps found by the genetic algorithm are different from each other. This can be seen in figure \ref{fig:results_evolution_samebasediffsettings}, where two novelty maps are shown for the same base map, using different settings ($E$ and $G$). This is a good thing, as it means that the evolution actually finds different solutions instead of being stuck in the same solution.
+
+\insertTwoPictures{GA_E_BM5}{GA_G_BM5}{The novelty of two different set of settings ($E$ and $G$ respectively) run on the same base map.}{results_evolution_samebasediffsettings}
+
+Looking at the best maps created for each base map (see figure \ref{fig:results_evolution_bestmapsdiffsettings}) they are very different from each other. This is to be expected, as the base maps already are very different (see figure \ref{fig:results_basemapgeneration_novelty} on page \pageref{fig:results_basemapgeneration_novelty}). Though the two searches use  the same base maps, their novelty maps are quite different (with the exception of a few places along the edge of the map).
+
+\insertTwoPictures{GA_E_Best}{GA_G_Best}{The novelty of the best maps created from the 10 same base maps with two different set of settings ($E$ and $G$ respectively).}{results_evolution_bestmapsdiffsettings}

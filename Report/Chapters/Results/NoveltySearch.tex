@@ -2,13 +2,16 @@
 \label{results_noveltysearch}
 
 % Minimum novelty + Mutation chance + Neighbours static
+% Novelty maps
 
-\begin{table}
+The results for the constrained novelty search were gathered by running constrained novelty search with different sets of settings. Table \ref{tab:results_novelty_combinations} describes the different novelty search settings that were used through the entire result gathering. Some of the settings were used solely for seeding the standard genetic algorithm and the NSGA-II algorithm, and have not been used for the constrained novelty search.
+
+\begin{table}[!h]
 	\begin{center}
 	\renewcommand{\arraystretch}{1}
 	\caption{The novelty search settings.}
 	\label{tab:results_novelty_combinations}
-		\begin{tabular}{| c | c | c | c | c | c |}
+		\begin{tabular}{| c ? c | c | c | c | c |}
 		\hline
 		Settings Label & Generations & Feasible Size & Infeasible Size & Add To Archive \\
 		\hline
@@ -32,25 +35,45 @@
 	\end{center}
 \end{table}
 
-\begin{table}
+Table \ref{tab:results_novelty_results} shows the results of the five sets of settings we tested with constrained novelty search. Each set was run for ten different base maps in order to limit how influential a good or bad base map would be for the results. Every one of the ten base maps generated its own set of results. The \textit{average} numbers shown in the table are the average numbers over the ten base maps for that column. \textit{Highest} and \textit{lowest} show the highest and lowest number of acceptable maps for any of the base maps processed with that specific set of settings.
+
+When it comes to constrained novelty search, we decided to evaluate the generated maps on whether they were acceptable as a map and how high quality they were. A map is  \textit{acceptable} if there is a ground path from the start base to its natural expansion and of \textit{high quality} if its fitness was 40 or above.
+
+\begin{table}[!h]
 	\begin{center}
 	\renewcommand{\arraystretch}{1}
 	\caption{Results of novelty search.}
-	\label{tab:results_noveltysearch_results}
-		\begin{tabular}{| c ? K | K | K | K | K | K | c |}
+	\label{tab:results_novelty_results}
+		\begin{tabular}{| c ? K | K | K | K | K | K | K |}
 		\hline
-		Setting & Acceptable \% (highest) & Acceptable \% (average) & Acceptable \% (lowest) & High-quality \% (highest) & High-quality \% (average) & High-quality \% (lowest) & Time\\
+		Settings & Accept-able \% (highest) & Accept-able \% (average) & Accept-able \% (lowest) & High-quality \% (highest) & High-quality \% (average) & High-quality \% (lowest) & Time (seconds)\\
 		\hline
-		I & 59.08\% & 89.09\% & 40.00\% & 1.74\% & 7.27\% & 0.00\% & 193.08 \\
+		I & 89.09\% & 59.08\% & 40.00\% & 7.27\% & 1.74\% & 0.00\% & 193.08 \\
 		\hline
-		II & 63.56\% & 80.56\% & 44.00\% & 3.31\% & 9.09\% & 0.00\% & 203.71 \\
+		II & 80.56\% & 63.56\% & 44.00\% & 9.09\% & 3.31\% & 0.00\% & 203.71 \\
 		\hline
-		III & 73.31\% & 86.36\% & 62.50\% & 2.50\% & 12.50\% & 0.00\% & 70.24 \\
+		III & 86.36\% & 73.31\% & 62.50\% & 12.50\% & 2.50\% & 0.00\% & 70.24 \\
 		\hline
-		IV & 62.27\% & 71.00\% & 46.00\% & 2.90\% & 8.00\% & 0.00\% & 207.57  \\
+		IV & 71.00\% & 62.27\% & 46.00\% & 8.00\% & 2.90\% & 0.00\% & 207.57  \\
 		\hline
-		V & 65.93\% & 84.62\% & 54.29\% & 2.21\% & 8.70\% & 0.00\% & 210.40 \\
+		V & 84.62\% & 65.93\% & 54.29\% & 8.70\% & 2.21\% & 0.00\% & 210.40 \\
 		\hline
 		\end{tabular}
 	\end{center}
 \end{table}
+
+Set III is the set that generated the most acceptable maps and is also the one with the fewest generations run. This comes from the lowest number of acceptable maps being 8\% to 22.5\% higher than the rest of the sets, not from the highest number of acceptable maps. It does not generate more high-quality maps on average than the other sets, however. This suggests that creating acceptable maps does not necessarily result in creating high-quality maps. 
+
+Another thing to note is the search time between the different sets. The data shows that spending more time on searching does not have much (if any) impact on the final results. This leads us to believe that base maps have a larger influence on the results of the constrained novelty search than time spent searching (after a certain point).
+
+The results also show that the base map a search is performed on has a high influence on the final result. Using set I as an example, a search on one of the ten base maps resulted in 89.09\% acceptable maps, where one of the other base maps resulted in only 40\% acceptable maps. That is less than half of the generated maps that are acceptable. If the base maps did not have much of an influence (i.e. the quality of the base maps war roughly equal), the lowest and highest number of acceptable maps would both be much close to the average value.
+
+High-quality tells the same story. The highest number of high-quality maps found was 7\% or above, but for every single set of settings, there was a base map where no high-quality map was found. This means that novelty search does not guarantee that a high-quality map will be found and that the base map has a lot to say when it comes to finding high-quality maps.
+
+\subsection*{Novelty of Novelty Maps}
+
+As constrained novelty search attempts to find novel maps, it is important that novelty search actually produces novel maps. Figure \ref{fig:results_novelty_bm2diffsettings} and \ref{results_novelty_bm5diffsettings} shows that different maps are found when using different settings on the same base map.
+
+\insertTwoPictures{Novelty_SetI_BM2}{Novelty_SetIII_BM2}{The novelty of two different set of settings ($I$ and $III$ respectively) run on the same base map.}{results_novelty_bm2diffsettings}
+
+\insertTwoPictures{Novelty_SetI_BM5}{Novelty_SetIII_BM5}{The novelty of two different set of settings ($I$ and $III$ respectively) run on the same base map.}{results_novelty_bm5iffsettings}

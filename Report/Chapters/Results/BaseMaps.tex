@@ -1,7 +1,11 @@
 \section{Base Map Generation}
 \label{results_basemapgeneration}
 
-The base maps we create are, as mentioned in section \ref{methodology_ca}, made through the use of a cellular automata. Due to the random seeding we utilize, the quality of the base maps can vary greatly, though most of them are good enough to create StarCraft II maps from.
+The base maps we create are, as mentioned in section \ref{methodology_ca}, made through the use of a cellular automata. The quality of the base maps vary due to the random seeding used, but most of them are good enough to allow the different search algorithms to create decent maps. The generation of a base map takes on average 6.42 seconds according to a test that generated 100 base maps. In the test the fastest generation time was 5.98 seconds and the slowest generation time was 6.85.
+
+One thing to note is that the base maps we generate are not compatible with the StarCraft II map editor, as there are constraints in the editor that our cellular automata does not follow. Changes are made to points between tiles in the map editor (and only every second point can be affected), which affects the four tiles around that point, where our cellular automata can change individual tiles. This means that the cellular automata can create areas of height-level (for example an area that is only one tile high/wide) that is not possible to create in the editor.
+
+\insertTwoPictures{BaseMap_Good}{BaseMap_Bad}{A good (left) and a bad (right) base map.}{results_basemapgeneration_goodbad}
 
 Shown in figure \ref{fig:results_basemapgeneration_goodbad} are two base maps generated through the cellular automata. The one to the left features four sizable areas of height-level two that all lead down to areas of height-level one. Assuming a start base is placed on either of these areas, the base will be pretty well-defended, as the map requires an attacker to head down to height-level zero to even get to the other side of the map. Any expansion bases are likely to be defendable as well, due to the same properties.
 
@@ -9,13 +13,15 @@ The map on the right is a good example of a bad base map. It has a few small are
 
 The largest problem is creating a path that links start-bases together almost no matter how they are placed. There are very few places where it is possible to place ramps in such a way that they would connect the top half of the map with the lower half, which greatly reduces the amount of places a start-base can be placed.
 
-\insertTwoPictures{BaseMap_Good}{BaseMap_Bad}{A good (left) and a bad (right) base map.}{results_basemapgeneration_goodbad}
+The two pictures shown are in the opposite end of the spectrum, but it is a general trend that the base maps are of very different qualities. 
 
-The two base maps shown are very different from each other, a trait which runs true for all the base maps we create. Figure \ref{fig:results_basemapgeneration_novelty} shows how different the generated base maps are. It shows the difference in height-level for every tile for every map. A tile is dark if a specific height-level was encountered on that tile on many maps. The less times the same height-level shows up in the same tile, the lighter the tile is.
+\subsection*{Novelty of Base Maps}
 
-\insertPicture{0.8}{BaseMap_Novelty}{A novelty map made based on ten generated base maps.}{results_basemapgeneration_novelty}
+The two base maps shown above are very different from each other, a trait which is important for the base map creation. Figure \ref{fig:results_basemapgeneration_novelty} shows two different \textit{novelty maps} created from a population of 10 and 100 different base maps respectively. A \textit{novelty map} is intended to show how much the maps it was created over are. The lighter the color of a tile, the more diverse that tile has been for the different maps. We use this method to show novelty for final maps created by the search algorithms as well.
 
-From the novelty map, it is easy to see that the base maps generated did not often share the same height-level in the same position.
+\insertTwoPictures{BaseMap_Novelty}{BaseMap_Novelty100}{Two novelty maps made over base maps. The left map is from 10 generated base maps, the right one is from 100 generated base maps.}{results_basemapgeneration_novelty}
+
+The novelty map shows that the base maps generated are all very different from each other. They further show that the more base maps we generate, the more diversity is added to the collection of maps.
 
 %do they work?
 
