@@ -42,6 +42,8 @@ Another improvement to the fitness function would be to change the evaluation fu
 
 The current implementation of base openness detection is somewhat naive. A base may be far less open than the detection may suggest, because it only detects the openness of tiles immediately outside the base area. If a tile is blocked in the second row of tiles outside of the base, it is still a "closed" tile surrounding the base. More advanced and precise methods for base openness detection will likely slow down the evaluation function, but will provide a more accurate evaluation of map quality.
 
+The fitness function currently calculates how much of the shortest path between the main bases that the Xel'Naga towers can see. While this is very important, generated maps with high fitness often have Xel'Naga towers placed on unreachable terrain. This is high beneficial for the Terran playable race, as they have early-game units with cliff-walking. As such, Terran players are able to control unreachable Xel'Naga towers much earlier than the other races and gain a lot of information in non-Terran versus Terran matches.
+
 \section{Feasibility Function Improvements}
 \label{futurework_feasibility}
 The constrained novelty search approach presented in this paper requires solutions to be decoded from their genotype to the corresponding phenotype in order to calculate their distance to feasibility. While the conversion process is not slow, it is by far the slowest part of the constrained novelty search process, and any approach that does not require conversion from genotype to phenotype would likely provide large increase in runtime 

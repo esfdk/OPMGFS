@@ -13,65 +13,90 @@ All five constrained novelty search tests (table \ref{tab:results_novelty_combin
 \\When initialised with random seeds (table \ref{tab:results_evolution_results}), the genetic algorithm using the highest fitness selection process generally stays within the two minute time limit with only one combination of settings significantly exceeding the two minute limit and three settings slightly exceeding the time limit. In two out of three cases, the stochastic selection process (table \ref{tab:results_evolution_stochastic}) is much faster which may indicate that it is preferable in the case that fast generation is desired. 
 \\\textbf{Needs rewrite after new test data!}
 
-If the genetic algorithm is seeded with solutions from a constrained novelty search (tables \ref{tab:results_novelevolutionhighfitness}, \ref{tab:results_novelevolutionhighnovelty}, \ref{tab:results_novelevolutionhighfitness_stochastic} \& \ref{tab:results_novelevolutionhighnovelty_stochastic}), the evolution time stays about the same, but performing the constrained novelty search and selecting the individuals for seeding is a significant slowdown for the algorithm. None of the tests of the seeded genetic algorithm had a novelty time (search + selection) below two minutes, which means that the approach is impractical for cases where fast generation is a high priority. Even though some of the tests exceed five minutes, it is still a viable approach to generating maps if generation speed is not the highest priority.
+If the genetic algorithm is seeded with solutions from a constrained novelty search (tables \ref{} \& \ref{}), the evolution time stays about the same, but performing the constrained novelty search and selecting the individuals for seeding is a significant slowdown for the algorithm. None of the tests of the seeded genetic algorithm had a novelty time (search + selection) below two minutes, which means that the approach is impractical for cases where fast generation is a high priority. Even though some of the tests exceed five minutes, it is still a viable approach to generating maps if generation speed is not the highest priority.
 
 Only one of the tests of the NSGA-II algorithm with random seeds (table \ref{tab:results_moea_results}) exceeded the two minute time limit and that was only by a slight amount. This makes randomly seeded NSGA-II viable for both fast map generation and for more precisely balanced map generation. As with the genetic algorithm, the additional time would be well spent on an improved fitness function.
 
-Much like the genetic algorithm, NSGA-II has slightly slower evolution speed when seeded with solutions found with constrained novelty search, but the run time of the algorithm is dominated by the time it takes to perform the constrained novelty search and select individuals for seeding. There is no significant difference in speed between seeding with highest novelty individuals and seeding with highest fitness individuals. As with the genetic algorithm, there are none of the test results indicate that seeded NSGA-II will be able to generate maps in less than two. There are a few tests that do not exceed the five minute limit, which makes seeding NSGA-II viable for map generation except in high-speed generation cases.
+NSGA-II has slightly slower evolution speed when seeded with solutions found with constrained novelty search, but the run time of the algorithm is dominated by the time it takes to perform the constrained novelty search and select individuals for seeding. There is no significant difference in speed between seeding with highest novelty individuals and seeding with highest fitness individuals. As with the genetic algorithm, there are none of the test results indicate that seeded NSGA-II will be able to generate maps in less than two. There are a few tests that do not exceed the five minute limit, which makes seeding NSGA-II viable for map generation except in high-speed generation cases.
 
-\section{Map Quality}
-\label{discussion_quality}
-
-\subsection{Base Maps}
-\label{discussion_quality_basemaps}
-% discuss quality of base maps and the importance of the base maps being of high quality
-
-\subsection{Fitness function}
-\label{discussion_quality_fitnessfunction}
-
-\insertPicture{0.8}{EvolutionHighFitnessMap}{A map with a fairly high (47.09) fitness score.}{discussion_quality_highfitnessmap}
-
-\insertPicture{0.8}{EvolutionLowFitnessMap}{A map with a fairly low (17.83) fitness score.}{discussion_quality_highfitnessmap}
-
-Suggested improvements to the fitness function are described in section \ref{futurework_fitnessfunction} on page \pageref{futurework_fitnessfunction}.
-
-% discuss quality of fitness function by using high and low fitness maps as examples
-
-\subsection{Search Methods}
-\label{discussion_quality_searchmethods}
-
-%Novelty search quality
-
-%Evolution quality
-
-%MOEA quality
-
-\section{Map Novelty}
+\section{Novelty of Generated Maps}
 \label{discussion_novelty}
-%refer to examples from results section
-%discuss how novel each method is
+For most players, a single good StarCraft II map offers a great deal of replay value. However, the replay value is not infinite and varies from player to player. New maps must be different from previous maps, as they will otherwise lack replay value due to similar maps having already been played. Therefore, any approach to map generation for StarCraft II needs to produce novel maps in order to be relevant as a long-term tool.
 
 \subsection{Base Maps}
 \label{discussion_novelty_basemaps}
-%discuss how many potentially novel base maps exist - maybe with example
+As shown by the \textit{novelty map} of the base map generation (see figure \ref{basemapthinghere}), the base maps generated by the cellular automata are very novel when compared to each other. This is important when using the two-layered search space methodology, as lack of novelty in base maps would result in much less of the StarCraft II map space being searched. Because the base map generation is randomly seeded\footnote{The random generator used in this project has 2,147,483,648 different seeds.}, there is an immense amount of novel base maps available for search. Given that the base maps are novel and there are so many different base maps available, it is unlikely that a player will experience maps generated from searching the same base map twice. It should be noted that on a 128x128 size map with three height levels and impassable terrain, there are $4^{(128*64)}$ different halves of the map, which is far less than the number of random seeds available for the random generator used by the cellular automata. This is significant, because it makes it unlikely that two individual base maps generated by the cellular automata will not be novel when compared individually.
 
 \subsection{Final Maps}
 \label{discussion_novelty_finalmaps}
 
-\insertPicture{0.5}{Discussion_NoveltySearch_IndividualNoveltyMap}{Novelty map for a search using the constrained novelty search algorithm on an individual base map.}{discussion_novelty_EvolutionIndividualNoveltyMap}
+%novelty of novelty search
 
-\insertPicture{0.5}{Discussion_Evolution_CollectiveNoveltyMap}{Novelty map for a search using the standard genetic algorithm on 10 different base maps.}{discussion_novelty_EvolutionCollectiveNoveltyMap}
-\insertPicture{0.5}{Discussion_Evolution_IndividualNoveltyMap}{Novelty map for a search using the standard genetic algorithm on an individual base map.}{discussion_novelty_EvolutionIndividualNoveltyMap}
+%novelty of evolution
 
-\insertPicture{0.5}{Discussion_MOEA_CollectiveNoveltyMap}{Novelty map for a multi-objective evolutionary search on 10 different base maps.}{discussion_novelty_MOEACollectiveNoveltyMap}
-\insertPicture{0.5}{Discussion_MOEA_IndividualNoveltyMap}{Novelty map for a multi-objective evolutionary search on an individual base map.}{discussion_novelty_MOEAIndividualNoveltyMap}
+%novelty of MOEA
+
+
+\section{Quality of Generated Maps}
+\label{discussion_quality}
+The StarCraft II game play relies heavily on having good maps available for play. What quantifies as a good map will vary from player to player, but for most players it is essential that the map is more or less balanced between the players. As such, it is important for a StarCraft II map generator to produce balanced maps in order to satisfy the playerbase.
+
+\subsection{Base Maps}
+\label{discussion_quality_basemaps}
+Even though the base maps generated by the cellular automata are very novel (see section \ref{results_basemapgeneration}), they do suffer compatibility issues with the StarCraft II map format. These issues prevent the base maps (and any generated maps) from being created and played in the actual game, which is a big problem with the method presented in this thesis. Fixing these issues would be the first and most important step on the road to making a viable, in-game, online StarCraft II map generator.
+
+In addition to the compatibility issues, there is a rather high variance in the quality of the base maps. As discussed in the results section, the fitness of the maps produced by the search methods are heavily influenced by the quality of the base map the search is being performed on. This correlation in quality means that it is important to have high-quality base maps in order to make a good StarCraft II map generator using a similar approach as presented in this paper. Furthermore, it is necessary for the average base map to be of a predictably high-quality if the map generator is to be used in an online capacity. 
+
+\subsection{Fitness function}
+\label{discussion_quality_fitnessfunction}
+The fitness function presented in this paper (section \ref{methodology_mapfitness}) is focused on ensuring equal opportunity between players and their choices of playable race and strategy. It does not evaluate the amount of used map space or the interestingness of the map layout. This means that maps with high fitness can look like the map shown in figure \ref{fig:discussion_quality_highfitnessmap}. In this map, the south-west and north-east corners are completely bare and has no interesting features from a competitive players point of view. Furthermore, the centre bases on the lowest height level are almost completely to hold for a player, as it will be very easy for the opponent to siege the low-ground base from the gold base on the middle height level right next to it.
+
+It is interesting, however, that the main bases are vulnerable from two directions, which are hard to defend at the same time (east/north ramps on the northern main base). While the fitness function does consider openness of bases, it does not account for additional, longer routes to the main base that can lead to the defending player having to be in two places at once. In addition, the map allows for a lot of aggressive play and small skirmishes as the players try to take additional bases. The Xel'Naga tower is placed on an unreachable low-ground, making it impossible to control in the early game except through units with cliff-walking.
+
+However, the map could certainly be tweaked by moving the centre bases to the highest level in the north-east/north-west corners (making them accessible only by air) and moving the Xel'Naga towers out of their holes and closer to the centre of the map. Most of the high-fitness generated maps follow the same pattern of requiring slightly tweaks and/or improvements in order to be a very interesting and competitive map.
+
+\insertPicture{0.8}{EvolutionHighFitnessMap}{A map with a fairly high (47.09) fitness score.}{discussion_quality_highfitnessmap}
+
+The map shown in figure \ref{fig:discussion_quality_lowfitnessmap} also has a lot of wasted space (roughly 50\%), but each player only has one expansion available that is reachable by ground (and only two overall). As such, it is almost impossible to run a late game strategy on this map. Instead, the players are forced into an aggressive play style with only one angle of attack. An argument could be made for this leading to interesting games, but it does not fit into the definition of balance presented in section \ref{goals_balance}. Overall, the lack of options in strategy leads to this map being of low quality and has very few interesting points due to the large amount of wasted space.
+
+\insertPicture{0.8}{EvolutionLowFitnessMap}{A map with a fairly low (17.83) fitness score.}{discussion_quality_lowfitnessmap}
+
+While higher fitness maps are generally better balanced and more interesting, there are many potential improvements that can be made to the fitness function in order to get a more accurate evaluation of the quality of the generated maps. Section \ref{futurework_fitness} on page \pageref{futurework_fitness} describes a number of suggested improvements to the fitness function.
+
+\subsection{Search Methods}
+\label{discussion_quality_searchmethods}
+The maps generated by constrained novelty search are more often than not of an acceptable quality level, but on average only a low percentage of the maps are of a high quality. It is especially poor that none of our tests showed a guarantee of at least one high-quality map. This is likely related to the fact that constrained novelty search will attempt to optimise novelty with no regard to quality, thus risking moving away from a solution that is close to being of a high quality. Overall, the lack of reliability in constrained novelty search makes it unfit for balanced map generation, but it produces enough maps of acceptable quality that it could be used in cases where balance is less of a priority.
+
+The genetic algorithm produces maps of high quality in eight out of nine test set-ups performed with a randomly seeded initial population. The standard deviation of the highest quality maps are around 7-11\% of the average except in the test producing non-high quality maps, where it is significantly higher (51\%). Because of the high average quality of the maps found when given enough time, the genetic algorithm is a viable choice for balanced map generation. 
+
+If the genetic algorithm is seeded with a novel high-fitness initial population, the fitness of the produced maps increases and the standard deviation decreases marginally. Using an initial population with high novelty produces slightly worse results than seeding with high-fitness individuals, but only in a single test is the difference significant. The quality of the maps produced and the low standard deviation of the seeding genetic algorithm makes it just as viable for balanced map generation as its randomly initialized variation.
+
+When seeded with random individuals, the NSGA-II algorithm produced maps of high-quality (above 40 fitness) in all tests except for one. This is likely due to low amount of generations and populations producing a very high standard deviation in the quality of the best maps found on the searched base maps. Due to the search algorithm producing high quality maps with low standard deviation, NSGA-II is viable for use as a search algorithm for balanced map generation, if it is given enough time to search.
+
+Seeding the NSGA-II algorithm with high-fitness novel individuals increases the quality of the produced maps and reduces the standard deviation slightly. If seeded with high-novelty novel individuals, the quality is improved in most cases, but the standard deviation stays about the same. The most significant difference between randomised and chosen seeds is the lack of a test showing an extremely high standard deviation in quality. There is no indication in the test results that seeding NSGA-II will make it any less viable for balanced map generation than with random seeds. 
 
 \section{Comparison of Approaches}
 \label{discussion_comparison}
-% discuss pros and cons of each method
+Novelty search and evolutionary programming are two different approaches to the search-based problem solving paradigm, each with their strengths and weaknesses. It is not always clear which is the better choice for solving any specific problem. In the case of online StarCraft II map generation, the solutions generated along the way to finding the best possible maps are different for each approach.
+
+\subsection{Constrained Novelty Search}
+\label{discussion_comparison_constrainednoveltysearch}
+%summary constrained novelty search
+Pros:
+\begin{my_itemize}
+\item Finds many novel maps of acceptable quality on the same base map
+\item Capable of running within the time limit
+\end{my_itemize}
+Cons:
+\begin{my_itemize}
+\item Best generated maps are not of extremely high quality
+\item High variance in map quality
+\item Not guaranteed to find high-quality maps
+\end{my_itemize}
+
 \subsection{Genetic Algorithm}
 \label{discussion_comparison_geneticalgorithm}
-
+%summarise evolution
 Pros:
 \begin{my_itemize}
 \item
@@ -85,19 +110,7 @@ Cons:
 
 \subsection{Multi-objective evolutionary algorithm}
 \label{discussion_comparison_moea}
-Pros:
-\begin{my_itemize}
-\item
-\item
-\end{my_itemize}
-Cons:
-\begin{my_itemize}
-\item
-\item
-\end{my_itemize}
-
-\subsection{Constrained Novelty Search}
-\label{discussion_comparison_constrainednoveltysearch}
+%summarize moea
 Pros:
 \begin{my_itemize}
 \item
@@ -110,7 +123,7 @@ Cons:
 \end{my_itemize}
 
 \subsection{Optimal Trade-off}
-% discuss tradeoff and which method offers the best balance/speed ratio
+% discuss tradeoff and which method+settings combination offers the best balance/speed ratio
 % discuss close alternatives
 
 \subsection{Suggested Method}
@@ -126,5 +139,8 @@ Below three archetypes are defined as guideline in order to provide a context fo
 \paragraph{The Casual:} Players who want to have a few matches every couple of days. While the casual player is not as focused on perfect balance, they still want to experience matches that are challenging, but not impossible. Because they do not dedicate a lot of time to play, the casual player will likely value map generation speed highly in order to play more matches in their limited time. The casual player values balance/fairness and interestingness/novelty equally, but prioritises map generation speed.
 
 \subsubsection{Which method for which player?}
+%suggest optimal method for competitor
 
-%suggest optimal method for each archetype
+Generating maps using only the constrained novelty search will be of interest to the hardcore non-competitor, as this archetype will not mind the occasional poor quality map. The speed of generation of the constrained novelty will also be acceptable, but it is not unlikely that the trade-off in runtime for a more thorough search will be of great interest. Instead, the hardcore non-competitor will likely want to given options between searches from two different base maps in order to maximize interestingness.
+
+%suggest optimal method for casual
