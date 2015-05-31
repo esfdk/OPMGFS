@@ -1,24 +1,24 @@
 \section{Base Map Generation}
 \label{results_basemapgeneration}
 
-The base maps we create are, as mentioned in section \ref{methodology_ca}, made through the use of a cellular automata. The quality of the base maps vary due to the random seeding used, but most of them are good enough to allow the different search algorithms to create decent maps. The generation of a base map takes on average 6.42 seconds according to a test that generated 100 base maps. In the test the fastest generation time was 5.98 seconds and the slowest generation time was 6.85.
+The base maps we create are, as mentioned in section \ref{methodology_ca}, made through the use of a cellular automata. The quality of the base maps vary due to the random seeding used, but most of them are good enough to allow the different search algorithms to create decent maps. Preliminary tests indicated that generation of a base map for a 128x128 map takes on average 6.42 seconds according to a test that generated 100 base maps. In the test the fastest generation time was 5.98 seconds and the slowest generation time was 6.85.
 
-One thing to note is that the base maps we generate are not compatible with the StarCraft II map editor, as there are constraints in the editor that our cellular automata does not follow. Changes are made to points between tiles in the map editor (and only every second point can be affected), which affects the four tiles around that point, where our cellular automata can change individual tiles. This means that the cellular automata can create areas of height-level (for example an area that is only one tile high/wide) that is not possible to create in the editor.
+One thing to note is that the base maps we generate are not completely compatible with the StarCraft II map editor, as there are constraints in the editor that our cellular automata does not follow. Changes are made to points between tiles in the map editor (and only every second point can be affected), which affects the four tiles around that point, where our cellular automata can change individual tiles. This means that the cellular automata can create areas of height-levels (for example an area that is only one tile high/wide) that is not possible to create in the editor.
 
-\insertTwoPictures{BaseMap_Good}{BaseMap_Bad}{A good (left) and a bad (right) base map.}{results_basemapgeneration_goodbad}
+\insertTwoPicturesLW{0.4}{BaseMap_Good}{BaseMap_Bad}{A good (left) and a bad (right) base map.}{results_basemapgeneration_goodbad}
 
 Shown in figure \ref{fig:results_basemapgeneration_goodbad} are two base maps generated through the cellular automata. The one to the left features four sizable areas of height-level two that all lead down to areas of height-level one. Assuming a start base is placed on either of these areas, the base will be pretty well-defended, as the map requires an attacker to head down to height-level zero to even get to the other side of the map. Any expansion bases are likely to be defendable as well, due to the same properties.
 
 The map on the right is a good example of a bad base map. It has a few small areas of height-level two, all of which connect very poorly to areas of height-level one. This means that start-bases on height-level two will often result in an infeasible map, as it is difficult to create ramps that would result in a path between the two start bases. Start-bases on lower height-levels are less desirable, but not the largest problem this base map has. 
 
-The largest problem is creating a path that links start-bases together almost no matter how they are placed. There are very few places where it is possible to place ramps in such a way that they would connect the top half of the map with the lower half, which greatly reduces the amount of places a start-base can be placed.
+The largest problem is creating a path that links start-bases together almost no matter how they are placed. There are very few places where it is possible to place ramps in such a way that they would connect the top half of the map with the lower half, which greatly reduces the amount of locations a start-base can be placed.
 
 The two pictures shown are in the opposite end of the spectrum, but it is a general trend that the base maps are of very different qualities. 
 
-\subsection*{Novelty of Base Maps}
+\subsubsection{Novelty of Base Maps}
 
-The two base maps shown above are very different from each other, a trait which is important for the base map creation. Figure \ref{fig:results_basemapgeneration_novelty} shows two different \textit{novelty maps} created from a population of 10 and 100 different base maps respectively. A \textit{novelty map} is intended to show how much the maps it was created over are. The lighter the color of a tile, the more diverse that tile has been for the different maps. We use this method to show novelty for final maps created by the search algorithms as well.
+The two base maps shown above are very different from each other, a trait which is important for the base map creation. Figure \ref{fig:results_basemapgeneration_novelty} shows two different \textit{novelty maps} created from a population of 10 and 100 different base maps respectively. A n\textit{novelty map} shows how different a set of maps is on a tile-by-tile basis. The lighter the color of a tile, the more diverse that tile has been for the different maps. We use this method to show novelty for final maps created by the search algorithms as well.
 
-\insertTwoPictures{BaseMap_Novelty}{BaseMap_Novelty100}{Two novelty maps made over base maps. The left map is from 10 generated base maps, the right one is from 100 generated base maps.}{results_basemapgeneration_novelty}
+\insertTwoPicturesLW{0.4}{BaseMap_Novelty}{BaseMap_Novelty100}{Two novelty maps made over base maps. The left map is from 10 generated base maps, the right one is from 100 generated base maps.}{results_basemapgeneration_novelty}
 
 The novelty map shows that the base maps generated are all very different from each other. They further show that the more base maps we generate, the more diversity is added to the collection of maps.

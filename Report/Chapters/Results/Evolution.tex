@@ -9,17 +9,17 @@ For the standard genetic algorithm, we ran three different kinds of tests:
 
 \begin{my_itemize}
 
-	\item Genetic algorithm using a random initial population. The settings used for this test are shown in table \ref{tab:results_evolution_combinations}). The results are shown in table \ref{tab:results_evolution_results}. The chance of mutation was set to 30\% and was never changed.
+	\item Genetic algorithm using a random initial population. The settings used for this test are shown in table \ref{tab:results_evolution_combinations}). The results are shown in table \ref{tab:results_evolution_results}. 
 
-	\item Genetic algorithm using an initial population made from the highest fitness maps created by constrained novelty search. These tests uses one of the set of settings shown in table \ref{tab:results_novelty_combinations} for the constrained novelty search in conjunction with one of the set of settings shown in table \ref{tab:results_evolution_combinations}. The settings and results are shown in table \ref{tab:results_novelevolutionhighfitness}.
+	\item Genetic algorithm using an initial population made from the highest fitness maps found by constrained novelty search. These tests uses one of the set of settings shown in table \ref{tab:results_novelty_combinations} for the constrained novelty search in conjunction with one of the set of settings shown in table \ref{tab:results_evolution_combinations}. The settings and results are shown in table \ref{tab:results_novelevolutionhighfitness}.
 
-	\item Genetic algorithm using an initial population made from the highest novelty maps created by constrained novelty search. These tests have been made in the same way as the tests seeding with the highest fitness maps. The combinations and results are shown in table \ref{tab:results_novelevolutionhighnovelty}.
+	\item Genetic algorithm using an initial population made from the highest novelty maps found by constrained novelty search. These tests have been made in the same way as the tests seeding with the highest fitness maps. The combinations and results are shown in table \ref{tab:results_novelevolutionhighnovelty}.
 
 \end{my_itemize}
 
 Like the results in the constrained novelty search section, all numbers in the result tables are the average of running the algorithm with settings on ten different base maps. \textit{Convergence} shows the generation at which there was no change in neither maximum nor minimum fitness for three consecutive generations. It is not necessarily the same as the generation at which the maximum fitness recorded in the tables was reached.
 
-We have attempted to keep the parents:children ratio close to 1:4 with 1 parent per 5 population size, though it is not exact for all of the settings setups. Furthermore, the odds of mutation happening was set to 30\% for all of the settings.
+In most of the tests, the parents:children ratio is 1:4 with 1 parent per 5 population size, but some of the tests have a different ratio. When mutation happens, there is a 30\% chance that a map point in the parent solution is mutated.
 
 \begin{table}[!h]
 	\begin{center}
@@ -78,11 +78,11 @@ We have attempted to keep the parents:children ratio close to 1:4 with 1 parent 
 	\end{center}
 \end{table}
 
-The results in table \ref{tab:results_evolution_results} make one thing immediately clear: Having both a low number of generations and a small population is not good for the search. The one set ($A$) that has low values in both has also scored a far worse fitness than any of the other sets. While the difference is not as high other sets with a low population, but higher number of generations, have also performed worse than their higher-population counterparts. This is shown by sets $C$ and $H$, that both have a population of five.
+The results in table \ref{tab:results_evolution_results} make one thing immediately clear: Having both a low number of generations and a small population size increases the speed of the evolutionary process, but significantly decreases the quality of the maps produced by the search. The one set ($A$) that has low values in both has also scored a far worse fitness than any of the other sets. While the difference is not as large, tests show that combinations of low population size and high number of generations generations have also scored worse than settings with larger population size. This is shown by sets $C$ and $H$, that both have a population of five.
 
 An interesting thing to note is that $H$ has scored significantly lower than $G$, even though the only difference between them is that their values for generations and population size has been switched around (and parents/children been changed to match). This is likely due to the fact that $H$ is forced to use the same parent (it only chooses one candidate to be the parent for the next generation, just like $A$ and $C$) when creating children for the next generation. All children it generates will be similar to that one parent, which means that any diversity in a generation is ignored in favor of the properties that one parent has. With only one parent, it becomes close to impossible to get out of a local optima (this goes for $A$ and $C$ too).
 
-According to our tests, it appears that a combination of generations and population size such that $\langle generations \rangle \times \langle populationSize \rangle = 250$, assuming $parents >= 2$, appears to be the best when considering how much extra benefit more time gives. $D$, $E$ and $G$ all have this and have scored fairly high considering they have not used more than one minute for their search. The interesting thing is that $G$ has scored the highest fitness of these three, even though it has the fewest number of generations. This suggests that it is more important to have a high population size and a high number of parents per generation than a high number of generations.
+Combinations of settings that generate high quality maps in a short of amount of time generally follow the pattern of $\langle generations \rangle \times \langle populationSize \rangle = 250$ and$parents >= 2$. $D$, $E$ and $G$ all have this and have scored fairly high considering they have not used more than one minute for their search. The interesting thing is that $G$ has scored the highest fitness of these three, even though it has the fewest number of generations. This suggests that it is more important to have a high population size and a high number of parents per generation than a high number of generations.
 
 The large difference between maximum and average fitness tells the same story as with constrained novelty search: The base map has a large influence in the quality of the map that can be generated.
 
@@ -130,7 +130,7 @@ The large difference between maximum and average fitness tells the same story as
 
 The results of seeding the genetic algorithm with maps found by constrained novelty search show the same: There is a clear increase in fitness, no matter if it is seeded with highest novelty or highest fitness individuals. This comes at the cost of having to run the constrained novelty search, however, which at the very least triples the total time needed for a search. The results also show that using the highest fitness individuals is the better choice for most combinations. Seeding with highest fitness individuals also results in a smaller standard deviation among the highest fitness maps generated.
 
-There do no seem to be any real correlation between the time constrained novelty search uses and the final fitness scores, no matter which of the two seedings one look at. Judging from this, it seems that running a "short" constrained novelty search is fine for most seeding purposes.
+Both when seeding with high-novelty individuals and with high-fitness individuals, there does not appear to be any significant correlation between the time spent by constrained novelty search and the final fitness scores. Judging from this, it seems that running a "short" constrained novelty search is fine for most seeding purposes.
 
 \subsection*{Novelty of Genetic Algorithm Maps}
 

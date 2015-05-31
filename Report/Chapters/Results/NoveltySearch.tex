@@ -4,7 +4,7 @@
 % Minimum novelty + Mutation chance + Neighbours static
 % Novelty maps
 
-The results for the constrained novelty search were gathered by running constrained novelty search with different sets of settings. Table \ref{tab:results_novelty_combinations} describes the different novelty search settings that were used through the entire result gathering. Some of the settings were used solely for seeding the standard genetic algorithm and the NSGA-II algorithm, and have not been used for the constrained novelty search. For all the settings, the number of neighbours a solution looks at when determining its novelty is 5.
+The results for the constrained novelty search were gathered by running constrained novelty search with different sets of settings. Table \ref{tab:results_novelty_combinations} describes the different novelty search settings that were used through the entire result gathering. Some of the settings were used solely for seeding the standard genetic algorithm and the NSGA-II algorithm, and have not been used to test constrained novelty search by itself. In all of the tests, five neighbours are used when calculating the novelty of an individual.
 
 \begin{table}[!h]
 	\begin{center}
@@ -35,9 +35,9 @@ The results for the constrained novelty search were gathered by running constrai
 	\end{center}
 \end{table}
 
-Table \ref{tab:results_novelty_results} shows the results of the five sets of settings we tested with constrained novelty search. Each set was run for ten different base maps in order to limit how influential a good or bad base map would be for the results. Every one of the ten base maps generated its own set of results. The \textit{average} numbers shown in the table are the average numbers over the ten base maps for that column. \textit{Highest} and \textit{lowest} show the highest and lowest number of acceptable maps for any of the base maps processed with that specific set of settings.
+Table \ref{tab:results_novelty_results} shows the results of the five sets of settings we tested with constrained novelty search. Each set of settings was tested on ten different base maps in order to limit how influential a good or bad base map would be for the results. Every one of the ten base maps generated its own set of results. The \textit{average} numbers shown in the table are the average numbers over the ten base maps for that column. \textit{Highest} and \textit{lowest} show the highest and lowest number of acceptable maps for any of the base maps processed with that specific set of settings.
 
-When it comes to constrained novelty search, we decided to evaluate the generated maps on whether they were acceptable as a map and how high quality they were. A map is  \textit{acceptable} if there is a ground path from the start base to its natural expansion and of \textit{high quality} if its fitness was 40 or above.
+When it comes to constrained novelty search, we decided to evaluate the generated maps on whether they were acceptable as a map and how high quality they were. A map is  \textit{acceptable} if there is a ground path from the start base to its natural expansion and of \textit{high quality} if its fitness was at least 40.
 
 \begin{table}[!h]
 	\begin{center}
@@ -62,7 +62,7 @@ Set III is the set that generated the most acceptable maps and is also the one w
 
 Another thing to note is the search time between the different sets. The data shows that spending more time on searching does not have much (if any) impact on the final results. This leads us to believe that base maps have a larger influence on the results of the constrained novelty search than time spent searching (after a certain point).
 
-The results also show that the base map a search is performed on has a high influence on the final result. Using set I as an example, a search on one of the ten base maps resulted in 89.09\% acceptable maps, where one of the other base maps resulted in only 40\% acceptable maps. That is less than half of the generated maps that are acceptable. If the base maps did not have much of an influence (i.e. the quality of the base maps war roughly equal), the lowest and highest number of acceptable maps would both be much close to the average value.
+The results also show that the base map a search is performed on has a high influence on the final result. Using set I as an example, a search on one of the ten base maps resulted in 89.09\% acceptable maps, where one of the other base maps resulted in only 40\% acceptable maps. That is less than half of the generated maps that are acceptable. If the base maps did not have much of an influence (i.e. the quality of the base maps was roughly equal), the lowest and highest number of acceptable maps would both be much close to the average value.
 
 High-quality tells the same story. The highest number of high-quality maps found was 7\% or above, but for every single set of settings, there was a base map where no high-quality map was found. This means that constrained novelty search does not guarantee that a high-quality map will be found and that the base map has a lot to say when it comes to finding high-quality maps.
 
