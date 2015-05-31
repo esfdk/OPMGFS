@@ -2,7 +2,7 @@
 \label{methodology_ca}
 A cellular automata is a form for model that can simulate artificial life and is often used in computational tasks (e.g. procedual contant generation\cite{togelius2011search}), mathematics and biology. 
 
-Cellular automatas are made from a regular grid of cells, where each cell can have one state out of a finite set of states. A cellular automata also contains a set of fixed rules that determines how a cell's state is affected by the cells around it, known as a cell's \textit{neighbourhood}. The rules are applied to all cells in the grid at once\footnote{Not all cells may have a rule that applies, in which case it keeps its state.} in order to create a new generation. New generations are created either until a certain criteria is reached, or until a chosen number of generations have passed.
+Cellular automatas are made from a regular grid of cells, where each cell can have one state out of a finite set of states. A cellular automata also contains a set of fixed rules that determines how a cell's state is affected by the cells around it, known as a cell's \textit{neighbourhood}. The rules are applied to all cells in the grid at once\footnote{Not all cells may have a rule that applies, in which case it keeps its current state.} in order to create a new generation. New generations are created either until a certain criteria is reached, or until a chosen number of generations have passed.
 
 The number of states in a cellular automata can range from two different states (e.g. \textit{active} and \textit{not-active}) all the up to a practically infinite number. The more states, however, the more complex the cellular automata will be. Every state will need to be linked to at least one rule (otherwise there is no point in having the state) and the more states that exist, the more complex their interactions will become.
 
@@ -10,10 +10,10 @@ Cellular automata rules use \textit{neighbourhoods} to determine what happens to
 
 \insertPicture{1}{CA_Neighbourhoods2}{The neighbourhoods used in cellular automatas.}{CA_Neighbourhoods}
 
-\subsection{Our Cellular Automata}
+\subsection{The Cellular Automata Implementation}
 \label{methodology_ca_our}
 
-We use a cellular automata to generate the initial heightmap for the phenotype, to smooth out the heightmap and to place impassable terrain. In order to save time, the cellular automata only work on the top 60\% of the map, which later is mirrored to form a complete map. We work on 60\% instead of 50\% in order to avoid that the cells at the bottom of the working area are biased by the empty cells below. This still happens with 60\%, but as the map is mirrored, the bottom cells will be overwritten and the bias will have no influence.
+For this thesis, a cellular automata has been used to generate the initial heightmap for the phenotype, to smooth out the heightmap and to place impassable terrain. In order to save time, the cellular automata only work on the top 60\% of the map, which later is rotated to form a complete map. 60\% has been chosen instead of 50\% in order to avoid that the cells at the bottom of the working area are biased by the empty cells below. This still happens with 60\%, but as the map is mirrored, the bottom cells will be overwritten and the bias will have no influence.
 
 \subsubsection{Initial Seeding}
 \label{methodology_ca_our_initial}
@@ -22,15 +22,15 @@ The cellular automata is initialized by randomly seeding the map with one of the
 
 \begin{my_itemize}
 
-	\item \textbf{Height2}: $odds$ $<$ 0.25
+	\item \textbf{Height2}: $odds$ $<$ 0.2
 
-	\item \textbf{Height1}: 0.25 $\le$ $odds$ $<$ 0.50
+	\item \textbf{Height1}: 0.2 $\le$ $odds$ $<$ 0.4
 
-	\item \textbf{Height0}: 0.50 $\le$ $odds$
+	\item \textbf{Height0}: 0.4 $\le$ $odds$
 
 \end{my_itemize}
 
-Before the seeding process begins, \textbf{x} \textit{focus points} are randomly determined. During seeding, for every cell a random number between 0.0 and 1.0 is generated and the state of the cell is set to the corresponding height-level, as shown above. If the cell is within 15 tiles of any of the \textit{focus points}, the generated number is reduced\footnote{This heightens the odds of a higher height-level occouring} depending on how close the cell is to a focus point. The reduction follows the calculation
+Before the seeding process begins, \textbf{x} \textit{focus points} are randomly determined. During seeding, for every cell a random number between 0.0 and 1.0 is generated and the state of the cell is set to the corresponding height-level, as shown above. If the cell is within 15 tiles of any of the \textit{focus points}, the generated number is reduced\footnote{This increases the odds of a higher height-level occouring.} depending on how close the cell is to a focus point. The reduction follows the calculation
 
 \begin{equation} \label{eq:oddsReduction}
 	odds := \langle odds\rangle - \frac{15 - \langle actualDistance\rangle}{15 \times 3}
