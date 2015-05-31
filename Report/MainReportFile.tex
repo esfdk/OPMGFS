@@ -145,6 +145,23 @@ breaklines=true}
 \end{figure}
 }
 
+\newcommand{\insertTwoPicturesLW}[5]{
+\begin{figure}[!ht]
+\begin{center}
+\begin{minipage}[b]{#1\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/#2}
+\end{minipage}
+\begin{minipage}[b]{#1\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/#3}
+\end{minipage}
+\end{center}
+\caption{#4}
+\label{fig:#5}
+\end{figure}
+}
+
 \newcommand{\insertTwoPicturesS}[4]{
 \begin{figure}[!ht]
 \begin{minipage}[b]{0.5\linewidth}

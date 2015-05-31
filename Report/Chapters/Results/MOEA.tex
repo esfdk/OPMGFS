@@ -13,7 +13,8 @@ For the multi-objective evolutionary algorithm tests, we ran three NSGA-II tests
 
 \end{my_itemize}
 
-Like the results in the novelty search section, all numbers are the average of running the algorithm with settings on ten different base maps. One thing to note about the results is that the minimum fitness is incredibly low in all cases. This happens because NSGA-II generates a new set of offspring during the last generation, and some of the offsprings risk mutating in such a way that they may not have start bases placed. This results in a very low fitness value and the minimum fitness should therefore not be considered too much. Due to the risk of such a low fitness, \textit{convergence} is based on when the maximum fitness did not change for three generations. It does not take minimum fitness into consideration.
+Like the results in the novelty search section, all numbers are the average of running the algorithm with settings on ten different base maps. One thing to note about the results is that the average fitness is very low in most cases. This happens because NSGA-II generates a new set of offspring during the last generation, and some of the offsprings risk mutating in such a way that they may not be able to place start bases. This results in a very low fitness value, which impacts the average fitness. The average fitness is therefore not as saying for the NSGA-II algorithm as for the standard genetic algorithm. 
+\\Due to the risk of such a low fitness, \textit{convergence} is based on when the maximum fitness did not change for three generations. It does not take minimum fitness into consideration.
 
 \begin{table}[!h]
 	\begin{center}
@@ -22,25 +23,17 @@ Like the results in the novelty search section, all numbers are the average of r
 	\label{tab:results_moea_results}
 		\begin{tabular}{| c ? K | K | K | L | L | K |}
 		\hline
-		Settings & Max fitness & Average fitness & Min fitness & Convergence (average) & Convergence (mode) &  Time \\
+		Settings & Max Fitness & Average Fitness & Max Fitness (std. dev.) & Convergence (average) & Convergence (std. dev.) &  Time \\
 		\hline
-		A 	& 31.22 	& 0.15 	& -94.11 	& 2.80 	& 1 		& 8.43 \\
-		\hline
-		B 	& 40.22 	& 8.71 	& -167.17 	& 12.70 	& 13 		& 57.31 \\
-		\hline
-		C 	& 41.30 	& 15.19 	& -12.30 	& 30.50 	& 33 		& 45.66 \\
-		\hline
-		D 	& 43.44 	& 12.40 	& -91.87 	& 20.10 	& 22 		& 58.05 \\
-		\hline
-		E 	& 44.19 	& 9.63	& -242.32 	& 7.60 	& 8 		& 73.17 \\
-		\hline
-		F 	& 44.63 	& 13.29 	& -170.02 	& 20.10 	& 24 		& 160.15 \\
-		\hline
-		G 	& 43.80 	& 2.62 	& -384.18 	& 3.20 	& 4 		& 95.97 \\
-		\hline
-		H 	& 41.17 	& 2.18 	& -158.80 	& 34.60 	& \#N/A 	& 54.58 \\
-		\hline
-		I 	& 44.17 	& 7.32 	& -98.53 	& 28.30 	& \#N/A 	& 115.16 \\
+		A 	& 31.22 	& 0.15 	& 14.01 	& 2.80 	& 1.81 	& 8.43 	\\ \hline
+		B 	& 40.22 	& 8.71 	& 5.08 	& 12.70 	& 1.49 	& 57.31 	\\ \hline
+		C 	& 41.30 	& 15.19 	& 3.68 	& 30.50 	& 12.63 	& 45.66 	\\ \hline
+		D 	& 43.44 	& 12.40 	& 3.97 	& 20.10 	& 5.53 	& 58.05 	\\ \hline
+		E 	& 44.19 	& 9.63	& 2.99 	& 7.60 	& 2.55 	& 73.17 	\\ \hline
+		F 	& 44.63 	& 13.29 	& 2.63 	& 20.10 	& 8.90 	& 160.15 	\\ \hline
+		G 	& 43.80 	& 2.62 	& 3.74 	& 3.20 	& 1.23 	& 95.97 	\\ \hline
+		H 	& 41.17 	& 2.18 	& 2.10 	& 34.60 	& 8.17 	& 54.58 	\\ \hline
+		I 	& 44.17 	& 7.32 	& 3.36 	& 28.30 	& 13.14 	& 115.16 	\\ 
 		\hline
 		\end{tabular}
 	\end{center}
@@ -50,9 +43,9 @@ From the results shown in table \ref{tab:results_moea_results}, it is clear that
 
 A good spot seems to be around 10 generations and a population of 25 or the other way around. $D$ and $E$ have these settings and are similar in terms of results. $E$ results in slightly better overall maps, though the search is slightly slower. Compared to the best set, $F$ (30 generations, population of 25), $D$ and $E$ do not perform quite as well (being $1.19$ and $0.44$ behind in fitness respectively), but they are both at least twice as fast. This suggests that an increase in either generations or population above the 10/25 combination provides very little benefit compared to how much longer the search takes. This holds true for set $I$ too.
 
-While the sets of settings do have an influence on how much time it takes to find maps of high quality, it is important to note that - like with novelty search - the base has a lot of influence on how the search turns out. Looking at the raw data collected, the maximum and minimum fitness maps generated with settings $F$ are $47.75$ and $38.69$ respectively, a difference in slightly more than 9 fitness.
+While the sets of settings do have an influence on how much time it takes to find maps of high quality, it is important to note that - like with novelty search - the base has a lot of influence on how the search turns out. Looking at the raw data collected, the highest and lowest fitness maps generated with settings $F$ are $47.75$ and $38.69$ respectively, a difference in slightly more than 9 fitness.
 
-It should be noted that the NSGA-II algorithm does not perform much better than the standard genetic algorithm. For the settings $G$, $H$ and $I$, the standard genetic algorithm actually scores slightly better than the NSGA-II algorithm. The difference in scores for all the test setups are so small that it could be due to variance, however.
+Comparing the  NSGA-II algorithm's results to those of the standard genetic algorithm, NSGA-II does not score much better than the standard genetic algorithm. For the settings $G$, $H$ and $I$, the standard genetic algorithm actually scores slightly better than the NSGA-II algorithm. The differences in the scores for all the test setups are so small that it could be due to variance, however.
 
 \begin{table}[!h]
 	\begin{center}
@@ -61,21 +54,15 @@ It should be noted that the NSGA-II algorithm does not perform much better than 
 	\label{tab:results_novelmoeahighfitness}
 		\begin{tabular}{| K ? S | S | K | K | K | K | K | K |}
 		\hline
-		Settings Combination & Max Fitness & Average Fitness & Min Fitness & Conver-gence (average) & Conver-gence (mode) & Evolution Time (seconds) & Novelty Time (seconds) & Total Time (seconds) \\
+		Settings Combination & Max Fitness & Average Fitness & Max Fitness (std. dev.) & Conver-gence (average) & Conver-gence (std. dev.) & Evolution Time (seconds) & Novelty Time (seconds) & Total Time (seconds) \\
 		\hline
-		E + IV 	& 46.72 	& 7.62 	& -454.71 	& 5.10 	& 6 		& 72.54 	& 177.82 	& 250.37 \\
-		\hline
-		F + I 		& 46.99 	& 14.52 	& -310.60 	& 18.80 	& 25 		& 152.42 	& 178.18 	& 330.60 \\
-		\hline
-		G + VIII 	& 46.70	& 10.01 	& -525.00 	& 2.00 	& 1 		& 93.81 	& 208.26 	& 302.07 \\
-		\hline
-		J + V 		& 43.69 	& 18.96 	& -25.01 	& 4.90 	& 1 		& 14.18 	& 334.80 	& 348.98 \\
-		\hline
-		H + VI 	& 45.64 	& -36.49 	& -305.77 	& 36.90 	& 24 		& 56.51 	& 828.85 	& 885.35 \\
-		\hline
-		I + VII 	& 47.27 	& 7.46 	& -237.53 	& 20.60 	& 1 		& 118.83 	& 1,380.37 	& 1,499.20 \\
-		\hline
-		D + II 	& 47.08 	& 16.68 	& -96.96 	& 19.90 	& 25 		& 62.77 	& 174.23 	& 237.00 \\
+		E + IV 	& 46.72 	& 7.62 	& 3.00 	& 5.10 	& 2.90 	& 72.54 	& 177.82 		& 250.37 	\\ \hline
+		F + I 		& 46.99 	& 14.52 	& 1.79 	& 18.80 	& 9.82 	& 152.42 	& 178.18 		& 330.60 	\\ \hline
+		G + VIII 	& 46.70	& 10.01 	& 2.29 	& 2.00 	& 1.63 	& 93.81 	& 208.26 		& 302.07 	\\ \hline
+		J + V 	& 43.69 	& 18.96 	& 1.75 	& 4.90 	& 3.57 	& 14.18 	& 334.80 		& 348.98 	\\ \hline
+		H + VI 	& 45.64 	& -36.49 	& 2.94 	& 36.90 	& 10.93 	& 56.51 	& 828.85 		& 885.35 	\\ \hline
+		I + VII 	& 47.27 	& 7.46 	& 2.98 	& 20.60 	& 17.99 	& 118.83 	& 1,380.37 	& 1,499.20 	\\ \hline
+		D + II 	& 47.08 	& 16.68 	& 2.64 	& 19.90 	& 6.64 	& 62.77 	& 174.23 		& 237.00 	\\ 
 		\hline
 		\end{tabular}
 	\end{center}
@@ -90,19 +77,13 @@ It should be noted that the NSGA-II algorithm does not perform much better than 
 		\hline
 		Settings Combination & Max Fitness & Average Fitness & Min Fitness & Conver-gence (average) & Conver-gence (mode) & Evolution Time (seconds) & Novelty Time (seconds) & Total Time (seconds) \\
 		\hline
-		E + IV 	& 44.02 	& 14.57 	& -170.32 	& 7.20 	& 8 		& 77.51 	& 173.58 	& 251.09 \\
-		\hline
-		F + I 		& 45.71 	& 10.96 	& -169.30 	& 24.70 	& 30 		& 148.29 	& 177.18 	& 325.48 \\
-		\hline
-		G + VIII 	& 45.81 	& 17.10 	& -311.90 	& 3.40 	& 5 		& 98.68 	& 215.47 	& 314.15 \\
-		\hline
-		J + V 		& 38.86 	& 18.55 	& -10.22 	& 6.20 	& 10 		& 12.98 	& 341.62 	& 354.60 \\
-		\hline
-		H + VI 	& 44.23 	& 14.40 	& -95.39 	& 34.70 	& 42 		& 53.18 	& 854.33 	& 907.51 \\
-		\hline
-		I + VII 	& 43.63 	& 12.04 	& -167.06 	& 28.40 	& \#N/A 	& 113.49 	& 1,370.54 	& 1,484.03 \\
-		\hline
-		D + II 	& 41.40 	& 16.52 	& -93.82 	& 18.40 	& 20 		& 55.04 	& 168.29 	& 223.33 \\
+		E + IV 	& 44.02 	& 14.57 	& 2.69 	& 7.20 	& 2.04 	& 77.51 	& 173.58 		& 251.09 	\\ \hline
+		F + I 		& 45.71 	& 10.96 	& 1.62 	& 24.70 	& 5.87 	& 148.29 	& 177.18 		& 325.48 	\\ \hline
+		G + VIII 	& 45.81 	& 17.10 	& 3.37 	& 3.40 	& 1.58 	& 98.68 	& 215.47 		& 314.15 	\\ \hline
+		J + V 	& 38.86 	& 18.55 	& 3.88 	& 6.20 	& 3.05 	& 12.98 	& 341.62 		& 354.60 	\\ \hline
+		H + VI 	& 44.23 	& 14.40 	& 2.58 	& 34.70 	& 12.88 	& 53.18 	& 854.33 		& 907.51 	\\ \hline
+		I + VII 	& 43.63 	& 12.04 	& 3.87 	& 28.40 	& 13.60 	& 113.49 	& 1,370.54 	& 1,484.03 \\ \hline
+		D + II 	& 41.40 	& 16.52 	& 2.29 	& 18.40 	& 5.44 	& 55.04 	& 168.29 		& 223.33 	\\ 
 		\hline
 		\end{tabular}
 	\end{center}
@@ -118,10 +99,10 @@ Compared to the standard genetic algorithm, seeding NSGA-II with highest fitness
 
 High fitness is important, but it is also important that different settings generate different maps. If they do not, the only point in different settings is how much time a search takes.
 
-\insertTwoPictures{MOEA_Novelty_5E}{MOEA_Novelty_5H}{The novelty of two different set of settings ($E$ and $H$ respectively) run on the same base map.}{results_moea_samebasediffsettings}
+\insertTwoPicturesLW{0.4}{MOEA_Novelty_5E}{MOEA_Novelty_5H}{The novelty of two different set of settings ($E$ and $H$ respectively) run on the same base map using NSGA-II.}{results_moea_samebasediffsettings}
 
 Figure \ref{fig:results_moea_samebasediffsettings} shows the novelty of the maps generated by using settings $E$ and $H$ on the same base map. As can be seen, they are very different in where they have focused their efforts, with $E$ managing to create maps that differs in more areas than $H$, where $H$ has focused more on the same areas. This can be attributed to the small population size as it is difficult to get out of a local optima with a small population size.
 
-\insertTwoPictures{MOEA_Novelty_BestE}{MOEA_Novelty_BestH}{The novelty of the best maps created from the 10 same base maps with two different set of settings ($E$ and $H$).}{results_moea_bestmapsdiffsettings}
+\insertTwoPicturesLW{0.4}{MOEA_Novelty_BestE}{MOEA_Novelty_BestH}{The novelty of the best maps created from the 10 same base maps with two different set of settings ($E$ and $H$) using NSGA-II.}{results_moea_bestmapsdiffsettings}
 
 As a search on one base map creates different maps, it is fair to assume that searching on different base maps will create very different maps. Figure \ref{fig:results_moea_bestmapsdiffsettings} shows this assumption to be true. The two novelty maps shown have been created from searching with two different sets of settings ($E$ and $H$) on the same base maps and taking the best map for each of those base maps. It is clear that the best maps created are very different from each other, as there are only few dark areas. The two maps do show that the search settings do have some things in common (the dark areas along the edge of the map). This is to be expected, as base maps do have an influence on the final maps.
