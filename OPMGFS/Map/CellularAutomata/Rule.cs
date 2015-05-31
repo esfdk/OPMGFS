@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Rule.cs" company="Derps">
-//   jmel & jcgr
-// </copyright>
-// <summary>
-//   Defines the CellularAutomata type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace OPMGFS.Map.CellularAutomata
+﻿namespace OPMGFS.Map.CellularAutomata
 {
     /// <summary>
     /// A class that specifies a rule for the cellular automata.

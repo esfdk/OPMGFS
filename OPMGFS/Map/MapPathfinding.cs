@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MapPathfinding.cs" company="Derps">
-//   jmel & jcgr
-// </copyright>
-// <summary>
-//   Defines the MapPathfinding type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace OPMGFS.Map
+﻿namespace OPMGFS.Map
 {
     using System;
     using System.Collections.Generic;

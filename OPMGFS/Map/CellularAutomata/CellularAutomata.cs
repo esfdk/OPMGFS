@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CellularAutomata.cs" company="Derps">
-//   jmel & jcgr
-// </copyright>
-// <summary>
-//   Defines the CellularAutomata type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace OPMGFS.Map.CellularAutomata
+﻿namespace OPMGFS.Map.CellularAutomata
 {
     using System;
     using System.Collections.Generic;

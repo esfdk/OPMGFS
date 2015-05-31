@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Enums.cs" company="Derps">
-//   jmel & jcgr
-// </copyright>
-// <summary>
-//   Defines the Enums type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace OPMGFS.Map
+﻿namespace OPMGFS.Map
 {
     using System.Globalization;
 

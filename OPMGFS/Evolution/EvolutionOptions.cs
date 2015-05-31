@@ -1,7 +1,5 @@
 ﻿namespace OPMGFS.Evolution
 {
-    using System;
-
     /// <summary>
     /// A class that contains options for evolution.
     /// </summary>

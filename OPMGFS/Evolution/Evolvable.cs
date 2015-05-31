@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Evolvable.cs" company="Derps">
-//   jmel & jcgr
-// </copyright>
-// <summary>
-//   Defines the Evolvable type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace OPMGFS.Evolution
+﻿namespace OPMGFS.Evolution
 {
     using System;
 

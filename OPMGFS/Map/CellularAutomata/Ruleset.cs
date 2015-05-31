@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Ruleset.cs" company="Derps">
-//   jmel & jcgr
-// </copyright>
-// <summary>
-//   Defines the MapPhenotype type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace OPMGFS.Map.CellularAutomata
+﻿namespace OPMGFS.Map.CellularAutomata
 {
     using System;
     using System.Collections.Generic;

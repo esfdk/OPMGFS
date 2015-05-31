@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="EvolvableDoubleArray.cs" company="Derps">
-//   jmel & jcgr
-// </copyright>
-// <summary>
-//   Defines the EvolvableDoubleArray type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace OPMGFS.Evolution
+﻿namespace OPMGFS.Evolution
 {
     using System;
     using System.Linq;

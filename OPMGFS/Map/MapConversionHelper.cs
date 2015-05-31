@@ -728,32 +728,6 @@
         /// <param name="mp">The map phenotype to flatten the area on.</param>
         private static void FlattenArea(Enums.HeightLevel height, int startX, int startY, int lengthX, int lengthY, MapPhenotype mp)
         {
-            // TODO: Melnyk - Implement variations of flattening
-            ////var centreY = startY + (lengthY / 2);
-            ////for (var y = startY; y <= startY + lengthY; y++)
-            ////{
-            ////    var distanceToCentreY = y - centreY;
-            ////    var xStartMod = distanceToCentreY > 0 ? distanceToCentreY - 1 : Math.Abs(distanceToCentreY);
-
-            ////    var xStart = startX + xStartMod;
-            ////    var xEnd = startX + lengthX - xStartMod;
-
-            ////    for (var x = xStart; x <= xEnd; x++)
-            ////    {
-            ////        if (mp.HeightLevels[x, y] == Enums.HeightLevel.Cliff && height != Enums.HeightLevel.Cliff)
-            ////        {
-            ////            mp.CliffPositions.Remove(new Tuple<int, int>(x, y));
-            ////        }
-
-            ////        mp.HeightLevels[x, y] = height;
-
-            ////        if (height == Enums.HeightLevel.Cliff)
-            ////        {
-            ////            mp.CliffPositions.Add(new Tuple<int, int>(x, y));
-            ////        }
-            ////    }
-            ////}
-
             if (!mp.InsideTopHalf(startX, startY) || !mp.InsideTopHalf(startX + lengthX, startY + lengthY))
             {
                 return;
@@ -1050,7 +1024,6 @@
                     break;
             }
 
-            // HACK: Removed check for occupied tiles (risks being placed on inside a starting position)
             while (xMod >= 1)
             {
                 if (mp.InsideTopHalf(x + xMod, y) && mp.InsideTopHalf(x, y + yMod) && mp.InsideTopHalf(x + xMod, y + yMod))
@@ -1294,9 +1267,6 @@
                 }
             }
 
-            // TODO: Melnyk - Diagonal ramps
-            // Northwest-Southeast diagonal
-            // Northeast-Southwest diagonal
             return false;
         }
 

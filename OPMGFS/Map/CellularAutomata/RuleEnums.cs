@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RuleEnums.cs" company="Derps">
-//   jmel & jcgr
-// </copyright>
-// <summary>
-//   Defines the MapPathfinding type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace OPMGFS.Map.CellularAutomata
+﻿namespace OPMGFS.Map.CellularAutomata
 {
     using System.Diagnostics.CodeAnalysis;
 

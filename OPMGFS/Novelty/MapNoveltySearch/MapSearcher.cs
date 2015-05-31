@@ -48,7 +48,6 @@
                     this.InfeasiblePopulation.CurrentGeneration.Add(ms);
                 }
 
-                // HACK: Should probably be a setting and/or timer instead of number of iterations
                 if (numberOfAttempts > 1000)
                 {
                     break;
