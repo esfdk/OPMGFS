@@ -1,17 +1,12 @@
 \section{Evolution}
 \label{results_evolution}
-
-% Average værdier oer okay, men base maps giver stor variance.
-
-% Testede 10 forskellige base maps med forskellige indstillinger. Tallene er average af de bedste resultater for hvert base map.
-
-For the standard genetic algorithm, we ran three different kinds of tests:
+Three different types of tests were performed for the genetic algorithm:
 
 \begin{my_itemize}
 
 	\item Genetic algorithm using a random initial population. The settings used for this test are shown in table \ref{tab:results_evolution_combinations}). The results are shown in table \ref{tab:results_evolution_results}. 
 
-	\item Genetic algorithm using an initial population made from the highest fitness maps found by constrained novelty search. These tests uses one of the set of settings shown in table \ref{tab:results_novelty_combinations} for the constrained novelty search in conjunction with one of the set of settings shown in table \ref{tab:results_evolution_combinations}. The settings and results are shown in table \ref{tab:results_novelevolutionhighfitness}.
+	\item Genetic algorithm using an initial population made from the highest fitness maps found by constrained novelty search. These tests use one of the set of settings shown in table \ref{tab:results_novelty_combinations} for the constrained novelty search in conjunction with one of the set of settings shown in table \ref{tab:results_evolution_combinations}. The settings and results are shown in table \ref{tab:results_novelevolutionhighfitness}.
 
 	\item Genetic algorithm using an initial population made from the highest novelty maps found by constrained novelty search. These tests have been made in the same way as the tests seeding with the highest fitness maps. The combinations and results are shown in table \ref{tab:results_novelevolutionhighnovelty}.
 
@@ -132,12 +127,12 @@ The results of seeding the genetic algorithm with maps found by constrained nove
 
 Both when seeding with high-novelty individuals and with high-fitness individuals, there does not appear to be any significant correlation between the time spent by constrained novelty search and the final fitness scores. Judging from this, it seems that running a "short" constrained novelty search is fine for most seeding purposes.
 
-\subsection*{Novelty of Genetic Algorithm Maps}
+\subsection{Novelty of Genetic Algorithm Maps}
 
 Like the constrained novelty search, the maps found by the genetic algorithm are different from each other. This can be seen in figure \ref{fig:results_evolution_samebasediffsettings}, where two novelty maps are shown for the same base map, using different settings ($E$ and $G$). This is a good thing, as it means that the evolution actually finds different solutions instead of being stuck in the same solution.
 
 \insertTwoPicturesLW{0.4}{GA_E_BM5}{GA_G_BM5}{The novelty of two different set of settings ($E$ and $G$ respectively) run on the same base map using the standard genetic algorithm.}{results_evolution_samebasediffsettings}
 
-Looking at the best maps created for each base map (see figure \ref{fig:results_evolution_bestmapsdiffsettings}) they are very different from each other. This is to be expected, as the base maps already are very different (see figure \ref{fig:results_basemapgeneration_novelty} on page \pageref{fig:results_basemapgeneration_novelty}). Though the two searches use  the same base maps, their novelty maps are quite different (with the exception of a few places along the edge of the map).
+Looking at the best maps created for each base map (see figure \ref{fig:results_evolution_bestmapsdiffsettings}), they are very different from each other. This is to be expected, as the base maps already are very different (see figure \ref{fig:results_basemapgeneration_novelty} on page \pageref{fig:results_basemapgeneration_novelty}). Though the two searches use  the same base maps, their novelty maps are quite different (with the exception of a few places along the edge of the map).
 
 \insertTwoPicturesLW{0.4}{GA_E_Best}{GA_G_Best}{The novelty of the best maps created from the 10 same base maps with two different set of settings ($E$ and $G$ respectively) using the standard genetic algorithm.}{results_evolution_bestmapsdiffsettings}
