@@ -45,12 +45,7 @@
             /// <summary>
             /// Represents a cliff.
             /// </summary>
-            Cliff = 9,
-
-            /// <summary>
-            /// Used to mark things when testing.
-            /// </summary>
-            Marker = -1000
+            Cliff = 9
         }
 
         /// <summary>
