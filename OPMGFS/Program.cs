@@ -3,8 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.CodeAnalysis;
-
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -17,293 +15,179 @@
 
     using Position = System.Tuple<int, int>;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
+    /// <summary>
+    /// The class that runs the program.
+    /// </summary>
     public class Program
     {
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
+        /// <summary>
+        /// Initializes the program.
+        /// </summary>
+        /// <param name="args"> The args. </param>
         public static void Main(string[] args)
         {
             Console.SetWindowSize(Console.LargestWindowWidth - 40, Console.WindowHeight + 40);
 
+            const int RandomGeneratorSeed = 124;
+
+            const int BaseMapStartSeed = 15;
+            const int BaseMapEndSeed = 25;
+
+            const int EvoGenerations = 10;
+            const int EvoPopSize = 25;
+            const int Parents = 6;
+            const int Children = 18;
+
+            const int MOEAGenerations = 10;
+            const int MOEAPopSize = 25;
+
+            const int NoveltyGenerations = 10;
+            const int Feasible = 30;
+            const int Infeasible = 30;
+            const int Neighbours = 5;
+            const int Archive = 5;
+
+            var list = new List<int>();
+            for (var i = BaseMapStartSeed; i < BaseMapEndSeed; i++)
+                list.Add(i);
+
+            var random = new Random(RandomGeneratorSeed);
+
             var sw = new Stopwatch();
             sw.Start();
 
-            var list = new List<int>();
-            for (var i = 15; i < 25; i++)
-            {
-                list.Add(i);
-            }
-
             Console.WriteLine("Generating base maps.");
-            var maps = GetBaseMaps(caRandomSeeds: list, baseMapFolder: string.Empty, fileToWriteTo: "baseMap-seeds(150-159).txt");
+            var maps = GetBaseMaps(
+                caRandomSeeds: list,
+                baseMapFolder: string.Format("BaseMaps-start{0}-end{1}", BaseMapStartSeed, BaseMapEndSeed));
             Console.WriteLine("It took {0} milliseconds to generate base maps.", sw.ElapsedMilliseconds);
+            Console.WriteLine("------");
+
+            var mapList = maps.Select(x => x.CreateFinishedMap(Enums.Half.Top, Enums.MapFunction.Turn)).ToList();
+            MapHelper.SaveGreyscaleNoveltyMap(mapList, " BaseMaps", string.Format("BaseMaps-start{0}-end{1}", BaseMapStartSeed, BaseMapEndSeed));
+            sw.Restart();
+
+            Console.WriteLine("Starting evolution");
+            RunEvolution(
+                maps,
+                random,
+                numberOfGenerations: EvoGenerations,
+                populationSize: EvoPopSize,
+                numberOfParents: Parents,
+                numberOfChildren: Children,
+                folderName: string.Format("Evolution-gen{0}-pop{1}-par{2}-child{3}", EvoGenerations, EvoPopSize, Parents, Children));
+            Console.WriteLine("Evolution done. It took  {0} milliseconds to perform evolution.", sw.ElapsedMilliseconds);
             Console.WriteLine("------");
             sw.Restart();
 
-            NewNormalEvolutionTests(maps, sw);
-            NewEvolutionTests(maps, sw);
+            Console.WriteLine("Starting multiobjective evolution");
+            RunMultiobjectiveEvolution(
+                maps,
+                random,
+                numberOfGenerations: MOEAGenerations,
+                populationSize: MOEAPopSize,
+                folderName: string.Format("MOEA-gen{0}-pop{1}", MOEAGenerations, MOEAPopSize));
+            Console.WriteLine("Multiobjective evolution done. It took {0} milliseconds.", sw.ElapsedMilliseconds);
+            Console.WriteLine("------");
+            sw.Restart();
+
+            Console.WriteLine("Starting novelty search.");
+            var nso = new NoveltySearchOptions(
+                feasiblePopulationSize: Feasible,
+                infeasiblePopulationSize: Infeasible,
+                numberOfNeighbours: Neighbours,
+                addToArchive: Archive);
+            RunNoveltySearch(
+                maps,
+                random,
+                numberOfGenerations: 100,
+                noveltySearchOptions: nso,
+                folderName: string.Format("NoveltySearch-gen{0}-feas{1}-infeas{2}-neighbors{3}-addtoarch{4}", NoveltyGenerations, Feasible, Infeasible, Neighbours, Archive));
+            Console.WriteLine("Novelty search done. It took {0} milliseconds to perform novelty search.", sw.ElapsedMilliseconds);
+            Console.WriteLine("------");
+            sw.Restart();
+
+            Console.WriteLine("Starting evolution with highest fitness novel maps.");
+            nso = new NoveltySearchOptions(feasiblePopulationSize: 90, infeasiblePopulationSize: 90);
+            RunEvolutionWithNoveltyAsBase(
+                maps,
+                random,
+                numberOfNoveltyGenerations: NoveltyGenerations,
+                numberOfEvolutionGenerations: EvoGenerations,
+                numberOfMOEAGenerations: MOEAGenerations,
+                noveltySearchOptions: nso,
+                evolutionPopulationSize: EvoPopSize,
+                moeaPopulationSize: MOEAPopSize,
+                numberOfParents: Children,
+                numberOfChildren: Parents,
+                folderName:
+                    string.Format(
+                        "NoEvHighFitness-noveltygen{0}-feas{1}-infeas{2}-evogen{3}-evopop{4}-evopar{5}-evochild{6}-moeagen{7}-moeapop{8}",
+                        NoveltyGenerations,
+                        Feasible,
+                        Infeasible,
+                        EvoGenerations,
+                        EvoPopSize,
+                        Parents,
+                        Children,
+                        MOEAGenerations,
+                        MOEAPopSize));
+            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
+            Console.WriteLine("------");
+            sw.Restart();
+
+            Console.WriteLine("Starting evolution with highest novelty maps.");
+            RunEvolutionWithNoveltyAsBase(
+                maps,
+                random,
+                numberOfNoveltyGenerations: NoveltyGenerations,
+                numberOfEvolutionGenerations: EvoGenerations,
+                numberOfMOEAGenerations: MOEAGenerations,
+                noveltySearchOptions: nso,
+                evolutionPopulationSize: EvoPopSize,
+                moeaPopulationSize: MOEAPopSize,
+                numberOfParents: Children,
+                numberOfChildren: Parents,
+                folderName:
+                    string.Format(
+                        "NoEvHighNovelty-noveltygen{0}-feas{1}-infeas{2}-evogen{3}-evopop{4}-evopar{5}-evochild{6}-moeagen{7}-moeapop{8}",
+                        NoveltyGenerations,
+                        Feasible,
+                        Infeasible,
+                        EvoGenerations,
+                        EvoPopSize,
+                        Parents,
+                        Children,
+                        MOEAGenerations,
+                        MOEAPopSize),
+                selectHighestFitness: false);
+            Console.WriteLine("Evolution with highest novelty maps. It took {0} milliseconds to perform evolution with highest novelty maps.", sw.ElapsedMilliseconds);
+            Console.WriteLine("------");
+            sw.Restart();
 
             Console.WriteLine("Everything is done running");
             Console.ReadKey();
         }
 
-        public static void NewNormalEvolutionTests(List<MapPhenotype> maps, Stopwatch sw)
-        {
-            var randomSeed = 124;
-
-            var random = new Random(randomSeed);
-            var folderString = "Evo A";
-
-            var evolutionGenerations = 5;
-            var evoPopSize = 5;
-            var parents = 1;
-            var children = 4;
-
-            Console.WriteLine("Starting evolution {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            RunEvolution(
-                maps,
-                random,
-                numberOfGenerations: evolutionGenerations,
-                populationSize: evoPopSize,
-                numberOfParents: parents,
-                numberOfChildren: children,
-                folderName: folderString);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-
-
-
-
-            random = new Random(randomSeed);
-            folderString = "Evo B";
-
-            evolutionGenerations = 15;
-            evoPopSize = 15;
-            parents = 3;
-            children = 12;
-
-            Console.WriteLine("Starting evolution {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            RunEvolution(
-                maps,
-                random,
-                numberOfGenerations: evolutionGenerations,
-                populationSize: evoPopSize,
-                numberOfParents: parents,
-                numberOfChildren: children,
-                folderName: folderString);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-
-
-
-
-            random = new Random(randomSeed);
-            folderString = "Evo C";
-
-            evolutionGenerations = 45;
-            evoPopSize = 5;
-            parents = 1;
-            children = 4;
-
-            Console.WriteLine("Starting evolution {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            RunEvolution(
-                maps,
-                random,
-                numberOfGenerations: evolutionGenerations,
-                populationSize: evoPopSize,
-                numberOfParents: parents,
-                numberOfChildren: children,
-                folderName: folderString);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-
-
-
-
-            random = new Random(randomSeed);
-            folderString = "Evo D";
-
-            evolutionGenerations = 25;
-            evoPopSize = 10;
-            parents = 2;
-            children = 8;
-
-            Console.WriteLine("Starting evolution {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            RunEvolution(
-                maps,
-                random,
-                numberOfGenerations: evolutionGenerations,
-                populationSize: evoPopSize,
-                numberOfParents: parents,
-                numberOfChildren: children,
-                folderName: folderString);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-
-
-
-
-            random = new Random(randomSeed);
-            folderString = "Evo H";
-
-            evolutionGenerations = 50;
-            evoPopSize = 5;
-            parents = 1;
-            children = 4;
-
-            Console.WriteLine("Starting evolution {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            RunEvolution(
-                maps,
-                random,
-                numberOfGenerations: evolutionGenerations,
-                populationSize: evoPopSize,
-                numberOfParents: parents,
-                numberOfChildren: children,
-                folderName: folderString);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-
-
-
-
-            random = new Random(randomSeed);
-            folderString = "Evo I";
-
-            evolutionGenerations = 50;
-            evoPopSize = 10;
-            parents = 2;
-            children = 8;
-
-            Console.WriteLine("Starting evolution {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            RunEvolution(
-                maps,
-                random,
-                numberOfGenerations: evolutionGenerations,
-                populationSize: evoPopSize,
-                numberOfParents: parents,
-                numberOfChildren: children,
-                folderName: folderString);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-        }
-
-        public static void NewEvolutionTests(List<MapPhenotype> maps, Stopwatch sw)
-        {
-            NoveltySearchOptions nso;
-            var randomSeed = 124;
-            var txtFile = "EvolutionWithNoveltyFitness.txt";
-            var selectHighestFitness = true;
-
-            var random = new Random(randomSeed);
-            var folderString = "EvoNov E + VI Nov";
-
-            var noveltyGenerations = 10;
-            var archive = 5;
-            var feasible = 50;
-            var infeasible = 50;
-
-            var evolutionGenerations = 10;
-            var evoPopSize = 25;
-            var parents = 6;
-            var children = 18;
-
-            random = new Random(randomSeed);
-            folderString = "EvoNov J + V Nov";
-
-            noveltyGenerations = 20;
-            archive = 1;
-            feasible = 60;
-            infeasible = 60;
-
-            evolutionGenerations = 10;
-            evoPopSize = 5;
-            parents = 1;
-            children = 4;
-
-            Console.WriteLine("Starting evolution with highest fitness novel maps {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            nso = new NoveltySearchOptions(feasiblePopulationSize: feasible, infeasiblePopulationSize: infeasible, addToArchive: archive);
-            RunEvolutionWithNoveltyAsBase(maps, random, runMOEA: false, selectHighestFitness: selectHighestFitness, numberOfNoveltyGenerations: noveltyGenerations, numberOfEvolutionGenerations: evolutionGenerations, noveltySearchOptions: nso, evolutionPopulationSize: evoPopSize, numberOfParents: parents, numberOfChildren: children, selectionStrategy: Enums.SelectionStrategy.ChanceBased, parentSelectionStrategy: Enums.SelectionStrategy.ChanceBased, folderName: folderString, fileToWriteTo: txtFile);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-
-
-
-
-            random = new Random(randomSeed);
-            folderString = "EvoNov H + VI Nov";
-
-            noveltyGenerations = 50;
-            archive = 1;
-            feasible = 60;
-            infeasible = 60;
-
-            evolutionGenerations = 50;
-            evoPopSize = 5;
-            parents = 1;
-            children = 4;
-
-            Console.WriteLine("Starting evolution with highest fitness novel maps {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            nso = new NoveltySearchOptions(feasiblePopulationSize: feasible, infeasiblePopulationSize: infeasible, addToArchive: archive);
-            RunEvolutionWithNoveltyAsBase(maps, random, runMOEA: false, selectHighestFitness: selectHighestFitness, numberOfNoveltyGenerations: noveltyGenerations, numberOfEvolutionGenerations: evolutionGenerations, noveltySearchOptions: nso, evolutionPopulationSize: evoPopSize, numberOfParents: parents, numberOfChildren: children, selectionStrategy: Enums.SelectionStrategy.ChanceBased, parentSelectionStrategy: Enums.SelectionStrategy.ChanceBased, folderName: folderString, fileToWriteTo: txtFile);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-
-
-
-
-            random = new Random(randomSeed);
-            folderString = "EvoNov I + VII Nov";
-
-            noveltyGenerations = 50;
-            archive = 1;
-            feasible = 90;
-            infeasible = 90;
-
-            evolutionGenerations = 50;
-            evoPopSize = 10;
-            parents = 2;
-            children = 8;
-
-            Console.WriteLine("Starting evolution with highest fitness novel maps {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            nso = new NoveltySearchOptions(feasiblePopulationSize: feasible, infeasiblePopulationSize: infeasible, addToArchive: archive);
-            RunEvolutionWithNoveltyAsBase(maps, random, runMOEA: false, selectHighestFitness: selectHighestFitness, numberOfNoveltyGenerations: noveltyGenerations, numberOfEvolutionGenerations: evolutionGenerations, noveltySearchOptions: nso, evolutionPopulationSize: evoPopSize, numberOfParents: parents, numberOfChildren: children, selectionStrategy: Enums.SelectionStrategy.ChanceBased, parentSelectionStrategy: Enums.SelectionStrategy.ChanceBased, folderName: folderString, fileToWriteTo: txtFile);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-
-
-
-
-            random = new Random(randomSeed);
-            folderString = "EvoNov D + II Nov";
-
-            noveltyGenerations = 25;
-            archive = 1;
-            feasible = 25;
-            infeasible = 25;
-
-            evolutionGenerations = 25;
-            evoPopSize = 10;
-            parents = 2;
-            children = 8;
-
-            Console.WriteLine("Starting evolution with highest fitness novel maps {0} at {1}.", folderString, DateTime.Now.TimeOfDay);
-            nso = new NoveltySearchOptions(feasiblePopulationSize: feasible, infeasiblePopulationSize: infeasible, addToArchive: archive);
-            RunEvolutionWithNoveltyAsBase(maps, random, runMOEA: false, selectHighestFitness: selectHighestFitness, numberOfNoveltyGenerations: noveltyGenerations, numberOfEvolutionGenerations: evolutionGenerations, noveltySearchOptions: nso, evolutionPopulationSize: evoPopSize, numberOfParents: parents, numberOfChildren: children, selectionStrategy: Enums.SelectionStrategy.ChanceBased, parentSelectionStrategy: Enums.SelectionStrategy.ChanceBased, folderName: folderString, fileToWriteTo: txtFile);
-            Console.WriteLine("Evolution with highest fitness novel maps. It took {0} milliseconds to perform evolution with highest fitness novel maps.", sw.ElapsedMilliseconds);
-            Console.WriteLine("------");
-            sw.Restart();
-        }
-
         #region Search Methods
+        /// <summary>
+        /// Runs evolution with the given settings.
+        /// </summary>
+        /// <param name="maps"> The maps to run evolution on. </param>
+        /// <param name="r"> The random number generator. </param>
+        /// <param name="mapSearchOptions"> The map search options. </param>
+        /// <param name="mapFitnessOptions"> The map fitness options. </param>
+        /// <param name="numberOfGenerations"> The number of generations to run. </param>
+        /// <param name="populationSize"> The population size of the evolution. </param>
+        /// <param name="numberOfParents"> The number of parents used in the evolution. </param>
+        /// <param name="numberOfChildren"> The number of children spawned per generation. </param>
+        /// <param name="mutationChance"> The chance of mutation happening. </param>
+        /// <param name="selectionStrategy"> The selection strategy. </param>
+        /// <param name="parentSelectionStrategy"> The parent selection strategy. </param>
+        /// <param name="populationStrategy"> The population strategy. </param>
+        /// <param name="folderName"> The folder to save results to in "Images/Finished Maps". </param>
+        /// <param name="fileToWriteTo"> The file to write timings and fitness per generation to. </param>
+        /// <param name="lowestFitnessLevelForPrint"> The fitness required before a map is printed. </param>
         public static void RunEvolution(
             List<MapPhenotype> maps,
             Random r,
@@ -318,7 +202,7 @@
             Enums.SelectionStrategy parentSelectionStrategy = Enums.SelectionStrategy.ChanceBased,
             Enums.PopulationStrategy populationStrategy = Enums.PopulationStrategy.Mutation,
             string folderName = "MapEvolution",
-            string fileToWriteTo = "evolutionGenerationTimes.txt",
+            string fileToWriteTo = "EvolutionGenerationTimes.txt",
             double lowestFitnessLevelForPrint = double.MinValue)
         {
             var stringToWrite = new StringBuilder();
@@ -379,6 +263,19 @@
             WriteToTextFile(stringToWrite.ToString(), fileToWriteTo, folderName);
         }
 
+        /// <summary>
+        /// Runs MOEA on a set of maps.
+        /// </summary>
+        /// <param name="maps"> The maps to run evolution on. </param>
+        /// <param name="r"> The random number generator. </param>
+        /// <param name="mapSearchOptions"> The map search options. </param>
+        /// <param name="mapFitnessOptions"> The map fitness options. </param>
+        /// <param name="numberOfGenerations"> The number of generations to run. </param>
+        /// <param name="populationSize"> The population size. </param>
+        /// <param name="mutationChance"> The chance of mutation happening. </param>
+        /// <param name="folderName"> The folder to save results to in "Images/Finished Maps". </param>
+        /// <param name="fileToWriteTo"> The file to write timings and fitness per generation to. </param>
+        /// <param name="lowestFitnessLevelForPrint"> The fitness required before a map is printed. </param>
         public static void RunMultiobjectiveEvolution(
             List<MapPhenotype> maps,
             Random r,
@@ -443,6 +340,18 @@
             WriteToTextFile(sb.ToString(), fileToWriteTo, folderName);
         }
 
+        /// <summary>
+        /// Runs novelty search on a given set of maps with the given settings.
+        /// </summary>
+        /// <param name="maps"> The maps to run evolution on. </param>
+        /// <param name="r"> The random number generator. </param>
+        /// <param name="mapSearchOptions"> The map search options. </param>
+        /// <param name="noveltySearchOptions"> The novelty search options. </param>
+        /// <param name="mapFitnessOptions"> The map fitness options. </param>
+        /// <param name="numberOfGenerations"> The number of generations to run. </param>
+        /// <param name="folderName"> The folder to save results to in "Images/Finished Maps". </param>
+        /// <param name="fileToWriteTo"> The file to write timings and fitness per generation to. </param>
+        /// <param name="lowestFitnessLevelForPrint"> The fitness required before a map is printed. </param>
         public static void RunNoveltySearch(
             List<MapPhenotype> maps,
             Random r,
@@ -450,9 +359,9 @@
             NoveltySearchOptions noveltySearchOptions = null,
             MapFitnessOptions mapFitnessOptions = null,
             int numberOfGenerations = 10,
-            double lowestFitnessLevelForPrint = double.MinValue,
             string folderName = "MapNovelty",
-            string fileToWriteTo = "noveltySearchGenerationTimes.txt")
+            string fileToWriteTo = "NoveltySearchGenerationTimes.txt",
+            double lowestFitnessLevelForPrint = double.MinValue)
         {
             var stringToWrite = new StringBuilder();
 
@@ -507,6 +416,32 @@
             WriteToTextFile(stringToWrite.ToString(), fileToWriteTo, folderName);
         }
 
+        /// <summary>
+        /// Runs standard evolution and/or MOEA seeded with maps found by the constrained novelty search.
+        /// </summary>
+        /// <param name="maps"> The maps to run evolution on. </param>
+        /// <param name="r"> The random number generator. </param>
+        /// <param name="mapSearchOptions"> The map search options. </param>
+        /// <param name="noveltySearchOptions"> The novelty search options. </param>
+        /// <param name="mapFitnessOptions"> The map fitness options. </param>
+        /// <param name="numberOfNoveltyGenerations"> The number of generations to run for the novelty search. </param>
+        /// <param name="numberOfEvolutionGenerations"> The number of generations to run for the standard evolution. </param>
+        /// <param name="numberOfMOEAGenerations"> The number of generations to run for the MOEA. </param>
+        /// <param name="evolutionPopulationSize"> The population size of the standard evolution. </param>
+        /// <param name="numberOfParents"> The number of parents for the standard evolution. </param>
+        /// <param name="numberOfChildren"> The number of children spawned per generation in the standard evolution. </param>
+        /// <param name="evolutionMutationChance"> The chance of mutation happening during evolution. </param>
+        /// <param name="moeaPopulationSize"> The population size of the MOEA. </param>
+        /// <param name="moeaMutationChance"> The chance of mutation happening in the MOEA. </param>
+        /// <param name="selectionStrategy"> The selection strategy used in the standard evolution. </param>
+        /// <param name="parentSelectionStrategy"> The parent selection strategy used in the standard evolution. </param>
+        /// <param name="populationStrategy"> The population strategy used in the standard evolution. </param>
+        /// <param name="folderName"> The folder to save results to in "Images/Finished Maps". </param>
+        /// <param name="fileToWriteTo"> The file to write timings and fitness per generation to. </param>
+        /// <param name="selectHighestFitness"> Determines if the maps for seeding are chosen by highest fitness or highest novelty. </param>
+        /// <param name="lowestFitnessLevelForPrint"> The fitness required before a map is printed. </param>
+        /// <param name="runEvo"> Determines if the standard evolution should be run. </param>
+        /// <param name="runMOEA"> Determines if the MOEA should be run. </param>
         public static void RunEvolutionWithNoveltyAsBase(
             List<MapPhenotype> maps,
             Random r,
@@ -725,6 +660,31 @@
             WriteToTextFile(stringToWrite.ToString(), fileToWriteTo, folderName);
         }
 
+        /// <summary>
+        /// Creates base maps using a cellular automaton with the given settings.
+        /// </summary>
+        /// <param name="mapSize"> The height and width of the base maps. </param>
+        /// <param name="oddsOfHeight"> The chance of height1 happening. </param>
+        /// <param name="oddsOfHeight2"> The chance of height2 happening.</param>
+        /// <param name="maxRangeToGroupPoints"> The max range to the group points. </param>
+        /// <param name="groupPoints"> The number of points where terrain should be grouped during the initial seeding. </param>
+        /// <param name="generateHeight2"> Determines if the cellular automata should generate height2 or not. </param>
+        /// <param name="caRandomSeeds"> The random seeds to use for the CA's random generator. </param>
+        /// <param name="caRuleset"> The ruleset to use by the CA. If left as null, the default ruleset is used. </param>
+        /// <param name="sections"> The number of impassable terrain sections. </param>
+        /// <param name="maxLength"> The max length of impassable terrain sections. </param>
+        /// <param name="placementIntervals"> The interval at which areas are placed in the impassable terrain section. </param>
+        /// <param name="maxPathNoiseDisplacement"> The max displacement for an area in the impassable terrain.</param>
+        /// <param name="maxWidth"> The max width of a point. </param>
+        /// <param name="caGenerations"> The number of generations run by the CA. </param>
+        /// <param name="generateHeight2ThroughRules"> Determines if height2 should be generated through rules or not.</param>
+        /// <param name="smoothingNormalNeighbourhood"> If the number of neighbours in the normal Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
+        /// <param name="smoothingExtNeighbourhood"> If the number of neighbours in the extended Moore neighbourhood is less than or equal to this number, smoothing happens. </param>
+        /// <param name="smoothingGenerations"> The number of smoothing generations run. </param>
+        /// <param name="smoothingRuleSet"> The ruleset used for smoothing. If left as null, the default smoothing ruleset will be used. </param>
+        /// <param name="fileToWriteTo"> The file to write the timings to. </param>
+        /// <param name="baseMapFolder"> The folder to print the base maps to in "Images/Finished Maps". </param>
+        /// <returns> A list of base maps. </returns>
         public static List<MapPhenotype> GetBaseMaps(
             int mapSize = 128,
             double oddsOfHeight = 0.4,
@@ -745,7 +705,7 @@
             int smoothingExtNeighbourhood = 6,
             int smoothingGenerations = 10,
             List<Rule> smoothingRuleSet = null,
-            string fileToWriteTo = "baseMapGeneration.txt",
+            string fileToWriteTo = "BaseMapGeneration.txt",
             string baseMapFolder = "BaseMaps")
         {
             var stringToWrite = new StringBuilder();
@@ -811,6 +771,12 @@
             return baseMaps;
         }
 
+        /// <summary>
+        /// Writes a string to a txt file.
+        /// </summary>
+        /// <param name="stringToWrite"> The string to write. </param>
+        /// <param name="fileToWriteTo"> The name of the file to write to. </param>
+        /// <param name="folder"> The folder to write to in "Images/Finished Maps". </param>
         public static void WriteToTextFile(string stringToWrite, string fileToWriteTo, string folder = "")
         {
             var mapDir = Path.Combine(MapHelper.GetImageDirectory(), @"Finished Maps");
