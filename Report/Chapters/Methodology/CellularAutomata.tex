@@ -1,24 +1,24 @@
-\section{Cellular Automata}
+\section{Cellular Automaton}
 \label{methodology_ca}
-A cellular automata is a form for model that can simulate artificial life and is often used in computational tasks (e.g. procedual contant generation\cite{togelius2011search}), mathematics and biology. 
+A cellular automaton is a form for model that can simulate artificial life and is often used in computational tasks (e.g. procedural content generation\cite{togelius2011search}), mathematics and biology. 
 
-Cellular automatas are made from a regular grid of cells, where each cell can have one state out of a set of states. A cellular automata also contains a set of fixed rules that determine how a cell's state is affected by the cells around it, known as a cell's \textit{neighbourhood}. The rules are applied to all cells in the grid at once\footnote{Not all cells may have a rule that applies, in which case it keeps its current state.} in order to create a new generation. New generations are created either until a certain criteria is reached, or until a chosen number of generations have passed.
+Cellular automata are made from a regular grid of cells, where each cell can have one state out of a set of states. A cellular automaton also contains a set of fixed rules that determine how a cell's state is affected by the cells around it, known as a cell's \textit{neighbourhood}. The rules are applied to all cells in the grid at once\footnote{Not all cells may have a rule that applies, in which case it keeps its current state.} in order to create a new generation. New generations are created either until a certain criteria is reached, or until a chosen number of generations have passed.
 
-The number of states in a cellular automata can range from two different states (\textit{active} and \textit{not-active}) up to a any finite number of states. The more states, however, the more complex the cellular automata will be. Every state will need to be linked to at least one rule (otherwise there is no point in having the state) and the more states that exist, the more complex the ruleset will become.
+The number of states in a cellular automaton can range from two different states (\textit{active} and \textit{not-active}) up to a any finite number of states. The more states, however, the more complex the cellular automaton will be. Every state will need to be linked to at least one rule (otherwise there is no point in having the state) and the more states that exist, the more complex the ruleset will become.
 
-Cellular automata rules use \textit{neighbourhoods} to determine what happens to a cell (e.g. if five of the surrounding cells are active, change the state of this cell to active). These neighbourhoods determines which of the surrounding cells whose states are considered with regards to changing the current cell. There are two different neighbourhoods that are used in most cellular automatas; \textit{von Neumann} and \textit{Moore}. \textit{von Neumann} covers the cells horizontally and vertically in either direction from the current cell. \textit{Moore} covers not only horizontally and vertically, but also diagonally. Both neighbourhoods only consider cells one tile away from current cell, but they can be \textit{extended} to cover a larger area. Figure \ref{fig:CA_Neighbourhoods} shows the two neighbourhoods along with their extended versions.
+Cellular automata rules use \textit{neighbourhoods} to determine what happens to a cell (e.g. if five of the surrounding cells are active, change the state of this cell to active). These neighbourhoods determines which of the surrounding cells whose states are considered with regards to changing the current cell. There are two different neighbourhoods that are used in most cellular automata; \textit{von Neumann} and \textit{Moore}. \textit{von Neumann} covers the cells horizontally and vertically in either direction from the current cell. \textit{Moore} covers not only horizontally and vertically, but also diagonally. Both neighbourhoods only consider cells one tile away from current cell, but they can be \textit{extended} to cover a larger area. Figure \ref{fig:CA_Neighbourhoods} shows the two neighbourhoods along with their extended versions.
 
-\insertPicture{1}{CA_Neighbourhoods2}{The neighbourhoods used in cellular automatas.}{CA_Neighbourhoods}
+\insertPicture{1}{CA_Neighbourhoods2}{The neighbourhoods used in cellular automata.}{CA_Neighbourhoods}
 
-\subsection{Cellular Automata Implementation}
+\subsection{Cellular Automaton Implementation}
 \label{methodology_ca_our}
 
-For this thesis, a cellular automata has been used to generate the initial heightmap for the phenotype, to smooth out the heightmap, and to place impassable terrain. In order to save time, the cellular automata only work on the top 60\% of the map, which later is rotated to form a complete map. 60\% has been chosen instead of 50\% in order to avoid that the cells at the bottom of the working area are biased by the empty cells below. This still happens with 60\%, but as the map is rotated, the bottom cells will be overwritten and the bias will have no influence.
+For this thesis, a cellular automaton has been used to generate the initial heightmap for the phenotype, to smooth out the heightmap, and to place impassable terrain. In order to save time, the cellular automaton only work on the top 60\% of the map, which later is rotated to form a complete map. 60\% has been chosen instead of 50\% in order to avoid that the cells at the bottom of the working area are biased by the empty cells below. This still happens with 60\%, but as the map is rotated, the bottom cells will be overwritten and the bias will have no influence.
 
 \subsubsection{Initial Seeding}
 \label{methodology_ca_our_initial}
 
-The cellular automata is initialized by randomly seeding the map with one of the different height levels through the use of random number generation. The default odds are the following:
+The cellular automaton is initialized by randomly seeding the map with one of the different height levels through the use of random number generation. The default odds are the following:
 
 \begin{my_itemize}
 
@@ -30,7 +30,7 @@ The cellular automata is initialized by randomly seeding the map with one of the
 
 \end{my_itemize}
 
-Before the seeding process begins, \textbf{x} \textit{focus points} are randomly determined. During seeding, for every cell a random number between 0.0 and 1.0 is generated and the state of the cell is set to the corresponding height-level, as shown above. If the cell is within 15 tiles of any of the \textit{focus points}, the generated number is reduced\footnote{This increases the odds of a higher height-level occouring.} depending on how close the cell is to a focus point. The reduction follows the calculation
+Before the seeding process begins, \textbf{x} \textit{focus points} are randomly determined. During seeding, for every cell a random number between 0.0 and 1.0 is generated and the state of the cell is set to the corresponding height-level, as shown above. If the cell is within 15 tiles of any of the \textit{focus points}, the generated number is reduced\footnote{This increases the odds of a higher height-level occurring.} depending on how close the cell is to a focus point. The reduction follows the calculation
 
 \begin{equation} \label{eq:oddsReduction}
 	odds := \langle odds\rangle - \frac{15 - \langle actualDistance\rangle}{15 \times 3}

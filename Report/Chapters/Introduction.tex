@@ -3,26 +3,27 @@
 
 This report is the result of a Master's thesis project at the IT-University of Copenhagen, spring 2015.
 
-The goal of the thesis was to apply constrained novelty search, a standard genetic algorithm, and a multi-objective evolutionary algorithm to do online procedural content generation of maps for StarCraft II and analyse the quality of the generated maps and compare the trade-offs required in order for each algorithm to generate maps fast enough to be used in online\cite{shaker2015procedural} procedural content generation.
+The goal of the thesis was to apply constrained novelty search, a standard genetic algorithm, and a multi-objective evolutionary algorithm to do online\cite{shaker2015procedural} procedural content generation of maps for StarCraft II, analyse the quality of the generated maps and compare the trade-offs required in order for each algorithm to generate maps fast enough to be used in online procedural content generation.
 
 \section{Procedural Content Generation in Games}
 \label{introduction_pcg}
 
 Games are a widespread form for entertainment and they come in many different forms. One thing they have in common is that the content of a game determines how interesting a player thinks the game is. Thus, if there is not enough content (or enough varied content), a player will grow bored with a game and move on from it. Game content takes a lot of time and resources to develop, however, so there is a limit to how often a development team can push out new content. This is unfortunate, as many players eventually get bored with the existing content and want something new.
 
-One solution to this problem is to let the game generate new content by itself. This method is called "procedural content generation" (referred to as PCG) and is used in many games today. There exists a multitude of PCG techniques and they are used to different degrees from game to game. In Diablo\cite{diablo3}, PCG is used to create variance in the statistics of weapons and armour that can be acquired in the game and to generate different layouts for dungeons. In Dwarf Fortress\cite{dwarffortress}, PCG is used to create the entire world and most of what happens in it. Because of the amount of additional content that PCG can generate, there is a potentially near endless amount of novel content that players can consume, making it possible to meet the needs of the players without having to spend more development time on creating content after release.
+One solution to this problem is to let the game generate new content by itself. This method is called "procedural content generation" (referred to as PCG) and is used in many games today. A multitude of PCG techniques exist and they are used to varying degrees from game to game. In Diablo\cite{diablo3}, PCG is used to create variance in the statistics of weapons and armour that can be acquired in the game and to generate different layouts for dungeons. In Dwarf Fortress\cite{dwarffortress}, PCG is used to create the entire world and most of what happens in it. Because of the amount of additional content that PCG can generate, players have a nearly endless amount of novel content available to them. This makes it possible to meet the needs of the players without having to spend more development time on creating content after release.
+
 \section{StarCraft II}
 \label{introduction_starcraft}
 
 StarCraft II\cite{starcraft2} is a real-time strategy game developed by Blizzard Entertainment. It is the sequel to the original StarCraft\cite{starcraft} that was released in 1998 which was a huge success.
 
-StarCraft is set in a military science fiction world, where the player assumes the role of a general of one of three races; Protoss, Terran, and Zerg. The goal of the game is to build a base, gather resources, raise an army and, in the end, wipe out any opponents that the player is playing against. There is a lot of strategy involved, as each of the three races have access to their own unique buildings and units, with each type of unit having its own strengths and weaknesses. A player must know how to predict and counter\footnote{Countering a unit means using a unit of your own that exploits a weakness in the enemy unit.} the opponent's choice of units in order to win. In addition, StarCraft II requires both base and economy management, which makes the game both interesting and complex.
+The StarCraft games are set in a military science fiction world, where the player assumes the role of a general of one of three races; Protoss, Terran, and Zerg. The goal of the game is to build a base, gather resources, raise an army, and wipe out any opponents that the player is playing against. There is a lot of strategy involved, as each of the three races have access to their own unique buildings and units, with each unit having its own strengths and weaknesses. A player must know how to predict and counter\footnote{Countering a unit means using a unit of your own that exploits a weakness in the enemy unit.} the opponent's choice of units in order to win. In addition, StarCraft II requires both base and economy management, which makes the game both interesting and complex.
 
 \insertTwoPictures{Starcraft2_02}{Starcraft2_01}{Left: A Terran base. Right: A Terran fleet assaulting a Protoss base.}{Starcraft2_Gameplay}
 
 These factors require the game to be very well balanced, otherwise one race will dominate the other two, making those two races redundant. The balance comes from tuning the statistics of unit (e.g. health, armour, damage) and buildings (e.g. health, build time, what the building provides access to), and from the maps the game is played on.
 
-A map in StarCraft is made from two-sided grid of $n$-by-$m$ tiles (where $n$ and $m$ generally are between 128 and 256) with different features. Some of the most important features are listed here:
+A map in StarCraft II is made from two-sided grid of $n$-by-$m$ tiles (where $n$ and $m$ generally are between 128 and 256) with different features. Some of the most important features are listed here:
 
 \begin{my_itemize}
 
@@ -50,15 +51,15 @@ The placement of other groups of resources (generally referred to as an \textit{
 
 \subsection{StarCraft and PCG}
 \label{introduction_starcraft_pcg}
-StarCraft II features a map editor that provides players the tools necessary to create their own maps from the ground-up. These maps can be published to the StarCraft Arcade\cite{starcraftarcade} and, from there, be played by players around the world. This is a good initiative, as it allows players to get a fresh breath of air, if they have grown bored of the standard maps. The only problem is that new maps require someone to design, create and balance them, which heavily limits the flow of new maps. Having a tool that can generate balanced maps would speed this process up and would provide players with a larger variety of maps to choose from. It could allow for some interesting shifts in the meta-game as tournaments could be held where only randomly generated maps are played. 
+StarCraft II features a map editor that provides players the tools necessary to create their own maps from the ground-up. These maps can be published to the Arcade\cite{starcraftarcade} (a StarCraft II map-sharing platform) and, from there, be played by players around the world. This is a good initiative, as it allows players to get a fresh breath of air, if they have grown bored of the standard maps. The only problem is that new maps require someone to design, create and balance them, which heavily limits the flow of new maps. Having a tool that can generate balanced maps would speed this process up and would provide players with a larger variety of maps to choose from. It could allow for some interesting shifts in the meta-game as tournaments could be held where only randomly generated maps are played. 
 
 \section{Research Question}
 \label{introduction_researchquestion}
-When generating StarCraft maps, there are a number of different factors to consider. The three overarching factors are map balance (quality), map novelty, and generation speed. As noted above, balanced maps are a cornerstone of the StarCraft II game and any generator that aims to produce competitive maps must seek to keep the balance at a consistently high level. A generator must also create a large amount of maps that are novel, otherwise its usefulness will fall off rather quickly. While it is not mandatory for all map generators to be fast, any "on-the-fly" (online) StarCraft II map generation tool must be capable of producing a map within an acceptable time frame.
+When generating StarCraft II maps, there are a number of different factors to consider. The three overarching factors are map balance (quality), map novelty, and generation speed. As noted above, balanced maps are a cornerstone of the StarCraft II game and any generator that aims to produce competitive maps must seek to keep the balance at a consistently high level. A generator must also create a large amount of maps that are novel, otherwise its usefulness will fall off rather quickly. While it is not mandatory for all map generators to be fast, any "on-the-fly" (online) StarCraft II map generation tool must be capable of producing a map within an acceptable time frame.
 
 The aim of this thesis is to explore the potential for an online StarCraft II map generation tool and what trade-off between the three factors (balance, novelty, and speed) is required in order for the generator to finish generating a novel map of high quality map within an acceptable time frame. The main research question is as follows:
 \begin{quote}
-What trade-offs must be made in balance and novelty of maps in order to achieve the speed necessary to create a viable online procedural StarCraft map generator?
+What trade-offs must be made in balance and novelty of maps in order to achieve the speed necessary to create a viable online procedural StarCraft II map generator?
 \end{quote}
 
 \subsection{Objectives}
@@ -74,10 +75,10 @@ The objectives of this thesis are the following:
 
 \subsubsection{Balance}
 In order to generate and objectively evaluate maps based on balance, it is necessary to (subjectively) define what balance means in terms of StarCraft II maps.
-\subsubsection{Cellular Automata}
+\subsubsection{Cellular Automaton}
 Because the StarCraft II map search space is immense, the aim is to reduce the size of this search space by generating \textit{base maps} that cover the top half of the map and consist of different height levels, impassable terrain, and cliffs. 
 \subsubsection{Search}
-Constrained novelty search, a standard genetic algorithm, and a multi-objective evolutionary algorithm are used to search for optimal placements of StarCraft II map elements (bases, ramps, etc\ldots) on the \textit{base maps} generated by the cellular automata. The \textit{base maps} are only altered slightly during the search. When a potential solution has been found, the top half of the map is rotated onto the bottom half such that north-west becomes south-east and north-east becomes south-west.
+Constrained novelty search, a standard genetic algorithm, and a multi-objective evolutionary algorithm are used to search for optimal placements of StarCraft II map elements (bases, ramps, etc\ldots) on the \textit{base maps} generated by the cellular automaton. The \textit{base maps} are only altered slightly during the search. When a potential solution has been found, the top half of the map is rotated onto the bottom half such that north-west becomes south-east and north-east becomes south-west.
 \subsubsection{Evaluation}
 The maps produced by the different approaches are evaluated based on four measures: speed of generation, objective\footnote{This objective quality is measured using the same fitness function used in evolution.} quality of the maps produced, the novelty of the maps produced, and a subjective measure that considers elements that are not part of the objective quality measure.
 \subsubsection{Comparison}

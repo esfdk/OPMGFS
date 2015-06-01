@@ -1,11 +1,9 @@
 TODO:
 	Grooss
-		Consider using genotype/phenotype to reduce confusion
 		
 	Melnyk
 
 	Uassigned TODOs
-		Time limit on evolution/novelty search (and figure out what should be limit)
 	
 	Low prio TODOs
 		Number of choke points seen by Xel'Naga towers
@@ -27,7 +25,7 @@ TODO:
 		(done) Fix bug in choke point search
 		(ground/flight done) Calculate both ground and flight distances
 		(done) Impement other version of ramp placement
-		(check if fixed)Base openess (combine number of traversable points around occupied area & 8 directions from center of base (8 directions only from start)
+		(check if fixed)Base openness (combine number of traversable points around occupied area & 8 directions from center of base (8 directions only from start)
 		
 Notes:
 	Quality = Novelty of map + mechanical quality
@@ -40,7 +38,7 @@ Notes:
 	We do not consider blink/reaper movement in fitness calculation
 	Novelty search: one parent - one child
 	2 tile wide cliffs cover more area than otherwise
-	Start Base Approach openess is VERY naive
+	Start Base Approach openness is VERY naive
 	When we in code use "max" in fitness, we sometimes mean "optimal"
 	Should have included novelty significance factors so that different start base positions are more significant in novelty calculations than difference in destructible rock placement
 	Seed evolution with both most novel solutions and novel solutions that have the highest fitness
@@ -48,15 +46,6 @@ Notes:
 	Discuss reduction in number of objectives (potentially combining them ?)
 	Xel'Naga Tower objective score is difficult to measure because there are many parts and there is no single specific value that makes for "better placement", only "different"
 	Consider bell curve for some fitness measures (e.g. path distance, direct distance, number of expansions)
-
-	MOEA:
-		Keep selecting non-dominated solutions until only dominated solutions are left. 
-		After that, we select solutions based on how many solutions that dominate them.
-		If two (or more) solutions are dominated by the same number, we select the one that dominate the other.
-			If they do not dominate each other, we select based on fitness.
-		TL;DR: Dominance > Fitness
-
-	For evolution selection we currently use highest fitness. Should look into using chance based instead.
 	
 	Number of units:
 		Protoss: 18

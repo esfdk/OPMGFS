@@ -18,7 +18,7 @@ As mentioned above, a map is made up of height-levels and various features the p
 \subsection{Functionality of the Structure}
 \label{methodology_phenotype_functionality}
 
-Generation of the \textit{initial heightmap} and \textit{smoothing of the heightmap}\footnote{Both generation and smoothing are only focused on height-levels, not on cliffs or ramps. The placement of cliffs is handled by the phenotype and placement of ramps is handled by the genotype.} are both handled by a cellular automata (see section \ref{methodology_ca}) and will not be discussed in-depth here.
+Generation of the \textit{initial heightmap} and \textit{smoothing of the heightmap}\footnote{Both generation and smoothing are only focused on height-levels, not on cliffs or ramps. The placement of cliffs is handled by the phenotype and placement of ramps is handled by the genotype.} are both handled by a cellular automaton (see section \ref{methodology_ca}) and will not be discussed in-depth here.
 
 \subsubsection*{Cliff Placement}
 
@@ -33,7 +33,7 @@ After cliffs have been placed, it is possible that cliffs have been placed in su
 During the smoothing process, if any tile is found that is only connected to one other tile of the same height-level\footnote{This is checked using the von Neumann neighbourhood.}, that tile is transformed into a cliff and the position is saved. For every saved position, the area in a 7-by-7 square around it is run through the smoothing process again. This may seem counter-intuitive, but in StarCraft II the minimum size of a height-level area is 2-by-2. Any height-level tile \textbf{must} therefore have at least two other tiles of the same height-level next to it, otherwise it is not a valid height.
 
 \subsubsection{Visual Representation}
-When a map has been fully created (that means after the representation has been converted, see section \ref{methodology_conversion}), a visual representation can be created. Every state in the heightmap, the feature map and the rock map has a picture of a tile mapped to it. These tiles are draws on a bitmap, in the order of heightmap, features and rocks. This map is saved to a PNG file which can be opened and analyzed. For an example of the visual representation, see figure \ref{fig:methodology_genotype_differentbasemaps} on page \pageref{fig:methodology_genotype_differentbasemaps}.
+When a map has been fully created (that means after the representation has been converted, see section \ref{methodology_conversion}), a visual representation can be created. Every state in the heightmap, the feature map and the rock map has a picture of a tile mapped to it. These tiles are draws on a bitmap, in the order of heightmap, features and rocks. This map is saved to a PNG file which can be opened and analysed. For an example of the visual representation, see figure \ref{fig:methodology_genotype_differentbasemaps} on page \pageref{fig:methodology_genotype_differentbasemaps}.
 
 A explanation of the different tiles can be seen here:
 

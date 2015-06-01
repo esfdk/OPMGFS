@@ -13,7 +13,7 @@ Three tests were performed on the multi-objective evolutionary algorithm (NSGA-I
 
 \end{my_itemize}
 
-Like the results in the novelty search section, all numbers are the average of running the algorithm with settings on ten different base maps. One thing to note about the results is that the average fitness is very low in most cases. This happens because NSGA-II generates a new set of offspring during the last generation, and some of the offsprings risk mutating in such a way that they may not be able to place start bases. This results in a very low fitness value, which impacts the average fitness significantly. The average fitness is therefore not as telling for the NSGA-II algorithm as for the standard genetic algorithm. Due to the risk of such a low fitness, \textit{convergence} is based on when the maximum fitness did not change for three generations. It does not take minimum fitness into consideration.
+Like the results in the novelty search section, all numbers are the average of running the algorithm with settings on ten different base maps. One thing to note about the results is that the average fitness is very low in most cases. This happens because NSGA-II generates a new set of offspring during the last generation, and some of the offspring risk mutating in such a way that they may not be able to place start bases. This results in a very low fitness value, which impacts the average fitness significantly. The average fitness is therefore not as telling for the NSGA-II algorithm as for the standard genetic algorithm. Due to the risk of such a low fitness, \textit{convergence} is based on when the maximum fitness did not change for three generations. It does not take minimum fitness into consideration.
 
 \begin{table}[!h]
 	\begin{center}
@@ -44,7 +44,7 @@ A good spot seems to be around 10 generations and a population of 25 or the othe
 
 While the sets of settings do have an influence on how much time it takes to find maps of high quality, it is important to note that - like with novelty search - the base map has a lot of influence on how the search turns out. Looking at the raw data collected, the highest and lowest fitness maps generated with settings $F$ are $47.75$ and $38.69$, respectively. This difference is quite significant, which means that some base maps may simply not have the potential for a high-quality map.
 
-Comparing the  NSGA-II algorithm's results to those of the standard genetic algorithm, NSGA-II does not score much better than the standard genetic algorithm. For the settings $G$, $H$ and $I$, the standard genetic algorithm actually scores slightly better than the NSGA-II algorithm. The differences in the scores for all the test setups are so small that it could be due to variance, however.
+Comparing the  NSGA-II algorithm's results to those of the standard genetic algorithm, NSGA-II does not score much better than the standard genetic algorithm. For the settings $G$, $H$ and $I$, the standard genetic algorithm actually scores slightly better than the NSGA-II algorithm. The differences in the scores for all the test set-ups are so small that it could be due to variance, however.
 
 \begin{table}[!h]
 	\begin{center}
