@@ -267,7 +267,7 @@
             sb.AppendLine(string.Format("Start Base Openness Fitness:               {0}", this.StartBaseOpennessFitness));
             sb.AppendLine(string.Format("Base Openness Fitness:                     {0}", this.BaseOpennessFitness));
 
-            return base.ToString();
+            return sb.ToString();
         }
         
         /// <summary>
