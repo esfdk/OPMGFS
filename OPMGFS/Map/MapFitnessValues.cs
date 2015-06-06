@@ -1,6 +1,7 @@
 ﻿namespace OPMGFS.Map
 {
     using System.Collections.Generic;
+    using System.Text;
 
     /// <summary>
     /// Contains the different fitness values for a map.
@@ -216,6 +217,57 @@
                            };
 
             return list;
+        }
+
+        /// <summary>
+        /// Prints MapFitnessValues to a string, with each line being indented a certain amount of times.
+        /// </summary>
+        /// <param name="numberOfTabs"> The number of indentations (\t) before every line. </param>
+        /// <returns> The MapFitnessValues as a string. </returns>
+        public string ToStringWithTabs(int numberOfTabs = 0)
+        {
+            var tabString = string.Empty;
+            for (var i = 0; i < numberOfTabs; i++)
+                tabString += "\t";
+
+            var sb = new StringBuilder();
+
+            sb.AppendLine(string.Format("{1}Base Space Fitness:                        {0}", this.BaseSpaceFitness, tabString));
+            sb.AppendLine(string.Format("{1}Base Height Level Fitness:                 {0}", this.BaseHeightLevelFitness, tabString));
+            sb.AppendLine(string.Format("{1}Path Between Start Bases Fitness:          {0}", this.PathBetweenStartBasesFitness, tabString));
+            sb.AppendLine(string.Format("{1}New Height Reached Fitness:                {0}", this.NewHeightReachedFitness, tabString));
+            sb.AppendLine(string.Format("{1}Distance To Natural Expansion Fitness:     {0}", this.DistanceToNaturalExpansionFitness, tabString));
+            sb.AppendLine(string.Format("{1}Distance to NonNatural Expansions Fitness: {0}", this.DistanceToNonNaturalExpansionFitness, tabString));
+            sb.AppendLine(string.Format("{1}Expansions Availabe Fitness:               {0}", this.ExpansionsAvailableFitness, tabString));
+            sb.AppendLine(string.Format("{1}Choke Points Fitness:                      {0}", this.ChokePointFitness, tabString));
+            sb.AppendLine(string.Format("{1}Xel'Naga Placement Fitness:                {0}", this.XelNagaPlacementFitness, tabString));
+            sb.AppendLine(string.Format("{1}Start Base Openness Fitness:               {0}", this.StartBaseOpennessFitness, tabString));
+            sb.AppendLine(string.Format("{1}Base Openness Fitness:                     {0}", this.BaseOpennessFitness, tabString));
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Prints MapFitnessValues to a string.
+        /// </summary>
+        /// <returns> The MapFitnessValues as a string. </returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine(string.Format("Base Space Fitness:                        {0}", this.BaseSpaceFitness));
+            sb.AppendLine(string.Format("Base Height Level Fitness:                 {0}", this.BaseHeightLevelFitness));
+            sb.AppendLine(string.Format("Path Between Start Bases Fitness:          {0}", this.PathBetweenStartBasesFitness));
+            sb.AppendLine(string.Format("New Height Reached Fitness:                {0}", this.NewHeightReachedFitness));
+            sb.AppendLine(string.Format("Distance To Natural Expansion Fitness:     {0}", this.DistanceToNaturalExpansionFitness));
+            sb.AppendLine(string.Format("Distance to NonNatural Expansions Fitness: {0}", this.DistanceToNonNaturalExpansionFitness));
+            sb.AppendLine(string.Format("Expansions Availabe Fitness:               {0}", this.ExpansionsAvailableFitness));
+            sb.AppendLine(string.Format("Choke Points Fitness:                      {0}", this.ChokePointFitness));
+            sb.AppendLine(string.Format("Xel'Naga Placement Fitness:                {0}", this.XelNagaPlacementFitness));
+            sb.AppendLine(string.Format("Start Base Openness Fitness:               {0}", this.StartBaseOpennessFitness));
+            sb.AppendLine(string.Format("Base Openness Fitness:                     {0}", this.BaseOpennessFitness));
+
+            return base.ToString();
         }
         
         /// <summary>
