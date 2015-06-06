@@ -323,6 +323,30 @@
             return WithinMapBounds(new Position(x, y), sizeX, sizeY);
         }
 
+        public static MapPhenotype IncreaseSizeOfMap(MapPhenotype mp, int size)
+        {
+            var newMap = new MapPhenotype(mp.XSize * size, mp.YSize * size);
+
+            for (var x = 0; x < mp.XSize; x++)
+            {
+                for (var y = 0; y < mp.YSize; y++)
+                {
+                    var newMapX = x * size;
+                    var newMapY = y * size;
+
+                    for (var i = 0; i < size; i++)
+                    {
+                        for (var j = 0; j < size; j++)
+                        {
+                            newMap.HeightLevels[newMapX + i, newMapY + j] = mp.HeightLevels[x,y];
+                        }
+                    }
+                }
+            }
+
+            return newMap;
+        }
+
         #endregion
 
         #region Map Drawing methods

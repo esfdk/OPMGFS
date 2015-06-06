@@ -312,7 +312,7 @@
 
                     if (solution.Dominates(otherSolution))
                         solution.DominatedSolutions.Add(otherSolution);
-                    if (otherSolution.Dominates(solution)) 
+                    if (otherSolution.Dominates(solution))
                         solution.DominationCount += 1;
                 }
 
@@ -397,12 +397,12 @@
             /// <summary>
             /// Gets the list of map fitness values.
             /// </summary>
-            public List<double> MapFitnessValuesList 
-            { 
+            public List<double> MapFitnessValuesList
+            {
                 get
                 {
                     return this.Map.MapFitnessValues.FitnessList();
-                } 
+                }
             }
 
             /// <summary>

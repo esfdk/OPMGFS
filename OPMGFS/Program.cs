@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
 
     using OPMGFS.Evolution;
@@ -238,7 +239,7 @@
                                   };
 
                 evolver.Initialize(stringToWrite);
-                evolver.Evolve(stringToWrite);
+                var bestMap = evolver.Evolve(stringToWrite);
                 var variationValue = 0;
 
                 foreach (var individual in evolver.Population)
@@ -256,9 +257,11 @@
                 bestMaps.Add(evolver.Population.OrderByDescending(evoMap => evoMap.Fitness).ToList()[0]);
                 MapHelper.SaveGreyscaleNoveltyMap(evolver.Population, string.Format("Base Map {0} NoveltyMap", baseMapCounter), folderName);
 
+                Console.WriteLine("The map fitness values of base map {0} were: {1}", baseMapCounter, ((EvolvableMap)bestMap).MapFitnessValues);
+
                 baseMapCounter++;
             }
-
+            
             MapHelper.SaveGreyscaleNoveltyMap(bestMaps, string.Format(" Best Maps NoveltyMap"), folderName);
             WriteToTextFile(stringToWrite.ToString(), fileToWriteTo, folderName);
         }
@@ -314,7 +317,7 @@
                     mso,
                     mfo);
                 
-                evolver.RunEvolution(sb);
+                var bestMap = evolver.RunEvolution(sb);
 
                 var variationValue = 0;
 
@@ -332,6 +335,7 @@
 
                 bestMaps.Add(evolver.Population.OrderByDescending(evoMap => evoMap.Fitness).ToList()[0]);
                 MapHelper.SaveGreyscaleNoveltyMap(evolver.Population, string.Format("Base Map {0} NoveltyMap", baseMapCounter), folderName);
+                Console.WriteLine("The map fitness values of base map {0} were: {1}", baseMapCounter, bestMap.MapFitnessValues);
 
                 baseMapCounter++;
             }
@@ -787,6 +791,33 @@
 
             file.Write(stringToWrite);
             file.Close();
+        }
+
+        public static void GenerateTranslatedMaps(int amountToGenerate, int seedStart)
+        {
+            var sw = new Stopwatch();
+            for (var i = seedStart; i < seedStart + amountToGenerate; i++)
+            {
+                sw.Restart();
+                var random123 = new Random(i);
+                var ca = new CellularAutomata(64, 64, Enums.Half.Top, maxRangeToGroupPoint: 7, r: random123);
+                ca.RunGenerations();
+                ca.CreateImpassableTerrain(maxLength: 25, maxPathNoiseDisplacement: 1, maxWidth: 2);
+
+                var map = new MapPhenotype(ca.Map, new Enums.Item[64, 64]);
+                map.SmoothTerrain();
+
+                var newMap = MapHelper.IncreaseSizeOfMap(map, 2);
+                newMap.SmoothTerrain(random: random123);
+                newMap.PlaceCliffs();
+
+                newMap.SmoothCliffs();
+                newMap.UpdateCliffPositions(Enums.Half.Top);
+                newMap.SaveMapToPngFile(string.Format("map {0}_4_translated_post_smooth_cliffs", i), itemMap: false);
+                Console.WriteLine(sw.ElapsedMilliseconds);
+            }
+
+            Console.ReadKey();
         }
         #endregion
     }
